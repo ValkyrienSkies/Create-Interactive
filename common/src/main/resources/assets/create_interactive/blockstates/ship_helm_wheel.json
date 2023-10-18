@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "": {
+      "model": "create_interactive:block/oak_ship_helm_wheel"
+    },
+    "wood=oak": {
+      "model": "create_interactive:block/oak_ship_helm_wheel"
+    },
+    "wood=acacia": {
+      "model": "create_interactive:block/acacia_ship_helm_wheel"
+    },
+    "wood=birch": {
+      "model": "create_interactive:block/birch_ship_helm_wheel"
+    },
+    "wood=crimson": {
+      "model": "create_interactive:block/crimson_ship_helm_wheel"
+    },
+    "wood=dark_oak": {
+      "model": "create_interactive:block/dark_oak_ship_helm_wheel"
+    },
+    "wood=jungle": {
+      "model": "create_interactive:block/jungle_ship_helm_wheel"
+    },
+    "wood=spruce": {
+      "model": "create_interactive:block/spruce_ship_helm_wheel"
+    },
+    "wood=warped": {
+      "model": "create_interactive:block/warped_ship_helm_wheel"
+    }
+  }
+}

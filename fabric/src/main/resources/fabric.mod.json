@@ -1,43 +1,37 @@
 {
   "schemaVersion": 1,
-  "id": "vs_eureka",
+  "id": "create_interactive",
   "version": "${version}",
-  "name": "VS Eureka Mod",
-  "description": "Basically Archimedes Ships, but with VS2 as the backend!",
+  "name": "Create Interactive",
+  "description": "Create... Interactive!",
   "authors": [
-    "ewoudje",
-    "Tri0de",
-    "Rubydesic"
+    "Tri0de"
   ],
-  "contributors": [
-    "Copper",
-    "Anarava",
-    "VS Discord"
-  ],
+  "contributors": [],
   "contact": {
     "homepage": "https://valkyrienskies.org/",
-    "sources": "https://github.com/ValkyrienSkies/Eureka"
+    "sources": "https://github.com/StewStrong/Create-Interactive"
   },
-  "license": "Apache-2.0",
-  "icon": "assets/vs_eureka/icon.png",
+  "license": "All Rights Reserved",
+  "icon": "assets/create_interactive/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "org.valkyrienskies.eureka.fabric.EurekaModFabric"
+      "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabric"
     ],
     "client": [
-      "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}Client"
+      "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabric${'$'}Client"
     ],
     "preLaunch": [
-      "org.valkyrienskies.eureka.fabric.ValkyrienPreLaunch"
+      "org.valkyrienskies.create_interactive.fabric.ValkyrienPreLaunch"
     ],
     "modmenu": [
-      "org.valkyrienskies.eureka.fabric.EurekaModFabric${'$'}ModMenu"
+      "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabric${'$'}ModMenu"
     ]
   },
   "mixins": [
-    "vs_eureka-common.mixins.json",
-    "vs_eureka.mixins.json"
+    "create_interactive-common.mixins.json",
+    "create_interactive.mixins.json"
   ],
   "depends": {
     "minecraft": ">=1.18.2",

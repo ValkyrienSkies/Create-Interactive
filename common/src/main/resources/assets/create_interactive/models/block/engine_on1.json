@@ -1,0 +1,6 @@
+{
+  "parent": "create_interactive:block/engine",
+  "textures": {
+    "front": "create_interactive:block/engine_front_on_1"
+  }
+}

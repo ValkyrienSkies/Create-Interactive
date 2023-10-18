@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "create_interactive:oak_ship_helm",
+    "create_interactive:spruce_ship_helm",
+    "create_interactive:birch_ship_helm",
+    "create_interactive:jungle_ship_helm",
+    "create_interactive:acacia_ship_helm",
+    "create_interactive:dark_oak_ship_helm",
+    "create_interactive:crimson_ship_helm",
+    "create_interactive:warped_ship_helm"
+  ]
+}

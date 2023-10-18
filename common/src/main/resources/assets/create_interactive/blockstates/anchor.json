@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "create_interactive:block/anchor"
+    },
+    "facing=east": {
+      "model": "create_interactive:block/anchor",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "create_interactive:block/anchor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "create_interactive:block/anchor",
+      "y": 270
+    }
+  }
+}

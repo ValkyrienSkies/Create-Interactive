@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "create_interactive:balloon",
+    "create_interactive:white_balloon",
+    "create_interactive:light_gray_balloon",
+    "create_interactive:gray_balloon",
+    "create_interactive:black_balloon",
+    "create_interactive:red_balloon",
+    "create_interactive:orange_balloon",
+    "create_interactive:yellow_balloon",
+    "create_interactive:lime_balloon",
+    "create_interactive:green_balloon",
+    "create_interactive:light_blue_balloon",
+    "create_interactive:cyan_balloon",
+    "create_interactive:blue_balloon",
+    "create_interactive:purple_balloon",
+    "create_interactive:magenta_balloon",
+    "create_interactive:pink_balloon",
+    "create_interactive:brown_balloon"
+  ]
+}

@@ -3,7 +3,7 @@ architectury {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/vs_eureka.accesswidener")
+    accessWidenerPath = file("src/main/resources/create_interactive.accesswidener")
 }
 
 dependencies {
@@ -50,7 +50,7 @@ publishing {
             println "Publishing to Github Packages"
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/ValkyrienSkies/Eureka")
+                url = uri("https://maven.pkg.github.com/StewStrong/Create-Interactive")
                 credentials {
                     username = System.getenv("GITHUB_ACTOR")
                     password = System.getenv("GITHUB_TOKEN")

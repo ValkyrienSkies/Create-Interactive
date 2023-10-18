@@ -28,8 +28,8 @@ loom {
 
     forge {
         convertAccessWideners = true
-        mixinConfig "vs_eureka.mixins.json"
-        mixinConfig "vs_eureka-common.mixins.json"
+        mixinConfig "create_interactive.mixins.json"
+        mixinConfig "create_interactive-common.mixins.json"
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
     }
 }

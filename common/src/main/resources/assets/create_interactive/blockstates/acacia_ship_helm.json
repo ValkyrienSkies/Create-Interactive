@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "create_interactive:block/acacia_ship_helm_base"
+    },
+    "facing=east": {
+      "model": "create_interactive:block/acacia_ship_helm_base",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "create_interactive:block/acacia_ship_helm_base",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "create_interactive:block/acacia_ship_helm_base",
+      "y": 270
+    }
+  }
+}

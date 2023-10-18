@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "vs_eureka:floater",
-    "#vs_eureka:ship_helms"
+    "create_interactive:floater",
+    "#create_interactive:ship_helms"
   ]
 }
