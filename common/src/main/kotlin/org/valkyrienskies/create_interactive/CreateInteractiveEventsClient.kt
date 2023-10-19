@@ -62,9 +62,6 @@ object CreateInteractiveEventsClient {
     }
 
     fun addShipToContraptionRef(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
-        if (shipToContraptions.containsKey(shipId)) {
-            throw IllegalArgumentException("Tried adding duplicate shipId $shipId")
-        }
         shipToContraptions[shipId] = WeakReference(contraptionEntity)
     }
 }

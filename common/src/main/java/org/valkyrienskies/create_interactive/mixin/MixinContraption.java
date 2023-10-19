@@ -29,11 +29,7 @@ import java.util.Map.Entry;
 @Mixin(Contraption.class)
 public class MixinContraption {
     @Unique
-    private Long vs$shipId = null;
-    @Unique
     private final Map<BlockPos, Pair<StructureBlockInfo, BlockEntity>> vs$initialBlocks = new HashMap<>();
-    @Shadow
-    public AbstractContraptionEntity entity;
     @Shadow
     public BlockPos anchor;
 
@@ -43,9 +39,14 @@ public class MixinContraption {
         if (level.isClientSide) {
             return;
         }
+        final Long prevId = ((AbstractContraptionEntityDuck) entity).getShadowShipId();
+        if (prevId != null && VSGameUtilsKt.getShipObjectWorld((ServerLevel) level).getAllShips().getById(prevId) != null) {
+            // If shadow ship already exists then don't make a new one
+            return;
+        }
         final BlockPos blockPos = new BlockPos(entity.position());
         final ServerShip serverShip = VSGameUtilsKt.getShipObjectWorld((ServerLevel) level).createNewShipAtBlock(VectorConversionsMCKt.toJOML(blockPos), false, 1.0, VSGameUtilsKt.getDimensionId(level));
-        vs$shipId = serverShip.getId();
+        final Long shipId = serverShip.getId();
 
         // Anchor at ship center
         final Vector3ic shipCenter = serverShip.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
@@ -59,7 +60,7 @@ public class MixinContraption {
             level.setBlock(newPos, pair.getKey().state, flags);
         }
 
-        ((AbstractContraptionEntityDuck) entity).setShadowShipId(vs$shipId);
+        ((AbstractContraptionEntityDuck) entity).setShadowShipId(shipId);
     }
 
     @Inject(method = "addBlock", at = @At("HEAD"))

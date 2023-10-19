@@ -65,7 +65,11 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         if (getShadowShipId() != null) {
             throw new IllegalStateException("Ship already exists");
         }
-        setShadowShipId(CreateInteractiveUtil.INSTANCE.createShipForContraption((ServerLevel) level, contraption, new BlockPos(position())));
+        if (compound.contains(SHADOW_SHIP_ID_NBT_KEY)) {
+            vs$shadowShipId = compound.getLong(SHADOW_SHIP_ID_NBT_KEY);
+        } else {
+            setShadowShipId(CreateInteractiveUtil.INSTANCE.createShipForContraption((ServerLevel) level, contraption, new BlockPos(position())));
+        }
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
@@ -74,9 +78,9 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     }
 
     @Inject(method = "writeAdditional", at = @At("HEAD"))
-    private void preWriteSpawnData(final CompoundTag compound, final boolean spawnPacket, final CallbackInfo ci) {
+    private void writeAdditional(final CompoundTag compound, final boolean spawnPacket, final CallbackInfo ci) {
         final Long shadowShipIdCopy = vs$shadowShipId;
-        if (spawnPacket && shadowShipIdCopy != null) {
+        if (shadowShipIdCopy != null) {
             compound.putLong(SHADOW_SHIP_ID_NBT_KEY, shadowShipIdCopy);
         }
     }
