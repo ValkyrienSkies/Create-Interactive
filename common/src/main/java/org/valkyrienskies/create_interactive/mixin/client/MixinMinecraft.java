@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.create_interactive.dont_delete.CreateInteractiveEventsClient;
+import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient;
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider;
 
 // Set priority to 1001 to run these after VS2 mixins

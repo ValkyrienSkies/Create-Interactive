@@ -7,17 +7,11 @@ object CreateInteractiveMod {
 
     @JvmStatic
     fun init() {
-        EurekaBlocks.register()
-        CreateInteractiveBlockEntities.register()
-        EurekaItems.register()
-        EurekaScreens.register()
-        EurekaEntities.register()
-        EurekaWeights.register()
         VSConfigClass.registerConfig("create_interactive", CreateInteractiveConfig::class.java)
     }
 
     @JvmStatic
     fun initClient() {
-        EurekaClientScreens.register()
+
     }
 }

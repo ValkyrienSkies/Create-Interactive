@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "create_interactive:ballast",
-    "create_interactive:engine",
-    "create_interactive:anchor"
-  ]
-}

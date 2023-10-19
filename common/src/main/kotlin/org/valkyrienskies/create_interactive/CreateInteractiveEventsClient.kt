@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.dont_delete
+package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import io.netty.util.collection.LongObjectHashMap
@@ -9,7 +9,7 @@ import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.world.ClientShipWorldCore
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
-import org.valkyrienskies.create_interactive.dont_delete.CreateInteractiveUtil.getContraptionPosRot
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
 import java.lang.ref.WeakReference
 

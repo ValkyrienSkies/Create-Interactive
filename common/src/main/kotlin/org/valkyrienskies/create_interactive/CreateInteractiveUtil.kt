@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.dont_delete
+package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption

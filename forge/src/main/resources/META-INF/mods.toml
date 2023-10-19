@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "Create Interactive"
 authors = ["Tri0de"]
 description = '''
-Create... Interactive!
+Create made interactive!
 '''
 logoFile = "icon.png"
 

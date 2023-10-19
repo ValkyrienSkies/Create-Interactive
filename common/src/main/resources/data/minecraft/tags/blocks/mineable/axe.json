@@ -1,7 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "create_interactive:floater",
-    "#create_interactive:ship_helms"
-  ]
-}
