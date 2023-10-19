@@ -14,9 +14,11 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient;
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 @Mixin(AbstractContraptionEntity.class)
 public abstract class MixinAbstractContraptionEntity extends Entity implements AbstractContraptionEntityDuck {
@@ -76,6 +78,17 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         final Long shadowShipIdCopy = vs$shadowShipId;
         if (spawnPacket && shadowShipIdCopy != null) {
             compound.putLong(SHADOW_SHIP_ID_NBT_KEY, shadowShipIdCopy);
+        }
+    }
+
+    @Inject(method = "disassemble", at = @At("TAIL"), remap = false)
+    private void postDisassemble(final CallbackInfo ci) {
+        final Long shadowShipIdCopy = vs$shadowShipId;
+        if (shadowShipIdCopy != null && level instanceof ServerLevel serverLevel) {
+            final ServerShip serverShip = VSGameUtilsKt.getShipObjectWorld(serverLevel).getAllShips().getById(shadowShipIdCopy);
+            if (serverShip != null) {
+                VSGameUtilsKt.getShipObjectWorld((ServerLevel) level).deleteShip(serverShip);
+            }
         }
     }
 }
