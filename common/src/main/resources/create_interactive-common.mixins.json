@@ -3,7 +3,8 @@
   "package": "org.valkyrienskies.create_interactive.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "client.PlayerEntityModelMixin"
+    "client.PlayerEntityModelMixin",
+    "MixinContraptionHandlerClient"
   ],
   "injectors": {
     "defaultRequire": 1
