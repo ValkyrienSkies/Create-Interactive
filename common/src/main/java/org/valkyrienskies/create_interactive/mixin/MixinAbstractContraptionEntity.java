@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.create_interactive.dont_delete.CreateInteractiveEventsClient;
 import org.valkyrienskies.create_interactive.dont_delete.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
-import org.valkyrienskies.create_interactive.mixinducks.DebugDuck;
 
 @Mixin(AbstractContraptionEntity.class)
 public abstract class MixinAbstractContraptionEntity extends Entity implements AbstractContraptionEntityDuck {
@@ -25,6 +25,9 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 
     @Shadow
     protected Contraption contraption;
+
+    @Unique
+    private static final String SHADOW_SHIP_ID_NBT_KEY = "ShadowShipId";
 
     public MixinAbstractContraptionEntity(final EntityType<?> entityType, final Level level) {
         super(entityType, level);
@@ -43,6 +46,10 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Inject(method = "readAdditional", at = @At("TAIL"))
     private void preReadAdditional(final CompoundTag compound, final boolean spawnData, final CallbackInfo ci) {
         if (level.isClientSide) {
+            if (spawnData && compound.contains(SHADOW_SHIP_ID_NBT_KEY)) {
+                vs$shadowShipId = compound.getLong(SHADOW_SHIP_ID_NBT_KEY);
+                CreateInteractiveEventsClient.INSTANCE.addShipToContraptionRef(vs$shadowShipId, AbstractContraptionEntity.class.cast(this));
+            }
             return;
         }
         if (contraption == null) {
@@ -56,6 +63,14 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void preTick(final CallbackInfo ci) {
-        DebugDuck.doDuck(AbstractContraptionEntity.class.cast(this));
+        CreateInteractiveUtil.INSTANCE.updateShipShadow(AbstractContraptionEntity.class.cast(this));
+    }
+
+    @Inject(method = "writeAdditional", at = @At("HEAD"))
+    private void preWriteSpawnData(final CompoundTag compound, final boolean spawnPacket, final CallbackInfo ci) {
+        final Long shadowShipIdCopy = vs$shadowShipId;
+        if (spawnPacket && shadowShipIdCopy != null) {
+            compound.putLong(SHADOW_SHIP_ID_NBT_KEY, shadowShipIdCopy);
+        }
     }
 }
