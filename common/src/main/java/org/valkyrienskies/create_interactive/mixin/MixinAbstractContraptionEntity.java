@@ -36,6 +36,11 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Override
     public void setShadowShipId(final Long shadowShipId) {
         vs$shadowShipId = shadowShipId;
+        if (shadowShipId != null) {
+            CreateInteractiveUtil.INSTANCE.linkShipToContraption(shadowShipId, AbstractContraptionEntity.class.cast(this));
+        } else {
+            // TODO: Maybe unlink it???
+        }
     }
 
     @Override

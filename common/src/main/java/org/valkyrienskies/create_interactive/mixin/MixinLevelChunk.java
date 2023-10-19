@@ -1,0 +1,48 @@
+package org.valkyrienskies.create_interactive.mixin;
+
+import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
+import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
+
+import java.lang.ref.WeakReference;
+
+@Mixin(LevelChunk.class)
+public class MixinLevelChunk {
+    @Shadow
+    @Final
+    Level level;
+    @Inject(method = "setBlockState", at = @At("TAIL"))
+    public void postSetBlockState(final BlockPos pos, final BlockState state, final boolean moved,
+                                  final CallbackInfoReturnable<BlockState> cir) {
+        if (level.isClientSide) return;
+        final ServerShip serverShip = VSGameUtilsKt.getShipManagingPos((ServerLevel) level, pos);
+        if (serverShip == null) return;
+        final WeakReference<AbstractContraptionEntity> contraptionEntityWeakReference = CreateInteractiveUtil.INSTANCE.getShipIdToContraptionEntityServer().get(serverShip.getId());
+        if (contraptionEntityWeakReference == null) return;
+        final AbstractContraptionEntity contraptionEntity = contraptionEntityWeakReference.get();
+        if (contraptionEntity == null) return;
+
+        // Anchor at ship center
+        final Vector3ic shipCenter = serverShip.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
+        final BlockPos relativePos = pos.subtract(VectorConversionsMCKt.toBlockPos(shipCenter));
+
+        // Set the block
+        contraptionEntity.setBlock(relativePos, new StructureTemplate.StructureBlockInfo(relativePos, state, null));
+    }
+}

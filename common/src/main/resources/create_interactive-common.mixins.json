@@ -15,6 +15,7 @@
     "MixinAbstractContraptionEntity",
     "MixinContraption",
     "MixinContraptionCollider",
-    "MixinEntity"
+    "MixinEntity",
+    "MixinLevelChunk"
   ]
 }

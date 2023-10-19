@@ -21,6 +21,7 @@ import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
+import java.lang.ref.WeakReference
 
 object CreateInteractiveUtil {
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos): ShipId {
@@ -88,5 +89,14 @@ object CreateInteractiveUtil {
         newRot.rotateLocalY(Math.toRadians(rotationStateOriginal.yawOffset.toDouble()))
 
         return entity.anchorVec.toJOML().add(0.5, 0.5, 0.5) to newRot
+    }
+
+    private val shipIdToContraptionEntityServerInternal: MutableMap<ShipId, WeakReference<AbstractContraptionEntity>> = HashMap()
+
+    val shipIdToContraptionEntityServer: Map<ShipId, WeakReference<AbstractContraptionEntity>>
+        get() = shipIdToContraptionEntityServerInternal
+
+    fun linkShipToContraption(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
+        shipIdToContraptionEntityServerInternal[shipId] = WeakReference(contraptionEntity)
     }
 }
