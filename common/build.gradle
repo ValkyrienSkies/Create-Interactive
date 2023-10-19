@@ -35,7 +35,7 @@ dependencies {
 publishing {
     publications {
         mavenCommon(MavenPublication) {
-            groupId = "org.valkyrienskies.eureka"
+            groupId = "org.valkyrienskies.create-interactive"
             version = project.version
             artifactId = rootProject.archives_base_name + "-" + project.name
             from components.java

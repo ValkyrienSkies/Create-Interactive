@@ -108,7 +108,7 @@ components.java {
 publishing {
     publications {
         mavenCommon(MavenPublication) {
-            groupId = "org.valkyrienskies.eureka"
+            groupId = "org.valkyrienskies.create-interactive"
             version = project.version
             artifactId = rootProject.archives_base_name + "-" + project.name
             from components.java
@@ -132,7 +132,7 @@ publishing {
             println "Publishing to Github Packages"
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/ValkyrienSkies/Eureka")
+                url = uri("https://maven.pkg.github.com/StewStrong/Create-Interactive")
                 credentials {
                     username = System.getenv("GITHUB_ACTOR")
                     password = System.getenv("GITHUB_TOKEN")

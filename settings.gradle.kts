@@ -49,4 +49,4 @@ include("common")
 include("fabric")
 include("forge")
 
-rootProject.name = "vs-eureka-mod"
+rootProject.name = "create-interactive-mod"
