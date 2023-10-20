@@ -12,6 +12,7 @@ import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.ships.ServerShipTransformProvider
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
@@ -42,7 +43,45 @@ object CreateInteractiveUtil {
             level.setBlock(newPos, value.state, flags)
         }
 
+        serverShip.isStatic = true
+
         return serverShip.id
+    }
+
+    private fun posRotToShipTransform(contraptionPosRot: ContraptionPosRot, serverShip: ServerShip, level: ServerLevel): ShipTransform {
+        val (contraptionPos, contraptionRot) = contraptionPosRot
+
+        // Anchor at ship center of mass
+        val cmInShip: Vector3dc = serverShip.inertiaData.centerOfMassInShip
+        val shipCenter: Vector3ic = serverShip.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
+        val offset = cmInShip.sub(
+            shipCenter.x().toDouble(),
+            shipCenter.y().toDouble(),
+            shipCenter.z().toDouble(),
+            Vector3d()
+        )
+        contraptionRot.transform(offset)
+        val newPos: Vector3dc = contraptionPos.add(offset, Vector3d())
+        val newScale = 1.0
+        val posInShip: Vector3dc = cmInShip.add(0.5, 0.5, 0.5, Vector3d())
+        return ShipTransformImpl(
+            newPos,
+            posInShip,
+            contraptionPosRot.rot,
+            Vector3d(newScale)
+        )
+    }
+
+    fun teleportShipToPosRot(contraptionPosRot: ContraptionPosRot, serverShip: ServerShip, level: ServerLevel) {
+        val shipTransform = posRotToShipTransform(contraptionPosRot, serverShip, level)
+        val newVel: Vector3dc = Vector3d()
+        val newOmega: Vector3dc = Vector3d()
+        val newDimension: String = level.dimensionId
+        // Because of an issue with the teleport function we have to set the center of mass to be cmInShip + (.5,.5,.5)
+        val shipTeleportData: ShipTeleportData = ShipTeleportDataImplFixed(
+            shipTransform.positionInWorld, shipTransform.positionInShip, shipTransform.shipToWorldRotation, newVel, newOmega, newDimension, shipTransform.shipToWorldScaling.x()
+        )
+        level.shipObjectWorld.teleportShip(serverShip, shipTeleportData)
     }
 
     fun updateShipShadow(entity: AbstractContraptionEntity) {
@@ -51,38 +90,28 @@ object CreateInteractiveUtil {
         if (level.isClientSide) {
             return
         }
+        val contraptionPosRot = getContraptionPosRot(entity)
         val serverShip: ServerShip? = (level as ServerLevel).shipObjectWorld.allShips.getById(shadowShipId)
         if (serverShip != null) {
-            val (contraptionPos, contraptionRot) = getContraptionPosRot(entity)
+            serverShip.transformProvider = object: ServerShipTransformProvider {
+                override fun provideNextTransform(
+                    prevShipTransform: ShipTransform,
+                    shipTransform: ShipTransform
+                ): ShipTransform {
+                    return posRotToShipTransform(contraptionPosRot, serverShip, level)
+                }
+            }
 
-            // Anchor at ship center of mass
-            val cmInShip: Vector3dc = serverShip.inertiaData.centerOfMassInShip
-            val shipCenter: Vector3ic = serverShip.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
-            val offset = cmInShip.sub(
-                shipCenter.x().toDouble(),
-                shipCenter.y().toDouble(),
-                shipCenter.z().toDouble(),
-                Vector3d()
-            )
-            contraptionRot.transform(offset)
-            val newPos: Vector3dc = contraptionPos.add(offset, Vector3d())
-            val newVel: Vector3dc = Vector3d()
-            val newOmega: Vector3dc = Vector3d()
-            val newDimension: String = level.dimensionId
-            val newScale = 1.0
-            // Because of an issue with the teleport function we have to set the center of mass to be cmInShip + (.5,.5,.5)
-            val shipTeleportData: ShipTeleportData = ShipTeleportDataImplFixed(
-                newPos, cmInShip.add(0.5, 0.5, 0.5, Vector3d()), contraptionRot, newVel, newOmega, newDimension, newScale
-            )
             // Make the ship static, so it won't be affected by physics
             serverShip.isStatic = true
-            level.shipObjectWorld.teleportShip(serverShip, shipTeleportData)
         } else {
             println("ERRRORRRRRRRRRR!!!!!!!!!")
         }
     }
 
-    fun getContraptionPosRot(entity: AbstractContraptionEntity): Pair<Vector3dc, Quaterniondc> {
+    data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc)
+
+    fun getContraptionPosRot(entity: AbstractContraptionEntity): ContraptionPosRot {
         val rotationStateOriginal = AbstractContraptionEntity::class.java.cast(entity).rotationState
         val rotationState = rotationStateOriginal as ContraptionRotationStateAccessor
         val newRot = Quaterniond().rotateZYX(
@@ -92,7 +121,7 @@ object CreateInteractiveUtil {
         )
         newRot.rotateLocalY(Math.toRadians(rotationStateOriginal.yawOffset.toDouble()))
 
-        return entity.anchorVec.toJOML().add(0.5, 0.5, 0.5) to newRot
+        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
     }
 
     private val shipIdToContraptionEntityServerInternal: MutableMap<ShipId, WeakReference<AbstractContraptionEntity>> = HashMap()

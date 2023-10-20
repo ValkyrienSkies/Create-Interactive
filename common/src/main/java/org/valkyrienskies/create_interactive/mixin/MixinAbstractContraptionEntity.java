@@ -39,7 +39,16 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     public void setShadowShipId(final Long shadowShipId) {
         vs$shadowShipId = shadowShipId;
         if (shadowShipId != null) {
-            CreateInteractiveUtil.INSTANCE.linkShipToContraption(shadowShipId, AbstractContraptionEntity.class.cast(this));
+            final AbstractContraptionEntity thisAs = AbstractContraptionEntity.class.cast(this);
+            CreateInteractiveUtil.INSTANCE.linkShipToContraption(shadowShipId, thisAs);
+            final ServerShip serverShip = VSGameUtilsKt.getShipObjectWorld((ServerLevel) level).getAllShips().getById(shadowShipId);
+            if (serverShip == null) {
+                // How???!
+                System.out.println("Absolute giga-sus!!!");
+                return;
+            }
+            final CreateInteractiveUtil.ContraptionPosRot contraptionPosRot = CreateInteractiveUtil.INSTANCE.getContraptionPosRot(thisAs);
+            CreateInteractiveUtil.INSTANCE.teleportShipToPosRot(contraptionPosRot, serverShip, (ServerLevel) level);
         } else {
             // TODO: Maybe unlink it???
         }
