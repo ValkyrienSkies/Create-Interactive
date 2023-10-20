@@ -2,11 +2,18 @@ package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
+import com.simibubi.create.content.contraptions.StructureTransform;
+import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
+import com.simibubi.create.foundation.utility.NBTProcessors;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Vector3i;
@@ -18,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
@@ -27,11 +35,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 @Mixin(Contraption.class)
-public class MixinContraption {
+public abstract class MixinContraption {
     @Unique
     private final Map<BlockPos, Pair<StructureBlockInfo, BlockEntity>> vs$initialBlocks = new HashMap<>();
     @Shadow
     public BlockPos anchor;
+    @Shadow
+    public boolean disassembled;
+    @Shadow
+    public AbstractContraptionEntity entity;
+    @Shadow
+    protected Map<BlockPos, StructureBlockInfo> blocks;
+    @Shadow
+    protected abstract CompoundTag getBlockEntityNBT(final Level world, final BlockPos pos);
 
     @Inject(method = "onEntityCreated", at = @At("HEAD"), remap = false)
     private void preOnEntityCreated(final AbstractContraptionEntity entity, final CallbackInfo ci) {
@@ -58,6 +74,28 @@ public class MixinContraption {
             final BlockPos newPos = localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z());
             final int flags = Block.UPDATE_MOVE_BY_PISTON | Block.UPDATE_SUPPRESS_DROPS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE;
             level.setBlock(newPos, pair.getKey().state, flags);
+
+            // region Copy the tile entity to the ship
+            final BlockEntity blockEntity = pair.getValue();
+            final BlockEntity newBlockEntity = level.getBlockEntity(newPos);
+
+            if (blockEntity != null && newBlockEntity != null) {
+                // Transform the block entity, put it in the ship
+                CompoundTag tag = pair.getKey().nbt;
+                tag = NBTProcessors.process(blockEntity, tag, false);
+                if (tag != null) {
+                    tag.putInt("x", newPos.getX());
+                    tag.putInt("y", newPos.getY());
+                    tag.putInt("z", newPos.getZ());
+
+                    if (blockEntity instanceof IMultiBlockEntityContainer && tag.contains("LastKnownPos"))
+                        tag.put("LastKnownPos", NbtUtils.writeBlockPos(BlockPos.ZERO.below(Integer.MAX_VALUE - 1)));
+
+                    newBlockEntity.load(tag);
+                    level.setBlockEntity(newBlockEntity);
+                }
+            }
+            // endregion
         }
 
         ((AbstractContraptionEntityDuck) entity).setShadowShipId(shipId);
@@ -70,5 +108,41 @@ public class MixinContraption {
             return;
         }
         vs$initialBlocks.put(pos, pair);
+    }
+
+    @Inject(method = "addBlocksToWorld", at = @At("HEAD"))
+    private void preAddBlocksToWorld(final Level world, final StructureTransform transform, final CallbackInfo ci) {
+        if (disassembled) {
+            // Do nothing
+            return;
+        }
+        final AbstractContraptionEntity entityCopy = entity;
+        if (entityCopy == null) {
+            System.out.println("Susmogus!");
+            return;
+        }
+        final AbstractContraptionEntityDuck duck = (AbstractContraptionEntityDuck) entityCopy;
+        final Long shadowShipId = duck.getShadowShipId();
+        if (shadowShipId == null) {
+            return;
+        }
+        final Ship ship = VSGameUtilsKt.getShipObjectWorld(world).getAllShips().getById(shadowShipId);
+        if (ship == null) {
+            return;
+        }
+        // Anchor at ship center
+        final Vector3ic shipCenter = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(world), new Vector3i());
+
+        // Update contraption tile entities to match the contents of the shadow ship
+        ship.getActiveChunksSet().forEach((chunkX, chunkZ) -> {
+            final ChunkAccess chunkAccess = world.getChunk(chunkX, chunkZ);
+            for (final BlockPos blockPos : chunkAccess.getBlockEntitiesPos()) {
+                final BlockPos localPos = blockPos.offset(-shipCenter.x(), -shipCenter.y(), -shipCenter.z());
+                final BlockState blockState = world.getBlockState(blockPos);
+                final CompoundTag compoundTag = getBlockEntityNBT(world, blockPos);
+                final StructureBlockInfo blockInfo = new StructureBlockInfo(localPos, blockState, compoundTag);
+                blocks.put(localPos, blockInfo);
+            }
+        });
     }
 }
