@@ -72,8 +72,12 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         }
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void preTick(final CallbackInfo ci) {
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void postTick(final CallbackInfo ci) {
+        // TODO: Its sus af that we have to keep linking the ship, but just do it!
+        if (vs$shadowShipId != null) {
+            CreateInteractiveUtil.INSTANCE.linkShipToContraption(vs$shadowShipId, AbstractContraptionEntity.class.cast(this));
+        }
         CreateInteractiveUtil.INSTANCE.updateShipShadow(AbstractContraptionEntity.class.cast(this));
     }
 
