@@ -25,7 +25,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Unique
     private Long vs$shadowShipId = null;
 
-    @Shadow
+    @Shadow(remap = false)
     protected Contraption contraption;
 
     @Unique
