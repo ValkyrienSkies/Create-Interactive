@@ -13,8 +13,10 @@ import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.properties.ShipId
+import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
-import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
+import org.valkyrienskies.core.apigame.world.properties.DimensionId
+import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.create_interactive.mixin.ContraptionRotationStateAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
@@ -54,8 +56,9 @@ object CreateInteractiveUtil {
             val (contraptionPos, contraptionRot) = getContraptionPosRot(entity)
 
             // Anchor at ship center of mass
+            val cmInShip: Vector3dc = serverShip.inertiaData.centerOfMassInShip
             val shipCenter: Vector3ic = serverShip.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
-            val offset = serverShip.inertiaData.centerOfMassInShip.sub(
+            val offset = cmInShip.sub(
                 shipCenter.x().toDouble(),
                 shipCenter.y().toDouble(),
                 shipCenter.z().toDouble(),
@@ -67,8 +70,9 @@ object CreateInteractiveUtil {
             val newOmega: Vector3dc = Vector3d()
             val newDimension: String = level.dimensionId
             val newScale = 1.0
-            val shipTeleportData: ShipTeleportData = ShipTeleportDataImpl(
-                newPos, contraptionRot, newVel, newOmega, newDimension, newScale
+            // Because of an issue with the teleport function we have to set the center of mass to be cmInShip + (.5,.5,.5)
+            val shipTeleportData: ShipTeleportData = ShipTeleportDataImplFixed(
+                newPos, cmInShip.add(0.5, 0.5, 0.5, Vector3d()), contraptionRot, newVel, newOmega, newDimension, newScale
             )
             // Make the ship static, so it won't be affected by physics
             serverShip.isStatic = true
@@ -81,10 +85,10 @@ object CreateInteractiveUtil {
     fun getContraptionPosRot(entity: AbstractContraptionEntity): Pair<Vector3dc, Quaterniondc> {
         val rotationStateOriginal = AbstractContraptionEntity::class.java.cast(entity).rotationState
         val rotationState = rotationStateOriginal as ContraptionRotationStateAccessor
-        val newRot = Quaterniond().rotateXYZ(
-            Math.toRadians(rotationState.getXRotation().toDouble()),
+        val newRot = Quaterniond().rotateZYX(
+            Math.toRadians(rotationState.getZRotation().toDouble()),
             Math.toRadians(rotationState.getYRotation().toDouble()),
-            Math.toRadians(rotationState.getZRotation().toDouble())
+            Math.toRadians(rotationState.getXRotation().toDouble()),
         )
         newRot.rotateLocalY(Math.toRadians(rotationStateOriginal.yawOffset.toDouble()))
 
@@ -98,5 +102,22 @@ object CreateInteractiveUtil {
 
     fun linkShipToContraption(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
         shipIdToContraptionEntityServerInternal[shipId] = WeakReference(contraptionEntity)
+    }
+
+    data class ShipTeleportDataImplFixed(
+        override val newPos: Vector3dc = Vector3d(),
+        val newPosInShip: Vector3dc = Vector3d(),
+        override val newRot: Quaterniondc = Quaterniond(),
+        override val newVel: Vector3dc = Vector3d(),
+        override val newOmega: Vector3dc = Vector3d(),
+        override val newDimension: DimensionId? = null,
+        override val newScale: Double? = null,
+    ) : ShipTeleportData {
+        override fun createNewShipTransform(oldShipTransform: ShipTransform): ShipTransform = ShipTransformImpl(
+            positionInWorld = newPos,
+            positionInShip = newPosInShip,
+            shipToWorldRotation = newRot,
+            shipToWorldScaling = newScale?.let { Vector3d(it) } ?: oldShipTransform.shipToWorldScaling,
+        )
     }
 }

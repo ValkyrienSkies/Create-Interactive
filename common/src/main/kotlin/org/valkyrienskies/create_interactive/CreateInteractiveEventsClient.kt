@@ -4,6 +4,9 @@ import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import io.netty.util.collection.LongObjectHashMap
 import io.netty.util.collection.LongObjectMap
 import net.minecraft.client.Minecraft
+import org.joml.Vector3d
+import org.joml.Vector3i
+import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ClientShipTransformProvider
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
@@ -11,6 +14,7 @@ import org.valkyrienskies.core.apigame.world.ClientShipWorldCore
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
+import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 
 object CreateInteractiveEventsClient {
@@ -33,6 +37,7 @@ object CreateInteractiveEventsClient {
             }
             // Skip the ship if its null, but don't delete the map entry in case the ship packet was delayed
             val clientShip = shipObjectWorld.allShips.getById(shipId) ?: continue
+            val shipCenter: Vector3ic = clientShip.chunkClaim.getCenterBlockCoordinates(mc.level!!.yRange, Vector3i())
             clientShip.transformProvider = object : ClientShipTransformProvider {
                 override fun provideNextTransform(
                     prevShipTransform: ShipTransform,
@@ -42,8 +47,11 @@ object CreateInteractiveEventsClient {
                     val contraptionEntity = contraption.get()
                     if (contraptionEntity != null) {
                         val (first, second) = getContraptionPosRot(contraptionEntity)
+
+                        // The contraption center block is at the same position as the ship center, so create the
+                        // transform to apply that
                         return ShipTransformImpl.create(
-                            first, shipTransform.positionInShip, second
+                            first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second
                         )
                     }
                     return null
@@ -54,6 +62,8 @@ object CreateInteractiveEventsClient {
                     shipTransform: ShipTransform,
                     partialTick: Double
                 ): ShipTransform? {
+                    // println("prevShipTransform is ${prevShipTransform.positionInShip.x()}, ${prevShipTransform.positionInShip.y()}, ${prevShipTransform.positionInShip.z()}")
+                    // println("shipTransform is ${shipTransform.positionInShip.x()}, ${shipTransform.positionInShip.y()}, ${shipTransform.positionInShip.z()}")
                     // Don't override default behavior
                     return null
                 }
