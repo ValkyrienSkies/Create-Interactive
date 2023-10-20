@@ -20,7 +20,7 @@ public class MixinContraptionCollider {
         // Only disable collision if the ship isn't here yet
         final Long shipId = ((AbstractContraptionEntityDuck) contraptionEntity).getShadowShipId();
         if (shipId == null) return;
-        final Ship ship = VSGameUtilsKt.getShipObjectWorld(contraptionEntity.level).getAllShips().getById(shipId);
+        final Ship ship = VSGameUtilsKt.getShipObjectWorld(contraptionEntity.level).getLoadedShips().getById(shipId);
         if (ship == null) return;
         ci.cancel();
     }
