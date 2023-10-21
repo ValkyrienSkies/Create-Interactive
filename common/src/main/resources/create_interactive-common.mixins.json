@@ -17,6 +17,7 @@
     "MixinContraption",
     "MixinContraptionCollider",
     "MixinEntity",
-    "MixinLevelChunk"
+    "MixinLevelChunk",
+    "MixinMountedStorageManager"
   ]
 }
