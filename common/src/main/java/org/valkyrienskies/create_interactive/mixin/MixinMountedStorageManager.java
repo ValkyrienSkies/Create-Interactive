@@ -2,8 +2,6 @@ package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.MountedFluidStorage;
-import com.simibubi.create.content.contraptions.MountedStorage;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.content.logistics.vault.ItemVaultBlockEntity;
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
@@ -30,10 +28,8 @@ import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntit
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Mixin(MountedStorageManager.class)
 public abstract class MixinMountedStorageManager {
@@ -47,14 +43,6 @@ public abstract class MixinMountedStorageManager {
     protected Contraption.ContraptionInvWrapper fuelInventory;
     @Shadow
     protected CombinedTankWrapper fluidInventory;
-    @Shadow
-    protected Map<BlockPos, MountedStorage> storage;
-    @Shadow
-    protected Map<BlockPos, MountedFluidStorage> fluidStorage;
-    @Shadow
-    protected abstract Contraption.ContraptionInvWrapper wrapItems(Collection<? extends Storage<ItemVariant>> list, boolean fuel);
-    @Shadow
-    protected abstract CombinedTankWrapper wrapFluids(Collection<? extends Storage<FluidVariant>> list);
 
     @Inject(method = "entityTick", at = @At("HEAD"), cancellable = true, remap = false)
     private void preEntityTick(final AbstractContraptionEntity entity, final CallbackInfo ci) {
