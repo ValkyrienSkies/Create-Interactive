@@ -11,7 +11,7 @@ import org.valkyrienskies.create_interactive.InteractiveStorageManager;
 
 @Mixin(CarriageContraption.class)
 public abstract class MixinCarriageContraption extends Contraption {
-    @Inject(method = "swapStorageAfterAssembly", at = @At("TAIL"), remap = false)
+    @Inject(method = "swapStorageAfterAssembly", at = @At("RETURN"), remap = false)
     private void postSwapStorageAfterAssembly(final CarriageContraptionEntity cce, final CallbackInfo ci) {
         if (!(storage instanceof InteractiveStorageManager)) {
             storage = new InteractiveStorageManager();

@@ -59,7 +59,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         return vs$shadowShipId;
     }
 
-    @Inject(method = "readAdditional", at = @At("TAIL"))
+    @Inject(method = "readAdditional", at = @At("RETURN"))
     private void preReadAdditional(final CompoundTag compound, final boolean spawnData, final CallbackInfo ci) {
         if (level.isClientSide) {
             if (spawnData && compound.contains(SHADOW_SHIP_ID_NBT_KEY)) {
@@ -81,7 +81,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         }
     }
 
-    @Inject(method = "tick", at = @At("TAIL"))
+    @Inject(method = "tick", at = @At("RETURN"))
     private void postTick(final CallbackInfo ci) {
         // TODO: Its sus af that we have to keep linking the ship, but just do it!
         if (vs$shadowShipId != null) {
@@ -98,7 +98,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         }
     }
 
-    @Inject(method = "disassemble", at = @At("TAIL"), remap = false)
+    @Inject(method = "disassemble", at = @At("RETURN"), remap = false)
     private void postDisassemble(final CallbackInfo ci) {
         final Long shadowShipIdCopy = vs$shadowShipId;
         if (shadowShipIdCopy != null && level instanceof ServerLevel serverLevel) {
