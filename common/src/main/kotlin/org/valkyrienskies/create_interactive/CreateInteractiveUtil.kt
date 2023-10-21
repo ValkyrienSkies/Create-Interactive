@@ -21,6 +21,7 @@ import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.create_interactive.mixin.ContraptionRotationStateAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
+import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
@@ -120,6 +121,14 @@ object CreateInteractiveUtil {
             Math.toRadians(rotationState.getXRotation().toDouble()),
         )
         newRot.rotateLocalY(Math.toRadians(rotationStateOriginal.yawOffset.toDouble()))
+
+        // Train on a train!!!
+        val parentShip = entity.level.getShipManagingPos(entity.position())
+        if (parentShip != null) {
+            val newNewPos = parentShip.transform.shipToWorld.transformPosition(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), Vector3d())
+            val newNewRot = parentShip.transform.shipToWorldRotation.mul(newRot, Quaterniond())
+            return ContraptionPosRot(newNewPos, newNewRot)
+        }
 
         return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
     }
