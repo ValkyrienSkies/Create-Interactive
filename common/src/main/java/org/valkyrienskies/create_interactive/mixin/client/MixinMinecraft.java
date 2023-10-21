@@ -23,7 +23,7 @@ public abstract class MixinMinecraft implements IShipObjectWorldClientProvider {
 
     @Inject(
         method = "tick",
-        at = @At("TAIL")
+        at = @At("RETURN")
     )
     public void postTick(final CallbackInfo ci) {
         if (!pause && level != null && getConnection() != null) {

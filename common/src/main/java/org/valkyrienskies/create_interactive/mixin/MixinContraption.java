@@ -53,7 +53,7 @@ public abstract class MixinContraption {
     @Shadow
     protected abstract CompoundTag getBlockEntityNBT(final Level world, final BlockPos pos);
 
-    @Inject(method = "<init>", at = @At("TAIL"))
+    @Inject(method = "<init>", at = @At("RETURN"))
     private void postInit(final CallbackInfo ci) {
         storage = new InteractiveStorageManager();
     }
