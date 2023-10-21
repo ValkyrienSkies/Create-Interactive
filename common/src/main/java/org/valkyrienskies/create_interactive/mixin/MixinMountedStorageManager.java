@@ -72,10 +72,14 @@ public abstract class MixinMountedStorageManager {
             final ServerShip serverShip = VSGameUtilsKt.getShipObjectWorld((ServerLevel) entity.level).getAllShips().getById(ci$shipId);
             final List<Storage<ItemVariant>> inventories = new ArrayList<>();
             final List<Storage<ItemVariant>> fuelInventories = new ArrayList<>();
-            // TODO: Support fluid inventories
+            final List<Storage<FluidVariant>> fluidInventories = new ArrayList<>();
             serverShip.getActiveChunksSet().forEach((chunkX, chunkZ) -> {
                 final LevelChunk chunk = entity.level.getChunk(chunkX, chunkZ);
                 for (final BlockEntity be : chunk.getBlockEntities().values()) {
+                    // TODO: Do we want to do this?
+                    // if (!MountedStorage.canUseAsStorage(be)) {
+                    //     continue;
+                    // }
                     if (be instanceof ChestBlockEntity chestBlockEntity) {
                         final InventoryStorage newInv = InventoryStorage.of(chestBlockEntity, null);
                         inventories.add(newInv);
@@ -90,13 +94,21 @@ public abstract class MixinMountedStorageManager {
                         }
                     }
                 }
+
+                for (final BlockEntity be : chunk.getBlockEntities().values()) {
+                    final Storage<FluidVariant> newFluidInv = TransferUtil.getFluidStorage(be);
+                    if (newFluidInv == null) continue;
+                    // TODO: Do we want to do this?
+                    // if (!(teHandler instanceof SmartFluidTank))
+                    //     continue;
+                    fluidInventories.add(newFluidInv);
+                }
             });
             inventories.addAll(ci$externalStorages);
             fuelInventories.addAll(ci$externalStorages);
             inventory.parts = inventories;
             fuelInventory.parts = fuelInventories;
-            // TODO: Fix this!!!!!
-            fluidInventory.parts = Collections.EMPTY_LIST;
+            fluidInventory.parts = fluidInventories;
         } else {
             // Empty storages
             inventory.parts = Collections.EMPTY_LIST;
@@ -111,7 +123,6 @@ public abstract class MixinMountedStorageManager {
         // Empty storages
         inventory = new Contraption.ContraptionInvWrapper();
         fuelInventory = new Contraption.ContraptionInvWrapper();
-        // TODO: Fix this!!!!!
         fluidInventory = new CombinedTankWrapper();
     }
 
