@@ -133,13 +133,21 @@ object CreateInteractiveUtil {
         return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
     }
 
+    private val shipIdToContraptionEntityClientInternal: MutableMap<ShipId, WeakReference<AbstractContraptionEntity>> = HashMap()
     private val shipIdToContraptionEntityServerInternal: MutableMap<ShipId, WeakReference<AbstractContraptionEntity>> = HashMap()
+
+    val shipIdToContraptionEntityClient: Map<ShipId, WeakReference<AbstractContraptionEntity>>
+        get() = shipIdToContraptionEntityClientInternal
 
     val shipIdToContraptionEntityServer: Map<ShipId, WeakReference<AbstractContraptionEntity>>
         get() = shipIdToContraptionEntityServerInternal
 
     fun linkShipToContraption(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
-        shipIdToContraptionEntityServerInternal[shipId] = WeakReference(contraptionEntity)
+        if (contraptionEntity.level.isClientSide) {
+            shipIdToContraptionEntityClientInternal[shipId] = WeakReference(contraptionEntity)
+        } else {
+            shipIdToContraptionEntityServerInternal[shipId] = WeakReference(contraptionEntity)
+        }
     }
 
     data class ShipTeleportDataImplFixed(

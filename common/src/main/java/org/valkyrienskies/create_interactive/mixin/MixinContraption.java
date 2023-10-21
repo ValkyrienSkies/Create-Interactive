@@ -1,8 +1,14 @@
 package org.valkyrienskies.create_interactive.mixin;
 
+import com.simibubi.create.AllInteractionBehaviours;
+import com.simibubi.create.AllMovementBehaviours;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.StructureTransform;
+import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement;
+import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
+import com.simibubi.create.content.contraptions.behaviour.MovementContext;
+import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour;
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import com.simibubi.create.foundation.utility.NBTProcessors;
 import net.minecraft.core.BlockPos;
@@ -14,7 +20,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.phys.AABB;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
@@ -27,15 +36,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
+import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 @Mixin(Contraption.class)
-public abstract class MixinContraption {
+public abstract class MixinContraption implements ContraptionDuck {
     @Unique
     private final Map<BlockPos, Pair<StructureBlockInfo, BlockEntity>> vs$initialBlocks = new HashMap<>();
     @Shadow
@@ -46,6 +57,14 @@ public abstract class MixinContraption {
     public AbstractContraptionEntity entity;
     @Shadow(remap = false)
     protected Map<BlockPos, StructureBlockInfo> blocks;
+    @Shadow(remap = false)
+    public AABB bounds;
+    @Shadow(remap = false)
+    protected List<MutablePair<StructureBlockInfo, MovementContext>> actors;
+    @Shadow(remap = false)
+    protected Map<BlockPos, MovingInteractionBehaviour> interactors;
+    @Shadow
+    protected abstract void disableActorOnStart(final MovementContext context);
     @Shadow
     protected abstract CompoundTag getBlockEntityNBT(final Level world, final BlockPos pos);
 
@@ -144,5 +163,33 @@ public abstract class MixinContraption {
                 blocks.put(localPos, blockInfo);
             }
         });
+    }
+
+    @Override
+    public void ci$setBlock(final Level level, final BlockPos localPos, final StructureTemplate.StructureBlockInfo structureBlockInfo) {
+        blocks.put(localPos, structureBlockInfo);
+        bounds = bounds.minmax(new AABB(localPos));
+
+        if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) {
+            MovementContext context = new MovementContext(level, structureBlockInfo, Contraption.class.cast(this));
+            MovementBehaviour behaviour = AllMovementBehaviours.getBehaviour(structureBlockInfo.state);
+            if (behaviour != null)
+                behaviour.startMoving(context);
+            if (behaviour instanceof ContraptionControlsMovement)
+                disableActorOnStart(context);
+
+            actors.add(MutablePair.of(structureBlockInfo, context));
+        } else {
+            // Remove actor if one exists
+            actors.removeIf(next -> next.left.pos.equals(structureBlockInfo.pos));
+        }
+
+        MovingInteractionBehaviour interactionBehaviour = AllInteractionBehaviours.getBehaviour(structureBlockInfo.state);
+        if (interactionBehaviour != null) {
+            interactors.put(localPos, interactionBehaviour);
+        } else {
+            // Remove interactor if one exists
+            interactors.remove(structureBlockInfo.pos);
+        }
     }
 }
