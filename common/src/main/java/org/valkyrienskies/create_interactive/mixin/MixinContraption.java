@@ -2,7 +2,6 @@ package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import com.simibubi.create.foundation.utility.NBTProcessors;
@@ -27,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
-import org.valkyrienskies.create_interactive.InteractiveStorageManager;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
@@ -48,15 +46,8 @@ public abstract class MixinContraption {
     public AbstractContraptionEntity entity;
     @Shadow(remap = false)
     protected Map<BlockPos, StructureBlockInfo> blocks;
-    @Shadow(remap = false)
-    protected MountedStorageManager storage;
     @Shadow
     protected abstract CompoundTag getBlockEntityNBT(final Level world, final BlockPos pos);
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void postInit(final CallbackInfo ci) {
-        storage = new InteractiveStorageManager();
-    }
 
     @Inject(method = "onEntityCreated", at = @At("HEAD"), remap = false)
     private void preOnEntityCreated(final AbstractContraptionEntity entity, final CallbackInfo ci) {
