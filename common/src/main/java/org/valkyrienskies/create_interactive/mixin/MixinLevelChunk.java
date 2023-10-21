@@ -27,7 +27,7 @@ public class MixinLevelChunk {
     @Shadow
     @Final
     Level level;
-    @Inject(method = "setBlockState", at = @At("RETURN"))
+    @Inject(method = "setBlockState", at = @At("TAIL"))
     public void postSetBlockState(final BlockPos pos, final BlockState state, final boolean moved,
                                   final CallbackInfoReturnable<BlockState> cir) {
         if (level.isClientSide) return;
