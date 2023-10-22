@@ -40,15 +40,21 @@ import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 @Mixin(Contraption.class)
 public abstract class MixinContraption implements ContraptionDuck {
     @Unique
     private final Map<BlockPos, Pair<StructureBlockInfo, BlockEntity>> vs$initialBlocks = new HashMap<>();
+    @Unique
+    private final Set<BlockPos> ci$changedActors = new HashSet<>();
     @Shadow
     public BlockPos anchor;
     @Shadow(remap = false)
@@ -167,6 +173,11 @@ public abstract class MixinContraption implements ContraptionDuck {
 
     @Override
     public void ci$setBlock(final Level level, final BlockPos localPos, final StructureTemplate.StructureBlockInfo structureBlockInfo) {
+        final StructureTemplate.StructureBlockInfo prevState = blocks.get(localPos);
+        if (prevState != null && prevState.state == structureBlockInfo.state) {
+            return;
+        }
+
         blocks.put(localPos, structureBlockInfo);
         bounds = bounds.minmax(new AABB(localPos));
 
@@ -178,10 +189,15 @@ public abstract class MixinContraption implements ContraptionDuck {
             if (behaviour instanceof ContraptionControlsMovement)
                 disableActorOnStart(context);
 
+            actors.removeIf(next -> next.left.pos.equals(structureBlockInfo.pos));
             actors.add(MutablePair.of(structureBlockInfo, context));
+            ci$changedActors.add(structureBlockInfo.pos);
         } else {
             // Remove actor if one exists
-            actors.removeIf(next -> next.left.pos.equals(structureBlockInfo.pos));
+            final boolean anyRemoved = actors.removeIf(next -> next.left.pos.equals(structureBlockInfo.pos));
+            if (anyRemoved) {
+                ci$changedActors.add(structureBlockInfo.pos);
+            }
         }
 
         MovingInteractionBehaviour interactionBehaviour = AllInteractionBehaviours.getBehaviour(structureBlockInfo.state);
@@ -191,5 +207,28 @@ public abstract class MixinContraption implements ContraptionDuck {
             // Remove interactor if one exists
             interactors.remove(structureBlockInfo.pos);
         }
+    }
+
+    @Override
+    public boolean ci$hasActorAtPos(final BlockPos localPos, boolean isCheckingMechanicalBearing) {
+        for (final MutablePair<StructureBlockInfo, MovementContext> actor : actors) {
+            if (actor.left.pos.equals(localPos)) {
+                if (isCheckingMechanicalBearing) {
+                    return actor.left.nbt != null;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Collection<BlockPos> ci$getChangedActors() {
+        return ci$changedActors;
+    }
+
+    @Override
+    public void ci$clearChangedActors() {
+        ci$changedActors.clear();
     }
 }

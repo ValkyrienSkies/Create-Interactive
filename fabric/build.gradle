@@ -50,6 +50,9 @@ dependencies {
     modImplementation("com.jamieswhiteshirt:reach-entity-attributes:${reach_entity_attributes_version}")
     modImplementation("dev.cafeteria:fake-player-api:${fake_player_api_version}")
     modImplementation("io.github.tropheusj:milk-lib:${milk_lib_version}")
+
+    // Indium
+    modImplementation("curse.maven:indium-459496:3911811")
 }
 
 processResources {
