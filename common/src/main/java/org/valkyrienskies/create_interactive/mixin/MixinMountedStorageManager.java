@@ -61,37 +61,40 @@ public abstract class MixinMountedStorageManager {
             final List<Storage<ItemVariant>> inventories = new ArrayList<>();
             final List<Storage<ItemVariant>> fuelInventories = new ArrayList<>();
             final List<Storage<FluidVariant>> fluidInventories = new ArrayList<>();
-            serverShip.getActiveChunksSet().forEach((chunkX, chunkZ) -> {
-                final LevelChunk chunk = entity.level.getChunk(chunkX, chunkZ);
-                for (final BlockEntity be : chunk.getBlockEntities().values()) {
-                    // TODO: Do we want to do this?
-                    // if (!MountedStorage.canUseAsStorage(be)) {
-                    //     continue;
-                    // }
-                    if (be instanceof ChestBlockEntity chestBlockEntity) {
-                        final InventoryStorage newInv = InventoryStorage.of(chestBlockEntity, null);
-                        inventories.add(newInv);
-                        fuelInventories.add(newInv);
-                    } else if (be instanceof ItemVaultBlockEntity itemVaultBlockEntity) {
-                        inventories.add(itemVaultBlockEntity.getInventoryOfBlock());
-                    } else {
-                        final Storage<ItemVariant> newInv = TransferUtil.getItemStorage(be);
-                        if (newInv != null) {
+            if (serverShip != null) {
+                serverShip.getActiveChunksSet().forEach((chunkX, chunkZ) -> {
+                    final LevelChunk chunk = entity.level.getChunk(chunkX, chunkZ);
+                    for (final BlockEntity be : chunk.getBlockEntities().values()) {
+                        // TODO: Do we want to do this?
+                        // if (!MountedStorage.canUseAsStorage(be)) {
+                        //     continue;
+                        // }
+                        if (be instanceof ChestBlockEntity chestBlockEntity) {
+                            final InventoryStorage newInv = InventoryStorage.of(chestBlockEntity, null);
                             inventories.add(newInv);
                             fuelInventories.add(newInv);
+                        } else if (be instanceof ItemVaultBlockEntity itemVaultBlockEntity) {
+                            inventories.add(itemVaultBlockEntity.getInventoryOfBlock());
+                        } else {
+                            final Storage<ItemVariant> newInv = TransferUtil.getItemStorage(be);
+                            if (newInv != null) {
+                                inventories.add(newInv);
+                                fuelInventories.add(newInv);
+                            }
                         }
                     }
-                }
 
-                for (final BlockEntity be : chunk.getBlockEntities().values()) {
-                    final Storage<FluidVariant> newFluidInv = TransferUtil.getFluidStorage(be);
-                    if (newFluidInv == null) continue;
-                    // TODO: Do we want to do this?
-                    // if (!(teHandler instanceof SmartFluidTank))
-                    //     continue;
-                    fluidInventories.add(newFluidInv);
-                }
-            });
+                    for (final BlockEntity be : chunk.getBlockEntities().values()) {
+                        final Storage<FluidVariant> newFluidInv = TransferUtil.getFluidStorage(be);
+                        if (newFluidInv == null) continue;
+                        // TODO: Do we want to do this?
+                        // if (!(teHandler instanceof SmartFluidTank))
+                        //     continue;
+                        fluidInventories.add(newFluidInv);
+                    }
+                });
+            }
+
             inventories.addAll(ci$externalStorages);
             fuelInventories.addAll(ci$externalStorages);
             inventory.parts = inventories;
