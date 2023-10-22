@@ -30,7 +30,6 @@
     "MixinCarriage",
     "MixinContraption",
     "MixinContraptionCollider",
-    "MixinEntity",
     "MixinLevelChunk"
   ]
 }
