@@ -3,6 +3,7 @@ package org.valkyrienskies.create_interactive.mixin;
 import com.jozufozu.flywheel.backend.Backend;
 import com.jozufozu.flywheel.backend.instancing.InstancedRenderDispatcher;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
+import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.ChunkPos;
@@ -70,9 +71,9 @@ public abstract class MixinLevelChunk extends ChunkAccess {
         if (!level.isClientSide) {
             contraptionEntity.setBlock(relativePos, new StructureTemplate.StructureBlockInfo(relativePos, state, null));
         } else {
-            if (Backend.isOn() && ((ContraptionDuck) contraptionEntity.getContraption()).ci$hasActorAtPos(relativePos, false)) {
+            if (Backend.isOn()) {
                 final BlockEntity blockEntity = blockEntities.get(pos);
-                if (blockEntity != null) {
+                if (blockEntity != null && ((ContraptionDuck) contraptionEntity.getContraption()).ci$hasActorAtPos(relativePos, blockEntity instanceof MechanicalBearingBlockEntity)) {
                     // TODO: Need to do this in other places too
                     // Remove block entity flywheel instances if tile entity is on a shadow ship
                     InstancedRenderDispatcher.getBlockEntities(this.level).remove(blockEntity);

@@ -9,6 +9,7 @@
     "client.MixinContraptionInstanceManager",
     "client.MixinContraptionRenderDispatcher",
     "client.MixinFlwContraption",
+    "client.MixinInstanceManager",
     "client.MixinMinecraft",
     "client.actor.MixinActorInstance",
     "client.actor.MixinDeployerActorInstance",
