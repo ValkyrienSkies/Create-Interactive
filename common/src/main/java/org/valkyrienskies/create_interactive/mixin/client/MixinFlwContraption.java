@@ -6,8 +6,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ActorInstance;
+import com.simibubi.create.content.contraptions.render.ContraptionProgram;
 import com.simibubi.create.content.contraptions.render.ContraptionRenderInfo;
 import com.simibubi.create.content.contraptions.render.FlwContraption;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -82,5 +84,12 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
             ci$actorToInstaceMap.put(actor.getLeft().pos, actorInstance);
         }
         ci.cancel();
+    }
+
+    @Inject(method = "renderStructureLayer", at = @At("HEAD"), cancellable = true, remap = false)
+    private void preRenderStructureLayer(final RenderType layer, final ContraptionProgram shader, final CallbackInfo ci) {
+        if (CreateInteractiveUtil.INSTANCE.doesContraptionHaveShipLoaded(contraption)) {
+            ci.cancel();
+        }
     }
 }
