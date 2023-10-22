@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck;
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionInstanceManagerDuck;
 
@@ -44,7 +45,12 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
      */
     @WrapOperation(method = "buildLayers", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/Contraption;getRenderedBlocks()Ljava/util/Collection;"))
     private Collection<StructureTemplate.StructureBlockInfo> redirectBuildLayersGetRenderedBlocks(final Contraption instance, final Operation<Collection<StructureTemplate.StructureBlockInfo>> operation) {
-        return Collections.EMPTY_LIST;
+        // Only disable block rendering if the contraption has a ship
+        if (CreateInteractiveUtil.INSTANCE.doesContraptionHaveShipLoaded(instance)) {
+            return Collections.EMPTY_LIST;
+        } else {
+            return operation.call(instance);
+        }
     }
 
     /**

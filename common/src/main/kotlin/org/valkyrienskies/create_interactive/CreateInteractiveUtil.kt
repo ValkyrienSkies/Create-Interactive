@@ -49,6 +49,12 @@ object CreateInteractiveUtil {
         return serverShip.id
     }
 
+    fun doesContraptionHaveShipLoaded(contraption: Contraption): Boolean {
+        val contraptionEntity: AbstractContraptionEntity = contraption.entity ?: return false
+        val shipId = (contraptionEntity as AbstractContraptionEntityDuck).getShadowShipId() ?: return false
+        return contraptionEntity.level.shipObjectWorld.loadedShips.getById(shipId) != null
+    }
+
     private fun posRotToShipTransform(contraptionPosRot: ContraptionPosRot, serverShip: ServerShip, level: ServerLevel): ShipTransform {
         val (contraptionPos, contraptionRot) = contraptionPosRot
 
@@ -106,7 +112,9 @@ object CreateInteractiveUtil {
             // Make the ship static, so it won't be affected by physics
             serverShip.isStatic = true
         } else {
-            println("ERRRORRRRRRRRRR!!!!!!!!!")
+            // Somehow the ship died?
+            println("Somehow a contraption ship shadow died!")
+            (entity as AbstractContraptionEntityDuck).shadowShipId = null
         }
     }
 
