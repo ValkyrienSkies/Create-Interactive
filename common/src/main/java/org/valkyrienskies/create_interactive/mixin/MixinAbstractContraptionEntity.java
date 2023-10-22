@@ -47,9 +47,10 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
                 return;
             }
         }
+        final Long prevShipId = vs$shadowShipId;
         vs$shadowShipId = shadowShipId;
+        final AbstractContraptionEntity thisAs = AbstractContraptionEntity.class.cast(this);
         if (shadowShipId != null) {
-            final AbstractContraptionEntity thisAs = AbstractContraptionEntity.class.cast(this);
             CreateInteractiveUtil.INSTANCE.linkShipToContraption(shadowShipId, thisAs);
             final ServerShip serverShip = VSGameUtilsKt.getShipObjectWorld((ServerLevel) level).getAllShips().getById(shadowShipId);
             if (serverShip == null) {
@@ -63,8 +64,8 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
             serverShip.setStatic(true);
             // Don't let the ship teleport through dimensions on its own
             ShipSettingsKt.getSettings(serverShip).setChangeDimensionOnTouchPortals(false);
-        } else {
-            // TODO: Maybe unlink it???
+        } else if (prevShipId != null) {
+            CreateInteractiveUtil.INSTANCE.unlinkShipToContraption(prevShipId, thisAs);
         }
     }
 
