@@ -19,6 +19,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient;
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
+import org.valkyrienskies.mod.common.util.ShipSettingsKt;
 
 @Mixin(AbstractContraptionEntity.class)
 public abstract class MixinAbstractContraptionEntity extends Entity implements AbstractContraptionEntityDuck {
@@ -49,6 +50,10 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
             }
             final CreateInteractiveUtil.ContraptionPosRot contraptionPosRot = CreateInteractiveUtil.INSTANCE.getContraptionPosRot(thisAs);
             CreateInteractiveUtil.INSTANCE.teleportShipToPosRot(contraptionPosRot, serverShip, (ServerLevel) level);
+            // Make the ship static, so it won't be affected by physics
+            serverShip.setStatic(true);
+            // Don't let the ship teleport through dimensions on its own
+            ShipSettingsKt.getSettings(serverShip).setChangeDimensionOnTouchPortals(false);
         } else {
             // TODO: Maybe unlink it???
         }

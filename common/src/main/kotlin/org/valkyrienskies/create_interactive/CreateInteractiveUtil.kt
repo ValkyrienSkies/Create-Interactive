@@ -23,6 +23,7 @@ import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntit
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
+import org.valkyrienskies.mod.common.util.settings
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
@@ -109,8 +110,15 @@ object CreateInteractiveUtil {
                 }
             }
 
+            // If the ship is in the wrong dimension then teleport it
+            if (entity.level.dimensionId != serverShip.chunkClaimDimension) {
+                teleportShipToPosRot(contraptionPosRot, serverShip, entity.level as ServerLevel)
+            }
+
             // Make the ship static, so it won't be affected by physics
             serverShip.isStatic = true
+            // Don't let the ship teleport through dimensions on its own
+            serverShip.settings.changeDimensionOnTouchPortals = false
         } else {
             // Somehow the ship died?
             println("Somehow a contraption ship shadow died!")
