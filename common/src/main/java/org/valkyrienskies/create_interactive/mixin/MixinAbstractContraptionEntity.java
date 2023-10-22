@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -18,6 +19,7 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient;
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
+import org.valkyrienskies.create_interactive.mixinducks.CarriageDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.util.ShipSettingsKt;
 
@@ -38,6 +40,13 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 
     @Override
     public void setShadowShipId(final Long shadowShipId) {
+        if (CarriageContraptionEntity.class.isInstance(this)) {
+            final CarriageContraptionEntity carriageContraptionEntity = CarriageContraptionEntity.class.cast(this);
+            if (!((CarriageDuck) carriageContraptionEntity.getCarriage()).ci$doesCarriageEntityControlShip(carriageContraptionEntity, shadowShipId)) {
+                // Do not set this if this entity doesn't control the ship
+                return;
+            }
+        }
         vs$shadowShipId = shadowShipId;
         if (shadowShipId != null) {
             final AbstractContraptionEntity thisAs = AbstractContraptionEntity.class.cast(this);
@@ -90,7 +99,16 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     private void postTick(final CallbackInfo ci) {
         // TODO: Its sus af that we have to keep linking the ship, but just do it!
         if (vs$shadowShipId != null) {
-            CreateInteractiveUtil.INSTANCE.linkShipToContraption(vs$shadowShipId, AbstractContraptionEntity.class.cast(this));
+            if (CarriageContraptionEntity.class.isInstance(this)) {
+                final CarriageContraptionEntity carriageContraptionEntity = CarriageContraptionEntity.class.cast(this);
+                if (((CarriageDuck) carriageContraptionEntity.getCarriage()).ci$doesCarriageEntityControlShip(carriageContraptionEntity, vs$shadowShipId)) {
+                    CreateInteractiveUtil.INSTANCE.linkShipToContraption(vs$shadowShipId, AbstractContraptionEntity.class.cast(this));
+                } else {
+                    CreateInteractiveUtil.INSTANCE.unlinkShipToContraption(vs$shadowShipId, AbstractContraptionEntity.class.cast(this));
+                    vs$shadowShipId = null;
+                    return;
+                }
+            }
         }
         CreateInteractiveUtil.INSTANCE.updateShipShadow(AbstractContraptionEntity.class.cast(this));
     }

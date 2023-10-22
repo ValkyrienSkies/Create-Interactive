@@ -166,6 +166,20 @@ object CreateInteractiveUtil {
         }
     }
 
+    fun unlinkShipToContraption(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
+        if (contraptionEntity.level.isClientSide) {
+            val prevVal = shipIdToContraptionEntityClientInternal[shipId]?.get()
+            if (prevVal != null && prevVal == contraptionEntity) {
+                shipIdToContraptionEntityClientInternal.remove(shipId)
+            }
+        } else {
+            val prevVal = shipIdToContraptionEntityServerInternal[shipId]?.get()
+            if (prevVal != null && prevVal == contraptionEntity) {
+                shipIdToContraptionEntityServerInternal.remove(shipId)
+            }
+        }
+    }
+
     data class ShipTeleportDataImplFixed(
         override val newPos: Vector3dc = Vector3d(),
         val newPosInShip: Vector3dc = Vector3d(),
