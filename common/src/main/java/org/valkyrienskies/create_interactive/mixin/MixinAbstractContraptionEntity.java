@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
+import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -42,7 +43,8 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     public void setShadowShipId(final Long shadowShipId) {
         if (CarriageContraptionEntity.class.isInstance(this)) {
             final CarriageContraptionEntity carriageContraptionEntity = CarriageContraptionEntity.class.cast(this);
-            if (!((CarriageDuck) carriageContraptionEntity.getCarriage()).ci$doesCarriageEntityControlShip(carriageContraptionEntity, shadowShipId)) {
+            final Carriage carriage = carriageContraptionEntity.getCarriage();
+            if (carriage != null && !((CarriageDuck) carriage).ci$doesCarriageEntityControlShip(carriageContraptionEntity, shadowShipId)) {
                 // Do not set this if this entity doesn't control the ship
                 return;
             }

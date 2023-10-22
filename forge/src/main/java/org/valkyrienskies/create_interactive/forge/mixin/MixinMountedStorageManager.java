@@ -1,21 +1,20 @@
-package org.valkyrienskies.create_interactive.mixin;
+package org.valkyrienskies.create_interactive.forge.mixin;
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.content.logistics.vault.ItemVaultBlockEntity;
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
-import io.github.fabricators_of_create.porting_lib.transfer.TransferUtil;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,6 +23,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.create_interactive.forge.WrappedIItemHandlerModifiable;
+import org.valkyrienskies.create_interactive.forge.mixinducks.CombinedInvWrapperDuck;
+import org.valkyrienskies.create_interactive.forge.mixinducks.CombinedTankWrapperDuck;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
@@ -36,7 +38,7 @@ public abstract class MixinMountedStorageManager {
     @Unique
     private Long ci$shipId = null;
     @Unique
-    private final List<Storage<ItemVariant>> ci$externalStorages = new ArrayList<>();
+    private final List<IItemHandlerModifiable> ci$externalStorages = new ArrayList<>();
     @Shadow
     protected Contraption.ContraptionInvWrapper inventory;
     @Shadow
@@ -58,9 +60,9 @@ public abstract class MixinMountedStorageManager {
         ci$shipId = duck.getShadowShipId();
         if (ci$shipId != null) {
             final ServerShip serverShip = VSGameUtilsKt.getShipObjectWorld((ServerLevel) entity.level).getAllShips().getById(ci$shipId);
-            final List<Storage<ItemVariant>> inventories = new ArrayList<>();
-            final List<Storage<ItemVariant>> fuelInventories = new ArrayList<>();
-            final List<Storage<FluidVariant>> fluidInventories = new ArrayList<>();
+            final List<IItemHandlerModifiable> inventories = new ArrayList<>();
+            final List<IItemHandlerModifiable> fuelInventories = new ArrayList<>();
+            final List<IFluidHandler> fluidInventories = new ArrayList<>();
             if (serverShip != null) {
                 serverShip.getActiveChunksSet().forEach((chunkX, chunkZ) -> {
                     final LevelChunk chunk = entity.level.getChunk(chunkX, chunkZ);
@@ -69,23 +71,27 @@ public abstract class MixinMountedStorageManager {
                         // if (!MountedStorage.canUseAsStorage(be)) {
                         //     continue;
                         // }
-                        if (be instanceof ChestBlockEntity chestBlockEntity) {
-                            final InventoryStorage newInv = InventoryStorage.of(chestBlockEntity, null);
-                            inventories.add(newInv);
-                            fuelInventories.add(newInv);
-                        } else if (be instanceof ItemVaultBlockEntity itemVaultBlockEntity) {
+
+                        if (be instanceof ItemVaultBlockEntity itemVaultBlockEntity) {
                             inventories.add(itemVaultBlockEntity.getInventoryOfBlock());
                         } else {
-                            final Storage<ItemVariant> newInv = TransferUtil.getItemStorage(be);
+                            final IItemHandler newInv = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve().orElse(null);
                             if (newInv != null) {
-                                inventories.add(newInv);
-                                fuelInventories.add(newInv);
+                                if (newInv instanceof IItemHandlerModifiable newInvModifiable) {
+                                    inventories.add(newInvModifiable);
+                                    fuelInventories.add(newInvModifiable);
+                                } else {
+                                    // Wrap newInv
+                                    final IItemHandlerModifiable wrappedNewInv = new WrappedIItemHandlerModifiable(newInv);
+                                    inventories.add(wrappedNewInv);
+                                    fuelInventories.add(wrappedNewInv);
+                                }
                             }
                         }
                     }
 
                     for (final BlockEntity be : chunk.getBlockEntities().values()) {
-                        final Storage<FluidVariant> newFluidInv = TransferUtil.getFluidStorage(be);
+                        final IFluidHandler newFluidInv = be.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
                         if (newFluidInv == null) continue;
                         // TODO: Do we want to do this?
                         // if (!(teHandler instanceof SmartFluidTank))
@@ -97,14 +103,14 @@ public abstract class MixinMountedStorageManager {
 
             inventories.addAll(ci$externalStorages);
             fuelInventories.addAll(ci$externalStorages);
-            inventory.parts = inventories;
-            fuelInventory.parts = fuelInventories;
-            fluidInventory.parts = fluidInventories;
+            ((CombinedInvWrapperDuck) inventory).ci$setInventories(inventories);
+            ((CombinedInvWrapperDuck) fuelInventory).ci$setInventories(fuelInventories);
+            ((CombinedTankWrapperDuck) fluidInventory).ci$setInventories(fluidInventories);
         } else {
             // Empty storages
-            inventory.parts = Collections.EMPTY_LIST;
-            fuelInventory.parts = Collections.EMPTY_LIST;
-            fluidInventory.parts = Collections.EMPTY_LIST;
+            ((CombinedInvWrapperDuck) inventory).ci$setInventories(Collections.EMPTY_LIST);
+            ((CombinedInvWrapperDuck) fuelInventory).ci$setInventories(Collections.EMPTY_LIST);
+            ((CombinedTankWrapperDuck) fluidInventory).ci$setInventories(Collections.EMPTY_LIST);
         }
     }
 
@@ -158,7 +164,7 @@ public abstract class MixinMountedStorageManager {
     }
 
     @Inject(method = "attachExternal", at = @At("HEAD"), cancellable = true, remap = false)
-    private void preAttachExternal(final Storage<ItemVariant> externalStorage, final CallbackInfo ci) {
+    private void preAttachExternal(final IItemHandlerModifiable externalStorage, final CallbackInfo ci) {
         ci.cancel();
         if (externalStorage == null) return;
         ci$externalStorages.add(externalStorage);
