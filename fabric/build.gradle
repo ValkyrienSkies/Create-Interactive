@@ -1,5 +1,20 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // Make sure this version matches the one included in Kotlin for Forge
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
+        // OPTIONAL Gradle plugin for Kotlin Serialization
+        classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
+        // Proguard
+        classpath 'com.guardsquare:proguard-gradle:7.4.0'
+    }
+}
+
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "org.jetbrains.kotlin.jvm"
     id "com.matthewprenger.cursegradle"
     id "com.modrinth.minotaur"
 }
@@ -35,6 +50,7 @@ dependencies {
     modImplementation("me.shedaniel.cloth:cloth-config:${cloth_config_version}")
 
     // Remove the next line if you don't want to depend on the API
+    modApi("org.valkyrienskies:valkyrienskies-118-common:${rootProject.vs2_version}")
     modApi("org.valkyrienskies:valkyrienskies-118-fabric:${rootProject.vs2_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
