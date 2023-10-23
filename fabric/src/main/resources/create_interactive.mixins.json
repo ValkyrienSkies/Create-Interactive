@@ -6,6 +6,7 @@
     "MixinMountedStorageManager"
   ],
   "client": [
+    "MixinContraptionHandlerClient"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -45,7 +45,7 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
     /**
      * Completely disable contraption block rendering
      */
-    @WrapOperation(method = "buildLayers", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/Contraption;getRenderedBlocks()Ljava/util/Collection;"))
+    @WrapOperation(method = "buildLayers", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/Contraption;getRenderedBlocks()Ljava/util/Collection;"), remap = false)
     private Collection<StructureTemplate.StructureBlockInfo> redirectBuildLayersGetRenderedBlocks(final Contraption instance, final Operation<Collection<StructureTemplate.StructureBlockInfo>> operation) {
         // Only disable block rendering if the contraption has a ship
         if (CreateInteractiveUtil.INSTANCE.doesContraptionHaveShipLoaded(instance)) {

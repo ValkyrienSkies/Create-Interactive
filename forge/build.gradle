@@ -43,6 +43,8 @@ configurations {
 }
 
 dependencies {
+    include(forgeRuntimeLibrary(annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1"))))
+
     forge "net.minecraftforge:forge:$forge_version"
     modApi("org.valkyrienskies:valkyrienskies-118-forge:$vs2_version") { transitive = false }
 

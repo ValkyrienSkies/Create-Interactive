@@ -3,7 +3,6 @@
   "package": "org.valkyrienskies.create_interactive.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "MixinContraptionHandlerClient",
     "client.ContraptionInstanceWorldAccessor",
     "client.MixinBlockEntityRenderDispatcher",
     "client.MixinContraptionInstanceManager",
