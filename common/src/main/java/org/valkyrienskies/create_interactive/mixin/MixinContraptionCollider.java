@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
+import org.valkyrienskies.create_interactive.mixin_logic.MixinContraptionColliderLogic;
 
 @Mixin(ContraptionCollider.class)
 public class MixinContraptionCollider {
@@ -15,9 +15,6 @@ public class MixinContraptionCollider {
      */
     @Inject(method = "collideEntities", at = @At("HEAD"), cancellable = true, remap = false)
     private static void preCollideEntities(final AbstractContraptionEntity contraptionEntity, final CallbackInfo ci) {
-        // Only disable collision if the contraption has a ship
-        if (CreateInteractiveUtil.INSTANCE.doesContraptionHaveShipLoaded(contraptionEntity.getContraption())) {
-            ci.cancel();
-        }
+        MixinContraptionColliderLogic.INSTANCE.preCollideEntities$create_interactive(contraptionEntity, ci);
     }
 }

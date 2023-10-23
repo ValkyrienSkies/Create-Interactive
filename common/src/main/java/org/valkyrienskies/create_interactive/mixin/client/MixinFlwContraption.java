@@ -4,7 +4,6 @@ import com.jozufozu.flywheel.core.virtual.VirtualRenderWorld;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ActorInstance;
 import com.simibubi.create.content.contraptions.render.ContraptionProgram;
 import com.simibubi.create.content.contraptions.render.ContraptionRenderInfo;
@@ -12,7 +11,6 @@ import com.simibubi.create.content.contraptions.render.FlwContraption;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,12 +18,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
-import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck;
-import org.valkyrienskies.create_interactive.mixinducks.ContraptionInstanceManagerDuck;
+import org.valkyrienskies.create_interactive.mixin_logic.client.MixinFlwContraptionLogic;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,19 +35,14 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
     }
 
     @Unique
-    private Map<BlockPos, ActorInstance> ci$actorToInstaceMap;
+    private Map<BlockPos, ActorInstance> ci$actorToInstanceMap;
 
     /**
      * Completely disable contraption block rendering
      */
     @WrapOperation(method = "buildLayers", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/Contraption;getRenderedBlocks()Ljava/util/Collection;"), remap = false)
     private Collection<StructureTemplate.StructureBlockInfo> redirectBuildLayersGetRenderedBlocks(final Contraption instance, final Operation<Collection<StructureTemplate.StructureBlockInfo>> operation) {
-        // Only disable block rendering if the contraption has a ship
-        if (CreateInteractiveUtil.INSTANCE.doesContraptionHaveShipLoaded(instance)) {
-            return Collections.EMPTY_LIST;
-        } else {
-            return operation.call(instance);
-        }
+        return MixinFlwContraptionLogic.INSTANCE.redirectBuildLayersGetRenderedBlocks$create_interactive(instance, operation);
     }
 
     /**
@@ -60,37 +50,18 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
      */
     @Inject(method = "tick", at = @At("HEAD"), remap = false)
     private void preTick(final CallbackInfo ci) {
-        for (final BlockPos blockPos : ((ContraptionDuck) contraption).ci$getChangedActors()) {
-            MutablePair<StructureTemplate.StructureBlockInfo, MovementContext> actor = contraption.getActorAt(blockPos);
-
-            // Remove old instance, if one exists
-            final ActorInstance oldActorInstance = ci$actorToInstaceMap.remove(blockPos);
-            if (oldActorInstance != null) {
-                ((ContraptionInstanceManagerDuck) ((ContraptionInstanceWorldAccessor) instanceWorld).getBlockEntityInstanceManager()).deleteActorInstance(oldActorInstance);
-            }
-            if (actor != null) {
-                // Add new instance
-                final ActorInstance actorInstance = ((ContraptionInstanceWorldAccessor) instanceWorld).getBlockEntityInstanceManager().createActor(actor);
-                ci$actorToInstaceMap.put(actor.getLeft().pos, actorInstance);
-            }
-        }
-        ((ContraptionDuck) contraption).ci$clearChangedActors();
+        MixinFlwContraptionLogic.INSTANCE.preTick$create_interactive(instanceWorld, ci$actorToInstanceMap, contraption, ci);
     }
 
     @Inject(method = "buildActors", at = @At("HEAD"), cancellable = true, remap = false)
     private void preBuildActors(final CallbackInfo ci) {
-        ci$actorToInstaceMap = new HashMap<>();
-        for (final MutablePair<StructureTemplate.StructureBlockInfo, MovementContext> actor : contraption.getActors()) {
-            final ActorInstance actorInstance = ((ContraptionInstanceWorldAccessor) instanceWorld).getBlockEntityInstanceManager().createActor(actor);
-            ci$actorToInstaceMap.put(actor.getLeft().pos, actorInstance);
-        }
-        ci.cancel();
+        // We have to initialize this, it can't be in the function
+        ci$actorToInstanceMap = new HashMap<>();
+        MixinFlwContraptionLogic.INSTANCE.preBuildActors$create_interactive(instanceWorld, ci$actorToInstanceMap, contraption, ci);
     }
 
     @Inject(method = "renderStructureLayer", at = @At("HEAD"), cancellable = true, remap = false)
     private void preRenderStructureLayer(final RenderType layer, final ContraptionProgram shader, final CallbackInfo ci) {
-        if (CreateInteractiveUtil.INSTANCE.doesContraptionHaveShipLoaded(contraption)) {
-            ci.cancel();
-        }
+        MixinFlwContraptionLogic.INSTANCE.preRenderStructureLayer$create_interactive(contraption, ci);
     }
 }
