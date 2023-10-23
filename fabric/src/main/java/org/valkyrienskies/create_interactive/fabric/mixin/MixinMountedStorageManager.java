@@ -36,13 +36,18 @@ public abstract class MixinMountedStorageManager {
     @Unique
     private Long ci$shipId = null;
     @Unique
-    private final List<Storage<ItemVariant>> ci$externalStorages = new ArrayList<>();
+    private List<Storage<ItemVariant>> ci$externalStorages;
     @Shadow
     protected Contraption.ContraptionInvWrapper inventory;
     @Shadow
     protected Contraption.ContraptionInvWrapper fuelInventory;
     @Shadow
     protected CombinedTankWrapper fluidInventory;
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void postInit(final CallbackInfo ci) {
+        ci$externalStorages = new ArrayList<>();
+    }
 
     @Inject(method = "entityTick", at = @At("HEAD"), cancellable = true, remap = false)
     private void preEntityTick(final AbstractContraptionEntity entity, final CallbackInfo ci) {

@@ -40,7 +40,7 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
     }
 
     @Unique
-    private final Map<BlockPos, ActorInstance> ci$actorToInstaceMap = new HashMap<>();
+    private Map<BlockPos, ActorInstance> ci$actorToInstaceMap;
 
     /**
      * Completely disable contraption block rendering
@@ -79,6 +79,7 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
 
     @Inject(method = "buildActors", at = @At("HEAD"), cancellable = true, remap = false)
     private void preBuildActors(final CallbackInfo ci) {
+        ci$actorToInstaceMap = new HashMap<>();
         for (final MutablePair<StructureTemplate.StructureBlockInfo, MovementContext> actor : contraption.getActors()) {
             final ActorInstance actorInstance = ((ContraptionInstanceWorldAccessor) instanceWorld).getBlockEntityInstanceManager().createActor(actor);
             ci$actorToInstaceMap.put(actor.getLeft().pos, actorInstance);

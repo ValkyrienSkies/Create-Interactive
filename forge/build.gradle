@@ -7,6 +7,8 @@ buildscript {
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
         // OPTIONAL Gradle plugin for Kotlin Serialization
         classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
+        // Proguard
+        classpath 'com.guardsquare:proguard-gradle:7.4.0'
     }
 }
 
@@ -43,7 +45,8 @@ configurations {
 }
 
 dependencies {
-    include(forgeRuntimeLibrary(annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1"))))
+    // VS2 already shades this, so we can don't have to
+    compileOnly(annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1")))
 
     forge "net.minecraftforge:forge:$forge_version"
     modApi("org.valkyrienskies:valkyrienskies-118-forge:$vs2_version") { transitive = false }
@@ -99,6 +102,26 @@ sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
             from commonSources.archiveFile.map { zipTree(it) }
+}
+
+task myProguardTask(type: proguard.gradle.ProGuardTask) {
+    configuration file('proguard-config.pro')
+
+    injars(tasks.named('remapJar').flatMap { it.archiveFile })
+
+    // Automatically handle the Java version of this build.
+    if (System.getProperty('java.version').startsWith('1.')) {
+        // Before Java 9, the runtime classes were packaged in a single jar file.
+        libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+    } else {
+        // As of Java 9, the runtime classes are packaged in modular jmod files.
+        libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+        //libraryjars "${System.getProperty('java.home')}/jmods/....."
+    }
+
+    verbose
+
+    outjars(layout.buildDirectory.file("libs/forge-proguarded-minified.jar"))
 }
 
 components.java {

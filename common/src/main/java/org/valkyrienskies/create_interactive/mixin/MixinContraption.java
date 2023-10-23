@@ -40,7 +40,6 @@ import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,9 +51,9 @@ import java.util.Set;
 @Mixin(Contraption.class)
 public abstract class MixinContraption implements ContraptionDuck {
     @Unique
-    private final Map<BlockPos, Pair<StructureBlockInfo, BlockEntity>> vs$initialBlocks = new HashMap<>();
+    private Map<BlockPos, Pair<StructureBlockInfo, BlockEntity>> vs$initialBlocks;
     @Unique
-    private final Set<BlockPos> ci$changedActors = new HashSet<>();
+    private Set<BlockPos> ci$changedActors;
     @Shadow
     public BlockPos anchor;
     @Shadow(remap = false)
@@ -73,6 +72,12 @@ public abstract class MixinContraption implements ContraptionDuck {
     protected abstract void disableActorOnStart(final MovementContext context);
     @Shadow
     protected abstract CompoundTag getBlockEntityNBT(final Level world, final BlockPos pos);
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void postInit(final CallbackInfo ci) {
+        vs$initialBlocks = new HashMap<>();
+        ci$changedActors = new HashSet<>();
+    }
 
     @Inject(method = "onEntityCreated", at = @At("HEAD"), remap = false)
     private void preOnEntityCreated(final AbstractContraptionEntity entity, final CallbackInfo ci) {

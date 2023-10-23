@@ -6,10 +6,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ContraptionRotationState.class)
 public interface ContraptionRotationStateAccessor {
-    @Accessor(remap = false)
+    @Accessor(value = "xRotation", remap = false)
     float getXRotation();
-    @Accessor(remap = false)
+    @Accessor(value = "yRotation", remap = false)
     float getYRotation();
-    @Accessor(remap = false)
+    @Accessor(value = "zRotation", remap = false)
     float getZRotation();
 }
