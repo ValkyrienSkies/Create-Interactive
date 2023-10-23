@@ -1,6 +1,13 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/open-obfuscator/dProtect")
+            credentials {
+                username = "Rubydesic"
+                password = "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"
+            }
+        }
     }
     dependencies {
         // Make sure this version matches the one included in Kotlin for Forge
@@ -8,7 +15,7 @@ buildscript {
         // OPTIONAL Gradle plugin for Kotlin Serialization
         classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
         // Proguard
-        classpath 'com.guardsquare:proguard-gradle:7.4.0'
+        classpath 're.obfuscator:dprotect-gradle:1.0.0'
     }
 }
 
@@ -16,6 +23,12 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
     id "com.matthewprenger.cursegradle"
     id "com.modrinth.minotaur"
+    id("io.github.izhangzhihao.unmeta") version "1.0.1"
+}
+
+// remvoe kotlin metadata
+unmeta {
+    enable.set(true)
 }
 
 apply from: '../gradle-scripts/publish-curseforge.gradle'
@@ -104,6 +117,7 @@ sourcesJar {
             from commonSources.archiveFile.map { zipTree(it) }
 }
 
+
 task myProguardTask(type: proguard.gradle.ProGuardTask) {
     configuration file('proguard-config.pro')
 
@@ -118,6 +132,8 @@ task myProguardTask(type: proguard.gradle.ProGuardTask) {
         libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
         //libraryjars "${System.getProperty('java.home')}/jmods/....."
     }
+
+    libraryjars(configurations.runtimeClasspath)
 
     verbose
 

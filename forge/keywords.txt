@@ -1,0 +1,60 @@
+#
+# This obfuscation dictionary contains reserved Java keywords. They can't
+# be used in Java source files, but they can be used in compiled class files.
+# Note that this hardly improves the obfuscation. Decent decompilers can
+# automatically replace reserved keywords, and the effect can fairly simply be
+# undone by obfuscating again with simpler names.
+# Usage:
+#     java -jar proguard.jar ..... -obfuscationdictionary keywords.txt
+#
+
+
+new
+break
+for
+int
+this
+void
+byte
+return
+if
+double
+char
+else
+goto
+long
+this
+class
+continue
+float
+case
+do
+final
+try
+catch
+short
+super
+throw
+while
+const
+import
+native
+public
+static
+switch
+throws
+boolean
+default
+extends
+finally
+package
+private
+abstract
+strictfp
+volatile
+interface
+protected
+transient
+implements
+instanceof
+synchronized
