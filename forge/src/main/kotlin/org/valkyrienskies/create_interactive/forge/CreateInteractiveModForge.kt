@@ -13,7 +13,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveConfig
 import org.valkyrienskies.create_interactive.CreateInteractiveMod
 import org.valkyrienskies.create_interactive.CreateInteractiveMod.init
 import org.valkyrienskies.create_interactive.CreateInteractiveMod.initClient
-import org.valkyrienskies.mod.compat.clothconfig.VSClothConfig.createConfigScreenFor
+import org.valkyrienskies.create_interactive.VS2KotlinHelper
 import thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
@@ -42,7 +42,7 @@ class CreateInteractiveModForge {
             ConfigGuiFactory::class.java
         ) {
             ConfigGuiFactory { _: Minecraft?, parent: Screen? ->
-                createConfigScreenFor(
+                VS2KotlinHelper.createConfigScreenFor(
                     parent!!,
                     getRegisteredConfig(CreateInteractiveConfig::class.java)
                 )

@@ -29,8 +29,7 @@ public class MixinCombinedInvWrapper implements CombinedInvWrapperDuck {
         this.itemHandler = itemHandlerCollection.toArray(new IItemHandlerModifiable[0]);
         this.baseIndex = new int[itemHandler.length];
         int index = 0;
-        for (int i = 0; i < itemHandler.length; i++)
-        {
+        for (int i = 0; i < itemHandler.length; i++) {
             index += itemHandler[i].getSlots();
             baseIndex[i] = index;
         }

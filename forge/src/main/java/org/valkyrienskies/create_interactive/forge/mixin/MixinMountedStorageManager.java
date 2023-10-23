@@ -24,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.create_interactive.forge.WrappedIItemHandlerModifiable;
+import org.valkyrienskies.create_interactive.forge.mixin_logic.MixinMountedStorageManagerLogic;
 import org.valkyrienskies.create_interactive.forge.mixinducks.CombinedInvWrapperDuck;
 import org.valkyrienskies.create_interactive.forge.mixinducks.CombinedTankWrapperDuck;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
@@ -63,60 +64,8 @@ public abstract class MixinMountedStorageManager {
         // Recreate inventories
         final AbstractContraptionEntityDuck duck = (AbstractContraptionEntityDuck) entity;
         ci$shipId = duck.getShadowShipId();
-        if (ci$shipId != null) {
-            final ServerShip serverShip = VSGameUtilsKt.getShipObjectWorld((ServerLevel) entity.level).getAllShips().getById(ci$shipId);
-            final List<IItemHandlerModifiable> inventories = new ArrayList<>();
-            final List<IItemHandlerModifiable> fuelInventories = new ArrayList<>();
-            final List<IFluidHandler> fluidInventories = new ArrayList<>();
-            if (serverShip != null) {
-                serverShip.getActiveChunksSet().forEach((chunkX, chunkZ) -> {
-                    final LevelChunk chunk = entity.level.getChunk(chunkX, chunkZ);
-                    for (final BlockEntity be : chunk.getBlockEntities().values()) {
-                        // TODO: Do we want to do this?
-                        // if (!MountedStorage.canUseAsStorage(be)) {
-                        //     continue;
-                        // }
 
-                        if (be instanceof ItemVaultBlockEntity itemVaultBlockEntity) {
-                            inventories.add(itemVaultBlockEntity.getInventoryOfBlock());
-                        } else {
-                            final IItemHandler newInv = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve().orElse(null);
-                            if (newInv != null) {
-                                if (newInv instanceof IItemHandlerModifiable newInvModifiable) {
-                                    inventories.add(newInvModifiable);
-                                    fuelInventories.add(newInvModifiable);
-                                } else {
-                                    // Wrap newInv
-                                    final IItemHandlerModifiable wrappedNewInv = new WrappedIItemHandlerModifiable(newInv);
-                                    inventories.add(wrappedNewInv);
-                                    fuelInventories.add(wrappedNewInv);
-                                }
-                            }
-                        }
-                    }
-
-                    for (final BlockEntity be : chunk.getBlockEntities().values()) {
-                        final IFluidHandler newFluidInv = be.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).orElse(null);
-                        if (newFluidInv == null) continue;
-                        // TODO: Do we want to do this?
-                        // if (!(teHandler instanceof SmartFluidTank))
-                        //     continue;
-                        fluidInventories.add(newFluidInv);
-                    }
-                });
-            }
-
-            inventories.addAll(ci$externalStorages);
-            fuelInventories.addAll(ci$externalStorages);
-            ((CombinedInvWrapperDuck) inventory).ci$setInventories(inventories);
-            ((CombinedInvWrapperDuck) fuelInventory).ci$setInventories(fuelInventories);
-            ((CombinedTankWrapperDuck) fluidInventory).ci$setInventories(fluidInventories);
-        } else {
-            // Empty storages
-            ((CombinedInvWrapperDuck) inventory).ci$setInventories(Collections.EMPTY_LIST);
-            ((CombinedInvWrapperDuck) fuelInventory).ci$setInventories(Collections.EMPTY_LIST);
-            ((CombinedTankWrapperDuck) fluidInventory).ci$setInventories(Collections.EMPTY_LIST);
-        }
+        MixinMountedStorageManagerLogic.INSTANCE.preEntityTick$create_interactive(entity, ci$shipId, ci$externalStorages, inventory, fuelInventory, fluidInventory);
     }
 
     @Inject(method = "createHandlers", at = @At("HEAD"), cancellable = true, remap = false)
