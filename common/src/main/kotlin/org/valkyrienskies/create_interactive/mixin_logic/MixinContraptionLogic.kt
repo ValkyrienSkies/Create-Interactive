@@ -140,6 +140,7 @@ internal object MixinContraptionLogic {
         disableActorOnStart: (MovementContext) -> Unit,
         changedActors: MutableSet<BlockPos>,
         interactors: MutableMap<BlockPos, MovingInteractionBehaviour>,
+        contraption: Contraption,
     ) {
         val prevState: StructureTemplate.StructureBlockInfo? = blocks[localPos]
         if (prevState != null && prevState.state === structureBlockInfo.state) {
@@ -149,8 +150,7 @@ internal object MixinContraptionLogic {
         setBounds(bounds.minmax(AABB(localPos)))
         if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) {
             val context = MovementContext(
-                level, structureBlockInfo,
-                Contraption::class.java.cast(this)
+                level, structureBlockInfo, contraption
             )
             val behaviour = AllMovementBehaviours.getBehaviour(structureBlockInfo.state)
             behaviour?.startMoving(context)

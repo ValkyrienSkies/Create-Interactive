@@ -101,7 +101,8 @@ public abstract class MixinContraption implements ContraptionDuck {
                 return Unit.INSTANCE;
             },
             ci$changedActors,
-            interactors
+            interactors,
+            Contraption.class.cast(this)
         );
     }
 

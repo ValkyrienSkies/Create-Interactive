@@ -27,7 +27,7 @@ internal object MixinFlwContraptionLogic {
         }
     }
 
-    internal fun preTick(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance>, contraption: Contraption, ci: CallbackInfo) {
+    internal fun preTick(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance?>, contraption: Contraption, ci: CallbackInfo) {
         for (blockPos in (contraption as ContraptionDuck).`ci$getChangedActors`()) {
             val actor: MutablePair<StructureTemplate.StructureBlockInfo, MovementContext>? =
                 contraption.getActorAt(blockPos)
@@ -42,17 +42,17 @@ internal object MixinFlwContraptionLogic {
             if (actor != null) {
                 // Add new instance
                 val actorInstance = (instanceWorld as ContraptionInstanceWorldAccessor).getBlockEntityInstanceManager()
-                    .createActor(actor)!!
+                    .createActor(actor)
                 actorToInstanceMap[actor.getLeft().pos] = actorInstance
             }
         }
         (contraption as ContraptionDuck).`ci$clearChangedActors`()
     }
 
-    internal fun preBuildActors(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance>, contraption: Contraption, ci: CallbackInfo) {
+    internal fun preBuildActors(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance?>, contraption: Contraption, ci: CallbackInfo) {
         for (actor in contraption.actors) {
             val actorInstance =
-                (instanceWorld as ContraptionInstanceWorldAccessor).getBlockEntityInstanceManager().createActor(actor)!!
+                (instanceWorld as ContraptionInstanceWorldAccessor).getBlockEntityInstanceManager().createActor(actor)
             actorToInstanceMap[actor.getLeft().pos] = actorInstance
         }
         ci.cancel()

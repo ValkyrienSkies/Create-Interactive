@@ -28,10 +28,9 @@ internal object MixinAbstractContraptionEntityLogic {
      */
     internal fun setShadowShipId(thisEntity: AbstractContraptionEntity, oldShadowShipId: ShipId?, newShadowShipId: ShipId?): ShipId? {
         if (thisEntity is CarriageContraptionEntity) {
-            val carriageContraptionEntity = CarriageContraptionEntity::class.java.cast(this)
-            val carriage = carriageContraptionEntity.carriage
+            val carriage = thisEntity.carriage
             if (carriage != null && !(carriage as CarriageDuck).`ci$doesCarriageEntityControlShip`(
-                    carriageContraptionEntity,
+                    thisEntity,
                     newShadowShipId
                 )
             ) {
@@ -88,10 +87,9 @@ internal object MixinAbstractContraptionEntityLogic {
     internal fun postTick(thisEntity: AbstractContraptionEntity, oldShadowShipId: ShipId?): ShipId? {
         // TODO: Its sus af that we have to keep linking the ship, but just do it!
         if (oldShadowShipId != null) {
-            if (CarriageContraptionEntity::class.java.isInstance(this)) {
-                val carriageContraptionEntity = CarriageContraptionEntity::class.java.cast(this)
-                if ((carriageContraptionEntity.carriage as CarriageDuck).`ci$doesCarriageEntityControlShip`(
-                        carriageContraptionEntity,
+            if (thisEntity is CarriageContraptionEntity) {
+                if ((thisEntity.carriage as CarriageDuck).`ci$doesCarriageEntityControlShip`(
+                        thisEntity,
                         oldShadowShipId
                     )
                 ) {
