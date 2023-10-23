@@ -118,7 +118,7 @@ sourcesJar {
 }
 
 
-task myProguardTask(type: proguard.gradle.ProGuardTask) {
+tasks.register('myProguardTask', proguard.gradle.ProGuardTask) {
     configuration file('proguard-config.pro')
 
     injars(tasks.named('remapJar').flatMap { it.archiveFile })

@@ -4,7 +4,7 @@
 -obfuscate-arithmetic,medium class * { *;}
 
 -packageobfuscationdictionary windows.txt
--classobfuscationdictionary keywords.txt
+-classobfuscationdictionary classnames.txt
 -obfuscationdictionary keywords.txt
 
 #noinspection ShrinkerUnresolvedReference

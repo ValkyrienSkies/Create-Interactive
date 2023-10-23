@@ -9,24 +9,25 @@
 #
 
 
-new
-break
-for
+this
 int
+byte
+double
+return
+long
+float
+new
+boolean
+break
 this
 void
-byte
-return
 if
-double
 char
 else
 goto
-long
-this
+for
 class
 continue
-float
 case
 do
 final
@@ -43,7 +44,6 @@ public
 static
 switch
 throws
-boolean
 default
 extends
 finally
