@@ -1,20 +1,58 @@
+-obfuscate-strings class !**mixin** { *; }
+-obfuscate-control-flow class * { *; }
+-obfuscate-constants class !**mixin** { *; }
+-obfuscate-arithmetic,medium class * { *;}
+
+-packageobfuscationdictionary windows.txt
+-classobfuscationdictionary keywords.txt
+-obfuscationdictionary keywords.txt
+
 #noinspection ShrinkerUnresolvedReference
 -ignorewarnings
--dontoptimize
--dontshrink
+#-dontobfuscate
+#-dontoptimize
+#-dontshrink
+
+-overloadaggressively
+
+# https://stackoverflow.com/questions/33189249/how-to-tell-proguard-to-keep-enum-constants-and-fields
+-keepclassmembers class * extends java.lang.Enum {
+    <fields>;
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Keep annotations
+-keepattributes RuntimeVisibleAnnotations, RuntimeInvisibleAnnotations
+
+# Keep the main entrypoints
+-keep,allowobfuscation class
+org.valkyrienskies.create_interactive.forge.mixin.ValkyrienForgeMixinConfigPlugin,
+org.valkyrienskies.create_interactive.forge.CreateInteractiveModForge
+{ *; }
+
+# Keep all mixins as entrypoints, but obfuscating is OK
+-keep,allowobfuscation @org.spongepowered.asm.mixin.Mixin class * { *; }
+
+# ok, don't obfuscate the class name though
+-keep @org.spongepowered.asm.mixin.Mixin class *
 
 
--keepattributes
-InnerClasses,
-Signature,
-RuntimeVisibleAnnotations,
-RuntimeVisibleParameterAnnotations,
-RuntimeVisibleTypeAnnotations,
-EnclosingMethod,
-AnnotationDefault,
-MethodParameters
+# Keep shadowed field/methods names the same
+-keepclassmembers class * {
+    @org.spongepowered.asm.mixin.Shadow <fields>;
+    @org.spongepowered.asm.mixin.Shadow <methods>;
+}
 
--keepparameternames
+# Obfuscate mixin class names in the mixins json file
+-adaptresourcefilecontents **.mixins.json**
+
+
+# Dont obfuscate library classes
+-keep class !org.valkyrienskies.create_interactive.** { *; }
+
+# repackage everything into one big class
+-repackageclasses org.valkyrienskies.create_interactive.aux
 
 
 -dontnote
@@ -45,32 +83,3 @@ com.github.victools.**
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
-
-# Keep annotations
--keepattributes RuntimeInvisibleAnnotations
-
-# Keep the forge mixin plugin names the same
--keep,allowshrinking,allowoptimization class org.valkyrienskies.create_interactive.forge.mixin.ValkyrienForgeMixinConfigPlugin { *; }
-
-# Keep mixin class names the same
--keepnames class org.valkyrienskies.create_interactive.mixin.*
--keepnames class org.valkyrienskies.create_interactive.mixin.client.*
--keepnames class org.valkyrienskies.create_interactive.mixin.client.actor.*
--keepnames class org.valkyrienskies.create_interactive.fabric.mixin.*
--keepnames class org.valkyrienskies.create_interactive.forge.mixin.*
-
-# Keep mixin field names the same
--keepclassmembers class org.valkyrienskies.create_interactive.mixin.* { <fields>; }
--keepclassmembers class org.valkyrienskies.create_interactive.mixin.client.* { <fields>; }
--keepclassmembers class org.valkyrienskies.create_interactive.mixin.client.actor.* { <fields>; }
--keepclassmembers class org.valkyrienskies.create_interactive.fabric.mixin.* { <fields>; }
--keepclassmembers class org.valkyrienskies.create_interactive.forge.mixin.* { <fields>; }
-
-# Keep some mixin method names the same (Anything that shadows a method)
--keepclassmembers class org.valkyrienskies.create_interactive.fabric.mixin.MixinCombinedInvWrapper { *; }
--keepclassmembers class org.valkyrienskies.create_interactive.fabric.mixin.MixinCombinedTankWrapper { *; }
--keepclassmembers class org.valkyrienskies.create_interactive.mixin.client.MixinMinecraft { *; }
--keepclassmembers class org.valkyrienskies.create_interactive.mixin.MixinContraption { *; }
-
--keep class !org.vlakyrienksies.createinteractive.** { *; }
-
