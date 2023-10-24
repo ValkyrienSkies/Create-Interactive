@@ -111,14 +111,15 @@ jar {
     archiveClassifier.set "dev"
 }
 
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-            from commonSources.archiveFile.map { zipTree(it) }
-}
+//sourcesJar {
+//    def commonSources = project(":common").sourcesJar
+//    dependsOn commonSources
+//            from commonSources.archiveFile.map { zipTree(it) }
+//}
 
+def proguardJarFile = layout.buildDirectory.file("libs/forge-proguarded-minified.jar")
 
-tasks.register('myProguardTask', proguard.gradle.ProGuardTask) {
+tasks.register('proguardJar', proguard.gradle.ProGuardTask) {
     configuration file('proguard-config.pro')
 
     injars(tasks.named('remapJar').flatMap { it.archiveFile })
@@ -140,9 +141,25 @@ tasks.register('myProguardTask', proguard.gradle.ProGuardTask) {
     outjars(layout.buildDirectory.file("libs/forge-proguarded-minified.jar"))
 }
 
+artifacts {
+    add("runtimeElements", proguardJarFile) {
+        builtBy(proguardJar)
+    }
+    add("apiElements", proguardJarFile) {
+        builtBy(proguardJar)
+    }
+}
+
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
+    }
+}
+
+// Remove the non-proguarded artifacts
+configurations {
+    [runtimeElements, apiElements].forEach { config ->
+        config.artifacts.removeIf { it.file.canonicalPath != proguardJarFile.get().getAsFile().canonicalPath }
     }
 }
 

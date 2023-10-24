@@ -120,8 +120,4 @@ allprojects {
 
         options.release = 17
     }
-
-    java {
-        withSourcesJar()
-    }
 }
