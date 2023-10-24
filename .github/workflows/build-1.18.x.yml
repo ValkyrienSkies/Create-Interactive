@@ -15,6 +15,28 @@ jobs:
           submodules: true # Clone with vs-core submodule
       - uses: gradle/wrapper-validation-action@v1
 
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build jar
+        run: ./gradlew build
+
+      # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
+      # the publishing section of your build.gradle
+      - name: Publish to GitHub Packages and VS Maven
+        run: ./gradlew publish
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   test-server:
     name: Test Server
     strategy:
