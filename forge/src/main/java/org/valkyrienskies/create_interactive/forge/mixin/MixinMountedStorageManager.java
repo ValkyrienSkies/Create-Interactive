@@ -3,17 +3,9 @@ package org.valkyrienskies.create_interactive.forge.mixin;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
-import com.simibubi.create.content.logistics.vault.ItemVaultBlockEntity;
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,16 +14,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.core.api.ships.ServerShip;
-import org.valkyrienskies.create_interactive.forge.WrappedIItemHandlerModifiable;
-import org.valkyrienskies.create_interactive.forge.mixin_logic.MixinMountedStorageManagerLogic;
-import org.valkyrienskies.create_interactive.forge.mixinducks.CombinedInvWrapperDuck;
-import org.valkyrienskies.create_interactive.forge.mixinducks.CombinedTankWrapperDuck;
+import org.valkyrienskies.create_interactive.forge.mixin_logic.mixin.MixinMountedStorageManagerLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
-import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Mixin(MountedStorageManager.class)

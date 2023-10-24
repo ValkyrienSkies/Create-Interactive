@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.fabric.mixin_logic
+package org.valkyrienskies.create_interactive.fabric.mixin_logic.mixin
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
