@@ -28,7 +28,11 @@
 # Keep the main entrypoints
 -keep,allowobfuscation class
 org.valkyrienskies.create_interactive.forge.mixin.ValkyrienForgeMixinConfigPlugin,
-org.valkyrienskies.create_interactive.forge.CreateInteractiveModForge
+org.valkyrienskies.create_interactive.forge.CreateInteractiveModForge,
+org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabric,
+org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabricClient,
+org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabricModMenu,
+org.valkyrienskies.create_interactive.fabric.ValkyrienPreLaunch
 { *; }
 
 # Keep all mixins as entrypoints, but obfuscating is OK
@@ -44,9 +48,8 @@ org.valkyrienskies.create_interactive.forge.CreateInteractiveModForge
     @org.spongepowered.asm.mixin.Shadow <methods>;
 }
 
-# Obfuscate mixin class names in the mixins json file
--adaptresourcefilecontents **.mixins.json**
-
+# Obfuscate mixin class names in the mixins json file, and fabric entry class names and json file
+-adaptresourcefilecontents **.mixins.json**, fabric.mod.json
 
 # Dont obfuscate library classes
 -keep class !org.valkyrienskies.create_interactive.** { *; }

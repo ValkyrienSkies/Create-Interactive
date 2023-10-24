@@ -20,13 +20,13 @@
       "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabric"
     ],
     "client": [
-      "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabric${'$'}Client"
+      "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabricClient"
     ],
     "preLaunch": [
       "org.valkyrienskies.create_interactive.fabric.ValkyrienPreLaunch"
     ],
     "modmenu": [
-      "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabric${'$'}ModMenu"
+      "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabricModMenu"
     ]
   },
   "mixins": [
