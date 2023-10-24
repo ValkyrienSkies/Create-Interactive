@@ -9,10 +9,13 @@ object CreateInteractiveConfig {
     @JvmField
     val SERVER = Server()
 
-    class Client
+    class Client {
+        @JsonSchema(description = "Dummy config value")
+        val maxConfig = 1
+    }
 
     class Server {
-        @JsonSchema(description = "The config yeah")
+        @JsonSchema(description = "Dummy config value")
         val maxConfig = 1
     }
 }
