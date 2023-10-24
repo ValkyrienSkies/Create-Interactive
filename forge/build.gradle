@@ -26,7 +26,7 @@ plugins {
     id("io.github.izhangzhihao.unmeta") version "1.0.1"
 }
 
-// remvoe kotlin metadata
+// remove kotlin metadata
 unmeta {
     enable.set(true)
 }
@@ -120,7 +120,7 @@ jar {
 def proguardJarFile = layout.buildDirectory.file("libs/forge-proguarded-minified.jar")
 
 tasks.register('proguardJar', proguard.gradle.ProGuardTask) {
-    configuration file('proguard-config.pro')
+    configuration file('../proguard/proguard-config.pro')
 
     injars(tasks.named('remapJar').flatMap { it.archiveFile })
 
@@ -138,7 +138,7 @@ tasks.register('proguardJar', proguard.gradle.ProGuardTask) {
 
     verbose
 
-    outjars(layout.buildDirectory.file("libs/forge-proguarded-minified.jar"))
+    outjars(proguardJarFile)
 }
 
 artifacts {
