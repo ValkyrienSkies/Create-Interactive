@@ -34,8 +34,6 @@ import java.util.Set;
 @Mixin(Contraption.class)
 public abstract class MixinContraption implements ContraptionDuck {
     @Unique
-    private Map<BlockPos, Pair<StructureBlockInfo, BlockEntity>> vs$initialBlocks;
-    @Unique
     private Set<BlockPos> ci$changedActors;
     @Shadow
     public BlockPos anchor;
@@ -58,18 +56,12 @@ public abstract class MixinContraption implements ContraptionDuck {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void postInit(final CallbackInfo ci) {
-        vs$initialBlocks = new HashMap<>();
         ci$changedActors = new HashSet<>();
     }
 
     @Inject(method = "onEntityCreated", at = @At("HEAD"), remap = false)
     private void preOnEntityCreated(final AbstractContraptionEntity entity, final CallbackInfo ci) {
-        MixinContraptionLogic.INSTANCE.preOnEntityCreated$create_interactive(vs$initialBlocks, anchor, entity);
-    }
-
-    @Inject(method = "addBlock", at = @At("HEAD"))
-    private void preAddBlock(final BlockPos pos, final Pair<StructureBlockInfo, BlockEntity> pair, final CallbackInfo ci) {
-        MixinContraptionLogic.INSTANCE.preAddBlock$create_interactive(vs$initialBlocks, anchor, pair);
+        MixinContraptionLogic.INSTANCE.preOnEntityCreated$create_interactive(blocks, anchor, entity);
     }
 
     @Inject(method = "addBlocksToWorld", at = @At("HEAD"))

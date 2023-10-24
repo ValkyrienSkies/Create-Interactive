@@ -8,19 +8,16 @@ import com.simibubi.create.content.contraptions.actors.contraptionControls.Contr
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer
-import com.simibubi.create.foundation.utility.NBTProcessors
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
 import org.apache.commons.lang3.tuple.MutablePair
-import org.apache.commons.lang3.tuple.Pair
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -31,7 +28,7 @@ import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 
 internal object MixinContraptionLogic {
-    internal fun preOnEntityCreated(initialBlocks: Map<BlockPos, Pair<StructureTemplate.StructureBlockInfo, BlockEntity>>, anchor: BlockPos, entity: AbstractContraptionEntity) {
+    internal fun preOnEntityCreated(initialBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, anchor: BlockPos, entity: AbstractContraptionEntity) {
         val level = entity.level
         if (level.isClientSide) {
             return
@@ -48,25 +45,23 @@ internal object MixinContraptionLogic {
 
         // Anchor at ship center
         val shipCenter: Vector3ic = serverShip.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
-        for ((pos, pair) in initialBlocks.entries) {
-            val localPos = pos.subtract(anchor)
+        for ((pos, structureInfo) in initialBlocks.entries) {
+            val localPos = pos // .subtract(anchor)
             val newPos = localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
             val flags =
                 Block.UPDATE_MOVE_BY_PISTON or Block.UPDATE_SUPPRESS_DROPS or Block.UPDATE_KNOWN_SHAPE or Block.UPDATE_CLIENTS or Block.UPDATE_IMMEDIATE
-            level.setBlock(newPos, pair.key.state, flags)
+            level.setBlock(newPos, structureInfo.state, flags)
 
             // region Copy the tile entity to the ship
-            val blockEntity = pair.value
             val newBlockEntity = level.getBlockEntity(newPos)
-            if (blockEntity != null && newBlockEntity != null) {
+            if (newBlockEntity != null) {
                 // Transform the block entity, put it in the ship
-                var tag: CompoundTag? = pair.key.nbt
-                tag = NBTProcessors.process(blockEntity, tag, false)
+                val tag: CompoundTag? = structureInfo.nbt
                 if (tag != null) {
                     tag.putInt("x", newPos.x)
                     tag.putInt("y", newPos.y)
                     tag.putInt("z", newPos.z)
-                    if (blockEntity is IMultiBlockEntityContainer && tag.contains("LastKnownPos")) tag.put(
+                    if (newBlockEntity is IMultiBlockEntityContainer && tag.contains("LastKnownPos")) tag.put(
                         "LastKnownPos", NbtUtils.writeBlockPos(
                             BlockPos.ZERO.below(
                                 Int.MAX_VALUE - 1
@@ -80,18 +75,6 @@ internal object MixinContraptionLogic {
             // endregion
         }
         (entity as AbstractContraptionEntityDuck).setShadowShipId(shipId)
-    }
-
-    internal fun preAddBlock(
-        initialBlocks: MutableMap<BlockPos, Pair<StructureTemplate.StructureBlockInfo, BlockEntity>>,
-        pos: BlockPos,
-        pair: Pair<StructureTemplate.StructureBlockInfo, BlockEntity>,
-    ) {
-        if (initialBlocks.containsKey(pos)) {
-            // Skip
-            return
-        }
-        initialBlocks[pos] = pair
     }
 
     internal fun preAddBlocksToWorld(disassembled: Boolean, entity: AbstractContraptionEntity?, blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>, world: Level, getBlockEntityNBT: (Level, BlockPos) -> CompoundTag?) {
