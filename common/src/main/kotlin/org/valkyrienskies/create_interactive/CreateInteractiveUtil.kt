@@ -29,7 +29,11 @@ import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 
 object CreateInteractiveUtil {
-    fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos): ShipId {
+    fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos): ShipId? {
+        if (contraption.javaClass.packageName.contains("createbigcannons")) {
+            // Do not create shadow ships for CBC, too hard
+            return null
+        }
         // Try adding the rigid body of this entity from the world
         val serverShip: ServerShip = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
 

@@ -38,6 +38,12 @@ internal object MixinContraptionLogic {
             // If shadow ship already exists then don't make a new one
             return
         }
+
+        if (entity.contraption.javaClass.packageName.contains("createbigcannons")) {
+            // Do not create shadow ships for CBC, too hard
+            return
+        }
+
         val blockPos = BlockPos(entity.position())
         val serverShip: ServerShip =
             (level as ServerLevel).shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
