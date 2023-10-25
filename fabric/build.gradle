@@ -84,6 +84,9 @@ dependencies {
 
     // Indium
     modImplementation("curse.maven:indium-459496:3911811")
+
+    // CBC
+    modImplementation("com.rbasamoyai:createbigcannons-fabric-${minecraft_version}:${createbigcannons_version}")
 }
 
 processResources {

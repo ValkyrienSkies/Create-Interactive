@@ -18,8 +18,8 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
-import org.valkyrienskies.create_interactive.mixin.ContraptionRotationStateAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
+import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -130,13 +130,7 @@ object CreateInteractiveUtil {
 
     fun getContraptionPosRot(entity: AbstractContraptionEntity): ContraptionPosRot {
         val rotationStateOriginal = AbstractContraptionEntity::class.java.cast(entity).rotationState
-        val rotationState = rotationStateOriginal as ContraptionRotationStateAccessor
-        val newRot = Quaterniond().rotateZYX(
-            Math.toRadians(rotationState.getZRotation().toDouble()),
-            Math.toRadians(rotationState.getYRotation().toDouble()),
-            Math.toRadians(rotationState.getXRotation().toDouble()),
-        )
-        newRot.rotateLocalY(Math.toRadians(rotationStateOriginal.yawOffset.toDouble()))
+        val newRot = (rotationStateOriginal as ContraptionRotationStateDuck).`ci$getRotationQuaternion`(Quaterniond())
 
         // Train on a train!!!
         val parentShip = entity.level.getShipManagingPos(entity.position())

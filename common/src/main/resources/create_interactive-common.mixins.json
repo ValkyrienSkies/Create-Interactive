@@ -24,11 +24,12 @@
   },
   "minVersion": "0.8",
   "mixins": [
-    "ContraptionRotationStateAccessor",
     "MixinAbstractContraptionEntity",
     "MixinCarriage",
+    "MixinCBCContraptionRotationState",
     "MixinContraption",
     "MixinContraptionCollider",
+    "MixinContraptionRotationState",
     "MixinLevelChunk"
   ]
 }
