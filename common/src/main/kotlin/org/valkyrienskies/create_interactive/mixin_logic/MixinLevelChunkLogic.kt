@@ -4,8 +4,10 @@ import com.jozufozu.flywheel.backend.Backend
 import com.jozufozu.flywheel.backend.instancing.InstancedRenderDispatcher
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
@@ -40,6 +42,16 @@ internal object MixinLevelChunkLogic {
         (contraptionEntity.contraption as ContraptionDuck).`ci$setBlock`(level, relativePos, info)
         if (!level.isClientSide) {
             contraptionEntity.setBlock(relativePos, StructureTemplate.StructureBlockInfo(relativePos, state, null))
+            // If its air then we need to remove the block from blocks map
+            if (state == Blocks.AIR.defaultBlockState()) {
+                if (contraptionEntity is CarriageContraptionEntity) {
+                    contraptionEntity.carriage.forEachPresentEntity {
+                        it.contraption.blocks.remove(relativePos)
+                    }
+                } else {
+                    contraptionEntity.contraption.blocks.remove(relativePos)
+                }
+            }
         } else {
             if (Backend.isOn()) {
                 val blockEntity: BlockEntity? = blockEntities[pos]

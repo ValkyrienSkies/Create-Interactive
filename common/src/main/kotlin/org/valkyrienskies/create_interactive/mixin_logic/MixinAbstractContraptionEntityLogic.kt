@@ -1,8 +1,10 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
+import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
@@ -101,6 +103,19 @@ internal object MixinAbstractContraptionEntityLogic {
             }
         }
         updateShipShadow(thisEntity)
+
+        // Disassemble contraptions with no blocks
+        if (!thisEntity.level.isClientSide && thisEntity.contraption.blocks.isEmpty()) {
+            println("Trying to disassemble contraption!")
+            if (thisEntity is CarriageContraptionEntity) {
+                val train = Create.RAILWAYS.sided(thisEntity.level).trains[thisEntity.trainId]
+                val pos = BlockPos(thisEntity.position())
+                train?.disassemble(Direction.NORTH, pos)
+            } else {
+                thisEntity.disassemble()
+            }
+        }
+
         return oldShadowShipId
     }
 
