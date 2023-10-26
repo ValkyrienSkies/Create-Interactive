@@ -4,7 +4,6 @@ import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import net.minecraft.core.BlockPos
-import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
@@ -91,7 +90,7 @@ internal object MixinAbstractContraptionEntityLogic {
         // TODO: Its sus af that we have to keep linking the ship, but just do it!
         if (oldShadowShipId != null) {
             if (thisEntity is CarriageContraptionEntity) {
-                if ((thisEntity.carriage as CarriageDuck).`ci$doesCarriageEntityControlShip`(
+                if (thisEntity.carriage != null && (thisEntity.carriage as CarriageDuck).`ci$doesCarriageEntityControlShip`(
                         thisEntity,
                         oldShadowShipId
                     )
