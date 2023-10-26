@@ -1,7 +1,7 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
-import com.simibubi.create.content.trains.bogey.StandardBogeyBlockEntity
+import com.simibubi.create.content.trains.bogey.AbstractBogeyBlockEntity
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.joml.Vector3i
 import org.joml.Vector3ic
@@ -18,7 +18,7 @@ internal object MixinBlockEntityRenderDispatcherLogic {
         ci: CallbackInfo
     ) {
         val level = blockEntity!!.level
-        val pos = blockEntity!!.blockPos
+        val pos = blockEntity.blockPos
         val ship = level.getShipManagingPos(pos) ?: return
         val contraptionEntityWeakReference =
             shipIdToContraptionEntityClient[ship.id] ?: return
@@ -27,7 +27,9 @@ internal object MixinBlockEntityRenderDispatcherLogic {
         // Anchor at ship center
         val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(level!!.yRange, Vector3i())
         val relativePos = pos.subtract(shipCenter.toBlockPos())
-        if (blockEntity is StandardBogeyBlockEntity || (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(
+
+        // Don't render bogeys or actors
+        if (blockEntity is AbstractBogeyBlockEntity || (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(
                 relativePos,
                 blockEntity is MechanicalBearingBlockEntity
             )
