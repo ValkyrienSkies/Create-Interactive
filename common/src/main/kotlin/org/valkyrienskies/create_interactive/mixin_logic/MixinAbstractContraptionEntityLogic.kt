@@ -19,6 +19,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.teleportShipT
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.unlinkShipToContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.updateShipShadow
 import org.valkyrienskies.create_interactive.mixinducks.CarriageDuck
+import org.valkyrienskies.create_interactive.mixinducks.TrainDuck
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.settings
 
@@ -106,12 +107,11 @@ internal object MixinAbstractContraptionEntityLogic {
 
         // Disassemble contraptions with no blocks
         if (!thisEntity.level.isClientSide && thisEntity.contraption.blocks.isEmpty()) {
-            println("Trying to disassemble contraption!")
             if (thisEntity is CarriageContraptionEntity) {
                 val train = Create.RAILWAYS.sided(thisEntity.level).trains[thisEntity.trainId]
-                val pos = BlockPos(thisEntity.position())
-                train?.disassemble(Direction.NORTH, pos)
+                (train as TrainDuck?)?.`ci$splitOrDisassemble`()
             } else {
+                println("Trying to disassemble contraption $thisEntity")
                 thisEntity.disassemble()
             }
         }

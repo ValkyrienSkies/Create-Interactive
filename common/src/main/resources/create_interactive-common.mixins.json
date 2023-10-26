@@ -30,6 +30,7 @@
     "MixinContraption",
     "MixinContraptionCollider",
     "MixinContraptionRotationState",
-    "MixinLevelChunk"
+    "MixinLevelChunk",
+    "MixinTrain"
   ]
 }

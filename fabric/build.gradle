@@ -51,6 +51,15 @@ configurations {
             developmentFabric.extendsFrom common
 }
 
+repositories {
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
 dependencies {
     include(annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1")))
 
@@ -87,6 +96,9 @@ dependencies {
 
     // CBC
     modImplementation("com.rbasamoyai:createbigcannons-fabric-${minecraft_version}:${createbigcannons_version}")
+
+    // Steam and rails
+    modImplementation("curse.maven:create-steam-n-rails-688231:4726376")
 }
 
 processResources {
