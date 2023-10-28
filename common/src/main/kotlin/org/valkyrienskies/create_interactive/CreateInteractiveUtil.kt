@@ -27,8 +27,12 @@ import org.valkyrienskies.mod.common.util.settings
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 object CreateInteractiveUtil {
+    private val printRateLimiter = RateLimiter(10.seconds.toJavaDuration())
+
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos): ShipId? {
         if (contraption.javaClass.packageName.contains("createbigcannons")) {
             // Do not create shadow ships for CBC, too hard
@@ -125,7 +129,9 @@ object CreateInteractiveUtil {
             serverShip.settings.changeDimensionOnTouchPortals = false
         } else {
             // Somehow the ship died?
-            println("Somehow a contraption ship shadow died!")
+            printRateLimiter.maybeRun {
+                println("Somehow a contraption ship shadow died! ${level.isClientSide} $entity")
+            }
             (entity as AbstractContraptionEntityDuck).shadowShipId = null
         }
     }
