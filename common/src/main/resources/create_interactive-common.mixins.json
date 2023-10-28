@@ -26,7 +26,6 @@
   "mixins": [
     "MixinAbstractContraptionEntity",
     "MixinCarriage",
-    "MixinCarriageContraptionEntity",
     "MixinCBCContraptionRotationState",
     "MixinContraption",
     "MixinContraptionCollider",
