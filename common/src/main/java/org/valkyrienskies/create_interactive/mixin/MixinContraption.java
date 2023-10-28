@@ -73,12 +73,11 @@ public abstract class MixinContraption implements ContraptionDuck {
     }
 
     @Override
-    public void ci$setBlock(final Level level, final BlockPos localPos, final StructureTemplate.StructureBlockInfo structureBlockInfo) {
+    public void ci$setBlock(final BlockPos localPos, final StructureTemplate.StructureBlockInfo structureBlockInfo) {
         MixinContraptionLogic.INSTANCE.setBlock$create_interactive(
             blocks,
             actors,
             bounds,
-            level,
             localPos,
             structureBlockInfo,
             (a) -> {

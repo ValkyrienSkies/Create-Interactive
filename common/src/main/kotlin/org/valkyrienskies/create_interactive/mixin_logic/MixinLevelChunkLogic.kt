@@ -39,20 +39,14 @@ internal object MixinLevelChunkLogic {
 
         // Set the block
         val info = StructureTemplate.StructureBlockInfo(relativePos, state, null)
-        (contraptionEntity.contraption as ContraptionDuck).`ci$setBlock`(level, relativePos, info)
-        if (!level.isClientSide) {
-            contraptionEntity.setBlock(relativePos, StructureTemplate.StructureBlockInfo(relativePos, state, null))
-            // If its air then we need to remove the block from blocks map
-            if (state == Blocks.AIR.defaultBlockState()) {
-                if (contraptionEntity is CarriageContraptionEntity) {
-                    contraptionEntity.carriage.forEachPresentEntity {
-                        it.contraption.blocks.remove(relativePos)
-                    }
-                } else {
-                    contraptionEntity.contraption.blocks.remove(relativePos)
-                }
+        if (contraptionEntity is CarriageContraptionEntity) {
+            contraptionEntity.carriage.forEachPresentEntity {
+                (it.contraption as ContraptionDuck).`ci$setBlock`(relativePos, info)
             }
         } else {
+            (contraptionEntity.contraption as ContraptionDuck).`ci$setBlock`(relativePos, info)
+        }
+        if (level.isClientSide) {
             if (Backend.isOn()) {
                 val blockEntity: BlockEntity? = blockEntities[pos]
                 if (blockEntity != null && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(

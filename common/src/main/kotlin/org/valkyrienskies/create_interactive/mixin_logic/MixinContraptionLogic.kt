@@ -14,6 +14,8 @@ import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.DoorBlock
 import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
@@ -21,6 +23,7 @@ import org.apache.commons.lang3.tuple.MutablePair
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -122,7 +125,6 @@ internal object MixinContraptionLogic {
         blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>,
         actors: MutableList<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>,
         bounds: AABB,
-        level: Level?,
         localPos: BlockPos,
         structureBlockInfo: StructureTemplate.StructureBlockInfo,
         setBounds: (AABB) -> Unit,
@@ -135,11 +137,45 @@ internal object MixinContraptionLogic {
         if (prevState != null && prevState.state === structureBlockInfo.state) {
             return
         }
-        blocks[localPos] = structureBlockInfo
-        setBounds(bounds.minmax(AABB(localPos)))
+
+        if (structureBlockInfo.state.block != Blocks.AIR) {
+            blocks[localPos] = structureBlockInfo
+            setBounds(bounds.minmax(AABB(localPos)))
+        } else {
+            // Remove air blocks
+            blocks.remove(localPos)
+        }
+
+        /* I really hate sliding doors!
+        if (prevState != null && prevState.state.block == structureBlockInfo.state.block && structureBlockInfo.state.block is DoorBlock) {
+            // Sliding doors are special, keep the actor the same in this case
+            val entity = contraption.entity
+            if (entity != null && prevState.state != structureBlockInfo.state) {
+                if (entity.level.isClientSide) {
+                    return
+                }
+                val duck = entity as AbstractContraptionEntityDuck
+                val shipId: ShipId? = duck.getShadowShipId()
+                if (shipId != null) {
+                    val serverShip: ServerShip? =
+                        (entity.level as ServerLevel).shipObjectWorld.allShips.getById(shipId)
+                    if (serverShip != null) {
+                        // Anchor at ship center
+                        val shipCenter: Vector3ic =
+                            serverShip.chunkClaim.getCenterBlockCoordinates(entity.level.yRange, Vector3i())
+                        val newPos = localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
+                        entity.level.setBlock(newPos, structureBlockInfo.state, 11)
+                        return
+                    }
+                }
+            }
+            return
+        }
+         */
+
         if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) {
             val context = MovementContext(
-                level, structureBlockInfo, contraption
+                contraption.entity.level, structureBlockInfo, contraption
             )
             val behaviour = AllMovementBehaviours.getBehaviour(structureBlockInfo.state)
             behaviour?.startMoving(context)
