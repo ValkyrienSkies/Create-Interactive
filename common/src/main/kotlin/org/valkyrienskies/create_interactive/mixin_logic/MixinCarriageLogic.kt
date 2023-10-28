@@ -46,7 +46,7 @@ internal object MixinCarriageLogic {
                 if (actualEntity != null) {
                     // Set this entity to be the shipowner
                     setShipDimension(key)
-                    (actualEntity as AbstractContraptionEntityDuck).setShadowShipId(shadowShipId)
+                    (actualEntity as AbstractContraptionEntityDuck).`ci$setShadowShipId`(shadowShipId)
                     return
                 }
             }

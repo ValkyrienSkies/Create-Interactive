@@ -60,7 +60,7 @@ object CreateInteractiveUtil {
 
     fun doesContraptionHaveShipLoaded(contraption: Contraption): Boolean {
         val contraptionEntity: AbstractContraptionEntity = contraption.entity ?: return false
-        val shipId = (contraptionEntity as AbstractContraptionEntityDuck).getShadowShipId() ?: return false
+        val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return false
         return contraptionEntity.level.shipObjectWorld.loadedShips.getById(shipId) != null
     }
 
@@ -101,7 +101,7 @@ object CreateInteractiveUtil {
     }
 
     fun updateShipShadow(entity: AbstractContraptionEntity) {
-        val shadowShipId = (entity as AbstractContraptionEntityDuck).getShadowShipId() ?: return
+        val shadowShipId = (entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
         val level = entity.level
         if (level.isClientSide) {
             return
@@ -132,7 +132,7 @@ object CreateInteractiveUtil {
             printRateLimiter.maybeRun {
                 println("Somehow a contraption ship shadow died! ${level.isClientSide} $entity")
             }
-            (entity as AbstractContraptionEntityDuck).shadowShipId = null
+            (entity as AbstractContraptionEntityDuck).`ci$setShadowShipId`( null)
         }
     }
 

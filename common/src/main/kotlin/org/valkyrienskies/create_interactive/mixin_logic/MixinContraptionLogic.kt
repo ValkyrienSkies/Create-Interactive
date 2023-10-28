@@ -15,7 +15,6 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.block.DoorBlock
 import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
@@ -23,7 +22,6 @@ import org.apache.commons.lang3.tuple.MutablePair
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
-import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -36,7 +34,7 @@ internal object MixinContraptionLogic {
         if (level.isClientSide) {
             return
         }
-        val prevId = (entity as AbstractContraptionEntityDuck).getShadowShipId()
+        val prevId = (entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
         if (prevId != null && (level as ServerLevel).shipObjectWorld.allShips.getById(prevId) != null) {
             // If shadow ship already exists then don't make a new one
             return
@@ -83,7 +81,7 @@ internal object MixinContraptionLogic {
             }
             // endregion
         }
-        (entity as AbstractContraptionEntityDuck).setShadowShipId(shipId)
+        (entity as AbstractContraptionEntityDuck).`ci$setShadowShipId`(shipId)
     }
 
     internal fun preAddBlocksToWorld(disassembled: Boolean, entity: AbstractContraptionEntity?, blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>, world: Level, getBlockEntityNBT: (Level, BlockPos) -> CompoundTag?) {
@@ -97,7 +95,7 @@ internal object MixinContraptionLogic {
             return
         }
         val duck = entityCopy as AbstractContraptionEntityDuck
-        val shadowShipId = duck.getShadowShipId() ?: return
+        val shadowShipId = duck.`ci$getShadowShipId`() ?: return
         val ship = world.shipObjectWorld.allShips.getById(shadowShipId) ?: return
         // Anchor at ship center
         val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(world.yRange, Vector3i())

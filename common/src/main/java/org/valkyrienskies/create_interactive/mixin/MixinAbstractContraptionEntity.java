@@ -28,14 +28,14 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     }
 
     @Override
-    public void setShadowShipId(final Long shadowShipId) {
+    public void ci$setShadowShipId(final Long shadowShipId) {
         vs$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.setShadowShipId$create_interactive(
             AbstractContraptionEntity.class.cast(this), vs$shadowShipId, shadowShipId
         );
     }
 
     @Override
-    public Long getShadowShipId() {
+    public Long ci$getShadowShipId() {
         return vs$shadowShipId;
     }
 

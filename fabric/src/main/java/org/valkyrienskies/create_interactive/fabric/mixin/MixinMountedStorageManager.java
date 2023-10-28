@@ -50,7 +50,7 @@ public abstract class MixinMountedStorageManager {
 
         // Recreate inventories
         final AbstractContraptionEntityDuck duck = (AbstractContraptionEntityDuck) entity;
-        ci$shipId = duck.getShadowShipId();
+        ci$shipId = duck.ci$getShadowShipId();
 
         MixinMountedStorageManagerLogic.INSTANCE.preEntityTick$create_interactive(
             entity, ci$shipId, ci$externalStorages, inventory, fuelInventory, fluidInventory

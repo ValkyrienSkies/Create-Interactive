@@ -1,7 +1,7 @@
 package org.valkyrienskies.create_interactive.mixinducks;
 
 public interface AbstractContraptionEntityDuck {
-    void setShadowShipId(final Long shadowShipId);
+    void ci$setShadowShipId(final Long shadowShipId);
 
-    Long getShadowShipId();
+    Long ci$getShadowShipId();
 }
