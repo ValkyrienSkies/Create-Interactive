@@ -42,7 +42,7 @@ internal object MixinMinecraftServerLogic {
 
         // TODO: Need to account for moving ships, ideally we want to run this code after the physics frames have been applied
         //       Maybe we need an event for after the physics frames are applied?
-        rootNodes.addAll(potentialRoots.filter { !shipToNode.containsKey(it) }
+        rootNodes.addAll(potentialRoots.filterNot(shipToNode::containsKey)
             .map { DagNode(null, it).apply { shipToNode[it] = this } })
 
         // Create dag
