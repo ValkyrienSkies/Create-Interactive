@@ -100,40 +100,28 @@ object CreateInteractiveUtil {
         level.shipObjectWorld.teleportShip(serverShip, shipTeleportData)
     }
 
-    fun updateShipShadow(entity: AbstractContraptionEntity) {
-        val shadowShipId = (entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
-        val level = entity.level
-        if (level.isClientSide) {
-            return
+    fun updateShipShadow(entity: AbstractContraptionEntity, serverShip: ServerShip, posRot: ContraptionPosRot): ShipTransform {
+        val transform = posRotToShipTransform(posRot, serverShip, entity.level as ServerLevel)
+        serverShip.transformProvider = object: ServerShipTransformProvider {
+            override fun provideNextTransform(
+                prevShipTransform: ShipTransform,
+                shipTransform: ShipTransform
+            ): ShipTransform {
+                return transform
+            }
         }
-        val contraptionPosRot = getContraptionPosRot(entity)
-        val serverShip: ServerShip? = (level as ServerLevel).shipObjectWorld.allShips.getById(shadowShipId)
-        if (serverShip != null) {
-            serverShip.transformProvider = object: ServerShipTransformProvider {
-                override fun provideNextTransform(
-                    prevShipTransform: ShipTransform,
-                    shipTransform: ShipTransform
-                ): ShipTransform {
-                    return posRotToShipTransform(contraptionPosRot, serverShip, level)
-                }
-            }
 
-            // If the ship is in the wrong dimension then teleport it
-            if (entity.level.dimensionId != serverShip.chunkClaimDimension) {
-                teleportShipToPosRot(contraptionPosRot, serverShip, entity.level as ServerLevel)
-            }
-
-            // Make the ship static, so it won't be affected by physics
-            serverShip.isStatic = true
-            // Don't let the ship teleport through dimensions on its own
-            serverShip.settings.changeDimensionOnTouchPortals = false
-        } else {
-            // Somehow the ship died?
-            printRateLimiter.maybeRun {
-                println("Somehow a contraption ship shadow died! ${level.isClientSide} $entity")
-            }
-            (entity as AbstractContraptionEntityDuck).`ci$setShadowShipId`( null)
+        // If the ship is in the wrong dimension then teleport it
+        if (entity.level.dimensionId != serverShip.chunkClaimDimension) {
+            teleportShipToPosRot(posRot, serverShip, entity.level as ServerLevel)
         }
+
+        // Make the ship static, so it won't be affected by physics
+        serverShip.isStatic = true
+        // Don't let the ship teleport through dimensions on its own
+        serverShip.settings.changeDimensionOnTouchPortals = false
+
+        return transform
     }
 
     data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc)
@@ -147,6 +135,22 @@ object CreateInteractiveUtil {
         if (parentShip != null) {
             val newNewPos = parentShip.transform.shipToWorld.transformPosition(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), Vector3d())
             val newNewRot = parentShip.transform.shipToWorldRotation.mul(newRot, Quaterniond())
+            return ContraptionPosRot(newNewPos, newNewRot)
+        }
+
+        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
+    }
+
+    fun getContraptionPosRot(entity: AbstractContraptionEntity, parentTransform: ShipTransform?): ContraptionPosRot {
+        val rotationStateOriginal = AbstractContraptionEntity::class.java.cast(entity).rotationState
+        val newRot = (rotationStateOriginal as ContraptionRotationStateDuck).`ci$getRotationQuaternion`(Quaterniond())
+
+        if (parentTransform != null) {
+            val newNewPos = parentTransform.shipToWorld.transformPosition(
+                entity.anchorVec.toJOML().add(0.5, 0.5, 0.5),
+                Vector3d()
+            )
+            val newNewRot = parentTransform.shipToWorldRotation.mul(newRot, Quaterniond())
             return ContraptionPosRot(newNewPos, newNewRot)
         }
 

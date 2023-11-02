@@ -102,7 +102,8 @@ internal object MixinAbstractContraptionEntityLogic {
                 }
             }
         }
-        updateShipShadow(thisEntity)
+        // Do this in MixinMinecraftServer instead
+        // updateShipShadow(thisEntity)
 
         // Disassemble contraptions with no blocks
         if (!thisEntity.level.isClientSide && thisEntity.contraption.blocks.isEmpty()) {

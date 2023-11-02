@@ -24,6 +24,7 @@
   },
   "minVersion": "0.8",
   "mixins": [
+    "AbstractContraptionEntityAccessor",
     "MixinAbstractContraptionEntity",
     "MixinCarriage",
     "MixinCBCContraptionRotationState",
@@ -31,6 +32,7 @@
     "MixinContraptionCollider",
     "MixinContraptionRotationState",
     "MixinLevelChunk",
+    "MixinMinecraftServer",
     "MixinTrain"
   ]
 }

@@ -3,9 +3,11 @@ package org.valkyrienskies.create_interactive.mixin;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,9 +21,20 @@ import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntit
 public abstract class MixinAbstractContraptionEntity extends Entity implements AbstractContraptionEntityDuck {
     @Unique
     private Long vs$shadowShipId = null;
+    @Unique
+    private Boolean ci$forceStall = null;
+    @Unique
+    private boolean ci$stalledPreviously = false;
 
     @Shadow(remap = false)
     protected Contraption contraption;
+
+    @Shadow(remap = false)
+    @Final
+    private static EntityDataAccessor<Boolean> STALLED;
+
+    @Shadow(remap = false)
+    protected abstract void onContraptionStalled();
 
     public MixinAbstractContraptionEntity(final EntityType<?> entityType, final Level level) {
         super(entityType, level);
@@ -37,6 +50,25 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Override
     public Long ci$getShadowShipId() {
         return vs$shadowShipId;
+    }
+
+    @Override
+    public void ci$setForceStall(final Boolean forceStall) {
+        ci$forceStall = forceStall;
+    }
+
+    @Inject(method = "tickActors", at = @At("HEAD"), remap = false)
+    private void preTickActors(final CallbackInfo ci) {
+        ci$stalledPreviously = contraption.stalled;
+    }
+
+    @Inject(method = "tickActors", at = @At("RETURN"), remap = false)
+    private void postTickActors(final CallbackInfo ci) {
+        if (level.isClientSide || ci$forceStall == null) return;
+        contraption.stalled = ci$forceStall;
+        if (!ci$stalledPreviously && contraption.stalled)
+            onContraptionStalled();
+        entityData.set(STALLED, contraption.stalled);
     }
 
     @Inject(method = "readAdditional", at = @At("RETURN"))
