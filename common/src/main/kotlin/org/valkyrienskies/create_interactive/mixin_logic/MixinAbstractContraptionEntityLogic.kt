@@ -2,11 +2,17 @@ package org.valkyrienskies.create_interactive.mixin_logic
 
 import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.contraptions.behaviour.MovementContext
+import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
+import com.simibubi.create.content.trains.entity.Train
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
+import org.joml.Vector3d
+import org.joml.Vector3dc
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.properties.ShipId
@@ -16,11 +22,14 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptio
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.linkShipToContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.teleportShipToPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.unlinkShipToContraption
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil.updateShipShadow
 import org.valkyrienskies.create_interactive.mixinducks.CarriageDuck
 import org.valkyrienskies.create_interactive.mixinducks.TrainDuck
+import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.settings
+import org.valkyrienskies.mod.common.util.toJOML
+import org.valkyrienskies.mod.common.util.toMinecraft
+import kotlin.math.abs
 
 internal object MixinAbstractContraptionEntityLogic {
     private const val SHADOW_SHIP_ID_NBT_KEY = "ShadowShipId"
@@ -132,5 +141,37 @@ internal object MixinAbstractContraptionEntityLogic {
                 level.shipObjectWorld.deleteShip(serverShip)
             }
         }
+    }
+
+    internal fun overwriteShouldActorTrigger(entity: AbstractContraptionEntity, context: MovementContext, actorPosition: Vec3, gridPosition: BlockPos): Boolean {
+        val previousPosition = context.position ?: return false
+
+        val ship = context.world.getShipManagingPos(actorPosition)
+
+        if (ship == null) {
+            context.motion = actorPosition.subtract(previousPosition)
+        } else {
+            val prevPos: Vector3dc = ship.prevTickTransform.shipToWorld.transformPosition(previousPosition.toJOML())
+            val curPos: Vector3dc = ship.transform.shipToWorld.transformPosition(actorPosition.toJOML())
+            context.motion = curPos.sub(prevPos, Vector3d()).toMinecraft()
+            // TODO: Should I scale this to be the magnitude of the relative speed of the sub-contraption?
+        }
+
+        val contraptionEntity = context.contraption.entity
+
+        if (!entity.level.isClientSide() && contraptionEntity is CarriageContraptionEntity && contraptionEntity.carriage != null) {
+            val train: Train = contraptionEntity.carriage.train
+            val actualSpeed = if (train.speedBeforeStall != null) train.speedBeforeStall else train.speed
+            context.motion = context.motion.normalize()
+                .scale(abs(actualSpeed))
+        }
+
+        var relativeMotion = context.motion
+        relativeMotion = entity.reverseRotation(relativeMotion, 1f)
+        context.relativeMotion = relativeMotion
+
+        return (BlockPos(previousPosition) != gridPosition
+            || (context.relativeMotion.length() > 0 || context.contraption is CarriageContraption)
+            && context.firstMovement)
     }
 }
