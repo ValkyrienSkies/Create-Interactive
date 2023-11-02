@@ -12,6 +12,7 @@ import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.isBlockInShipyard
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toJOML
+import org.valkyrienskies.mod.mixinducks.mod_compat.create.MixinAbstractContraptionEntityDuck
 import java.util.ArrayDeque
 import java.util.Queue
 
@@ -80,13 +81,13 @@ internal object MixinMinecraftServerLogic {
             if (!stalledPreviously && entity.contraption.stalled)
                 entity.invokeOnContraptionStalled()
             entity.entityData.set(entity.stalled, entity.contraption.stalled)
-            (entity as AbstractContraptionEntityDuck).`ci$setForceStall`(true)
+            (entity as MixinAbstractContraptionEntityDuck).`vs$setForceStall`(true)
         }
 
         // Propagate isStalled from children to parents
         fun computeIsStalled(rootNode: DagNode): Boolean {
             // Reset force stalled
-            (rootNode.contraptionEntity as AbstractContraptionEntityDuck?)?.`ci$setForceStall`(null)
+            (rootNode.contraptionEntity as MixinAbstractContraptionEntityDuck?)?.`vs$setForceStall`(false)
 
             var isStalled = false
             rootNode.children?.forEach {
