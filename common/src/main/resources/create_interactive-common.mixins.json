@@ -34,6 +34,9 @@
     "MixinContraptionRotationState",
     "MixinLevelChunk",
     "MixinMinecraftServer",
-    "MixinTrain"
+    "MixinTrain",
+    "deployer.DeployerBlockEntityAccessor",
+    "deployer.MixinDeployerMovementBehaviour",
+    "deployer.MixinDeployerMovingInteraction"
   ]
 }

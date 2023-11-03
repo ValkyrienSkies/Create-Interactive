@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
+import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Block
@@ -13,6 +14,7 @@ import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider
+import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
@@ -155,6 +157,13 @@ object CreateInteractiveUtil {
         }
 
         return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
+    }
+
+    fun getShipForMovementContext(context: MovementContext): Ship? {
+        val contraption = context.contraption
+        val contraptionEntity = contraption.entity ?: return null
+        val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
+        return contraptionEntity.level.shipObjectWorld.allShips.getById(shadowShipId)
     }
 
     private val shipIdToContraptionEntityClientInternal: MutableMap<ShipId, WeakReference<AbstractContraptionEntity>> = HashMap()

@@ -7,7 +7,6 @@ import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEn
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
@@ -38,7 +37,7 @@ internal object MixinLevelChunkLogic {
         val relativePos = pos.subtract(shipCenter.toBlockPos())
 
         // Set the block
-        val info = StructureTemplate.StructureBlockInfo(relativePos, state, null)
+        val info = StructureTemplate.StructureBlockInfo(relativePos, state, blockEntities[pos]?.saveWithFullMetadata())
         if (contraptionEntity is CarriageContraptionEntity) {
             contraptionEntity.carriage.forEachPresentEntity {
                 (it.contraption as ContraptionDuck).`ci$setBlock`(relativePos, info)
