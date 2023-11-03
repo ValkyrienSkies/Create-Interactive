@@ -28,6 +28,7 @@
     "AbstractContraptionEntityAccessor",
     "ControlledContraptionEntityAccessor",
     "MixinAbstractContraptionEntity",
+    "MixinAllInteractionBehaviours",
     "MixinCarriage",
     "MixinCBCContraptionRotationState",
     "MixinContraption",
@@ -37,7 +38,6 @@
     "MixinMinecraftServer",
     "MixinTrain",
     "deployer.DeployerBlockEntityAccessor",
-    "deployer.MixinDeployerMovementBehaviour",
-    "deployer.MixinDeployerMovingInteraction"
+    "deployer.MixinDeployerMovementBehaviour"
   ]
 }
