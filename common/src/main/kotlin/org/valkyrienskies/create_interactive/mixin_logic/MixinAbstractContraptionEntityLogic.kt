@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin_logic
 
 import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.contraptions.ControlledContraptionEntity
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
@@ -22,6 +23,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptio
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.linkShipToContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.teleportShipToPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.unlinkShipToContraption
+import org.valkyrienskies.create_interactive.mixin.ControlledContraptionEntityAccessor
 import org.valkyrienskies.create_interactive.mixinducks.CarriageDuck
 import org.valkyrienskies.create_interactive.mixinducks.TrainDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
@@ -30,6 +32,7 @@ import org.valkyrienskies.mod.common.util.settings
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toMinecraft
 import kotlin.math.abs
+import kotlin.math.max
 
 internal object MixinAbstractContraptionEntityLogic {
     private const val SHADOW_SHIP_ID_NBT_KEY = "ShadowShipId"
@@ -153,8 +156,23 @@ internal object MixinAbstractContraptionEntityLogic {
         } else {
             val prevPos: Vector3dc = ship.prevTickTransform.shipToWorld.transformPosition(previousPosition.toJOML())
             val curPos: Vector3dc = ship.transform.shipToWorld.transformPosition(actorPosition.toJOML())
-            context.motion = curPos.sub(prevPos, Vector3d()).toMinecraft()
-            // TODO: Should I scale this to be the magnitude of the relative speed of the sub-contraption?
+            val motion: Vector3d = curPos.sub(prevPos, Vector3d())
+
+            if (!entity.level.isClientSide() && entity is ControlledContraptionEntity) {
+                // Angle delta, in degrees
+                val angleDelta = (entity as ControlledContraptionEntityAccessor).angleDelta
+
+                // Make 360 degrees per second equivalent to 8 blocks per second speed
+                val angleSpeed = abs(angleDelta) * 8.0 / 360.0
+                val motionSpeed = motion.length()
+
+                val speed = max(angleSpeed, motionSpeed)
+
+                // It seems that the actual vector for this doesn't matter, only the magnitude does
+                motion.set(speed, 0.0, 0.0)
+            }
+
+            context.motion = motion.toMinecraft()
         }
 
         val contraptionEntity = context.contraption.entity
