@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin_logic.client
 
 import com.jozufozu.flywheel.backend.instancing.AbstractInstance
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
+import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.joml.Vector3i
 import org.joml.Vector3ic
@@ -13,7 +14,7 @@ import org.valkyrienskies.mod.common.util.toBlockPos
 import org.valkyrienskies.mod.common.yRange
 
 internal object MixinInstanceManagerLogic {
-    private fun shouldRemoveBlockEntityInShip(blockEntity: BlockEntity): Boolean {
+    internal fun shouldRemoveBlockEntityInShip(blockEntity: BlockEntity): Boolean {
         val level = blockEntity.level
         val pos = blockEntity.blockPos
         val ship = level.getShipManagingPos(pos) ?: return false
@@ -21,7 +22,7 @@ internal object MixinInstanceManagerLogic {
         val contraptionEntity = contraptionEntityWeakReference.get() ?: return false
         val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(level!!.yRange, Vector3i())
         val relativePos = pos.subtract(shipCenter.toBlockPos())
-        return (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(
+        return blockEntity !is DeployerBlockEntity && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(
             relativePos,
             blockEntity is MechanicalBearingBlockEntity
         )

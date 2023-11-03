@@ -13,6 +13,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -97,6 +99,12 @@ public abstract class MixinContraption implements ContraptionDuck {
     @Override
     public boolean ci$hasActorAtPos(final BlockPos localPos, boolean isCheckingMechanicalBearing) {
         return MixinContraptionLogic.INSTANCE.hasActorAtPos$create_interactive(localPos, isCheckingMechanicalBearing, actors);
+    }
+
+    @Nullable
+    @Override
+    public Pair<StructureBlockInfo, MovementContext> ci$getActorAtPos(BlockPos localPos) {
+        return MixinContraptionLogic.INSTANCE.getActorAtPos$create_interactive(localPos, actors);
     }
 
     @Override

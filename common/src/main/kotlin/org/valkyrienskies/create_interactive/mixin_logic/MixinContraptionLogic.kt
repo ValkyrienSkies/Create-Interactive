@@ -19,6 +19,7 @@ import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
 import org.apache.commons.lang3.tuple.MutablePair
+import org.apache.commons.lang3.tuple.Pair
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -171,7 +172,7 @@ internal object MixinContraptionLogic {
         }
          */
 
-        if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) {
+        if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) { // && AllMovementBehaviours.getBehaviour(structureBlockInfo.state) !is DeployerMovementBehaviour) {
             val context = MovementContext(
                 contraption.entity.level, structureBlockInfo, contraption
             )
@@ -212,5 +213,14 @@ internal object MixinContraptionLogic {
             }
         }
         return false
+    }
+
+    internal fun getActorAtPos(localPos: BlockPos, actors: List<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>): Pair<StructureTemplate.StructureBlockInfo, MovementContext?>? {
+        for (actor in actors) {
+            if (actor.left.pos == localPos) {
+                return actor
+            }
+        }
+        return null
     }
 }

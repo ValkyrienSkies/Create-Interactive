@@ -5,7 +5,10 @@ import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
+import org.apache.commons.lang3.tuple.Pair
 import org.joml.Quaterniond
 import org.joml.Quaterniondc
 import org.joml.Vector3d
@@ -21,11 +24,13 @@ import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
+import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.settings
+import org.valkyrienskies.mod.common.util.toBlockPos
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
@@ -164,6 +169,19 @@ object CreateInteractiveUtil {
         val contraptionEntity = contraption.entity ?: return null
         val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
         return contraptionEntity.level.shipObjectWorld.allShips.getById(shadowShipId)
+    }
+
+    fun getActorAtPos(level: Level, pos: BlockPos): Pair<StructureTemplate.StructureBlockInfo, MovementContext?>? {
+        val ship = level.getShipManagingPos(pos) ?: return null
+        val contraptionEntityWeakReference =
+            shipIdToContraptionEntityClient[ship.id] ?: return null
+        val contraptionEntity = contraptionEntityWeakReference.get() ?: return null
+
+        // Anchor at ship center
+        val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
+        val relativePos = pos.subtract(shipCenter.toBlockPos())
+
+        return (contraptionEntity.contraption as ContraptionDuck).`ci$getActorAtPos`(relativePos)
     }
 
     private val shipIdToContraptionEntityClientInternal: MutableMap<ShipId, WeakReference<AbstractContraptionEntity>> = HashMap()

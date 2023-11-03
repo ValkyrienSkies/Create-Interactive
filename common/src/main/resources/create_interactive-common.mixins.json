@@ -17,7 +17,8 @@
     "client.actor.MixinPSIActorInstance",
     "client.actor.MixinRollerActorInstance",
     "client.actor.MixinStabilizedBearingInstance",
-    "client.actor.PIInstanceAccessor"
+    "client.actor.PIInstanceAccessor",
+    "deployer.MixinDeployerRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
