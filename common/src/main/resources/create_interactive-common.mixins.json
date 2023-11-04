@@ -38,6 +38,7 @@
     "MixinMinecraftServer",
     "MixinTrain",
     "deployer.DeployerBlockEntityAccessor",
-    "deployer.MixinDeployerMovementBehaviour"
+    "deployer.MixinDeployerMovementBehaviour",
+    "sliding_door.MixinSlidingDoorMovementBehaviour"
   ]
 }

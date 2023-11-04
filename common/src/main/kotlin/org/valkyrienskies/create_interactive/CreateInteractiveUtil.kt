@@ -164,8 +164,9 @@ object CreateInteractiveUtil {
         return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
     }
 
-    fun getShipForMovementContext(context: MovementContext): Ship? {
-        val contraption = context.contraption
+    fun getShipForMovementContext(context: MovementContext): Ship? = getShipForContraption(context.contraption)
+
+    fun getShipForContraption(contraption: Contraption): Ship? {
         val contraptionEntity = contraption.entity ?: return null
         val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
         return contraptionEntity.level.shipObjectWorld.allShips.getById(shadowShipId)

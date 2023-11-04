@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin_logic.client
 
 import com.jozufozu.flywheel.backend.instancing.AbstractInstance
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
+import com.simibubi.create.content.decoration.slidingDoor.SlidingDoorBlockEntity
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.joml.Vector3i
@@ -22,7 +23,7 @@ internal object MixinInstanceManagerLogic {
         val contraptionEntity = contraptionEntityWeakReference.get() ?: return false
         val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(level!!.yRange, Vector3i())
         val relativePos = pos.subtract(shipCenter.toBlockPos())
-        return blockEntity !is DeployerBlockEntity && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(
+        return blockEntity !is DeployerBlockEntity && blockEntity !is SlidingDoorBlockEntity && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(
             relativePos,
             blockEntity is MechanicalBearingBlockEntity
         )

@@ -10,7 +10,7 @@ internal object MixinBlockEntityRenderDispatcherLogic {
         ci: CallbackInfo
     ) {
         // Don't render bogeys or actors
-        if (blockEntity is AbstractBogeyBlockEntity ||MixinInstanceManagerLogic.shouldRemoveBlockEntityInShip(blockEntity) ) {
+        if (blockEntity is AbstractBogeyBlockEntity || MixinInstanceManagerLogic.shouldRemoveBlockEntityInShip(blockEntity) ) {
             // Cancel the rendering
             ci.cancel()
         }

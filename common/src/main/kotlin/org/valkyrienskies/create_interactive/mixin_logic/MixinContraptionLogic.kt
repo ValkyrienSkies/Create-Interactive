@@ -133,7 +133,8 @@ internal object MixinContraptionLogic {
         contraption: Contraption,
     ) {
         val prevState: StructureTemplate.StructureBlockInfo? = blocks[localPos]
-        if (prevState != null && prevState.state === structureBlockInfo.state) {
+        // Check the block to fix sliding doors!
+        if (prevState != null && prevState.state.block === structureBlockInfo.state.block) {
             return
         }
 
