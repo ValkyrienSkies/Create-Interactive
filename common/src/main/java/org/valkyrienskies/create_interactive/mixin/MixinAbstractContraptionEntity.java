@@ -112,6 +112,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
                             final BlockState blockState = slidingDoorBlockEntity.getBlockState();
                             if (!(blockState.getBlock() instanceof SlidingDoorBlock slidingDoorBlock)) continue;
                             if (toUse != DoorControl.NONE) {
+                                // TODO: Check if door direction matches door control
                                 slidingDoorBlock.setOpen(null, level, blockState, entry.getKey(), shouldOpen);
                             }
                         }
