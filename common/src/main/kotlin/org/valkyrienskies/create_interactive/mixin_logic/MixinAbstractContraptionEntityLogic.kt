@@ -112,6 +112,8 @@ internal object MixinAbstractContraptionEntityLogic {
                     unlinkShipToContraption(oldShadowShipId, thisEntity)
                     return null
                 }
+            } else {
+                linkShipToContraption(oldShadowShipId, thisEntity)
             }
         }
         // Do this in MixinMinecraftServer instead
