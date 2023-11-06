@@ -22,7 +22,7 @@ public class MixinCarriage implements CarriageDuck {
     @Unique
     private ResourceKey<Level> ci$shipDimension;
     @Unique
-    private Long vs$shadowShipId = null;
+    private Long ci$shadowShipId = null;
 
     @Shadow
     private Map<ResourceKey<Level>, Carriage.DimensionalCarriageEntity> entities;
@@ -30,9 +30,9 @@ public class MixinCarriage implements CarriageDuck {
     @Override
     public boolean ci$doesCarriageEntityControlShip(final CarriageContraptionEntity entity, final Long shadowShipId) {
         return MixinCarriageLogic.INSTANCE.doesCarriageEntityControlShip$create_interactive(
-            entity, shadowShipId, ci$shipDimension, vs$shadowShipId,
+            entity, shadowShipId, ci$shipDimension, ci$shadowShipId,
             (a) -> {
-                vs$shadowShipId = a;
+                ci$shadowShipId = a;
                 return Unit.INSTANCE;
             },
             (a) -> {
@@ -44,7 +44,7 @@ public class MixinCarriage implements CarriageDuck {
 
     @Inject(method = "manageEntities", at = @At("RETURN"))
     private void postManageEntities(final Level level, final CallbackInfo ci) {
-        MixinCarriageLogic.INSTANCE.postManageEntities$create_interactive(level, vs$shadowShipId, ci$shipDimension, entities, (a) -> {
+        MixinCarriageLogic.INSTANCE.postManageEntities$create_interactive(level, ci$shadowShipId, ci$shipDimension, entities, (a) -> {
             ci$shipDimension = a;
             return Unit.INSTANCE;
         });

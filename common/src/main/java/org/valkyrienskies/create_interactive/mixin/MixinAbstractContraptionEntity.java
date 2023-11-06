@@ -24,7 +24,7 @@ import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntit
 @Mixin(AbstractContraptionEntity.class)
 public abstract class MixinAbstractContraptionEntity extends Entity implements AbstractContraptionEntityDuck {
     @Unique
-    private Long vs$shadowShipId = null;
+    private Long ci$shadowShipId = null;
 
     @Shadow(remap = false)
     protected Contraption contraption;
@@ -43,38 +43,38 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 
     @Override
     public void ci$setShadowShipId(final Long shadowShipId) {
-        vs$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.setShadowShipId$create_interactive(
-            AbstractContraptionEntity.class.cast(this), vs$shadowShipId, shadowShipId
+        ci$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.setShadowShipId$create_interactive(
+            AbstractContraptionEntity.class.cast(this), ci$shadowShipId, shadowShipId
         );
     }
 
     @Override
     public Long ci$getShadowShipId() {
-        return vs$shadowShipId;
+        return ci$shadowShipId;
     }
 
     @Inject(method = "readAdditional", at = @At("RETURN"))
     private void preReadAdditional(final CompoundTag compound, final boolean spawnData, final CallbackInfo ci) {
-        vs$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.preReadAdditional$create_interactive(
-            AbstractContraptionEntity.class.cast(this), vs$shadowShipId, compound, spawnData
+        ci$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.preReadAdditional$create_interactive(
+            AbstractContraptionEntity.class.cast(this), ci$shadowShipId, compound, spawnData
         );
     }
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void postTick(final CallbackInfo ci) {
-        vs$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.postTick$create_interactive(
-            AbstractContraptionEntity.class.cast(this), vs$shadowShipId, ci$extraData
+        ci$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.postTick$create_interactive(
+            AbstractContraptionEntity.class.cast(this), ci$shadowShipId, ci$extraData
         );
     }
 
     @Inject(method = "writeAdditional", at = @At("HEAD"))
     private void writeAdditional(final CompoundTag compound, final boolean spawnPacket, final CallbackInfo ci) {
-        MixinAbstractContraptionEntityLogic.INSTANCE.writeAdditional$create_interactive(compound, vs$shadowShipId);
+        MixinAbstractContraptionEntityLogic.INSTANCE.writeAdditional$create_interactive(compound, ci$shadowShipId);
     }
 
     @Inject(method = "disassemble", at = @At("RETURN"), remap = false)
     private void postDisassemble(final CallbackInfo ci) {
-        MixinAbstractContraptionEntityLogic.INSTANCE.postDisassemble$create_interactive(level, vs$shadowShipId);
+        MixinAbstractContraptionEntityLogic.INSTANCE.postDisassemble$create_interactive(level, ci$shadowShipId);
     }
 
     /**
