@@ -24,7 +24,7 @@ public class MixinCBCContraptionRotationState implements ContraptionRotationStat
         boolean flag = ((AbstractMountedCannonContraption) this.entity.getContraption()).initialOrientation().getAxis() == Direction.Axis.X;
         float yawAdjust = this.yaw + (flag ? 180.0f : 0.0f);
         float pitch = this.entity.pitch;
-        return MixinCBCContraptionRotationStateLogic.INSTANCE.getRotationQuaternion(
+        return MixinCBCContraptionRotationStateLogic.INSTANCE.getRotationQuaternion$create_interactive(
             AbstractContraptionEntity.ContraptionRotationState.class.cast(this), flag, yawAdjust, pitch, dest
         );
     }

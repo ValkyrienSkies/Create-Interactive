@@ -3,8 +3,8 @@ package org.valkyrienskies.create_interactive.mixin_logic
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import org.joml.Quaterniond
 
-object MixinCBCContraptionRotationStateLogic {
-    fun getRotationQuaternion(rotState: AbstractContraptionEntity.ContraptionRotationState, flag: Boolean, yawAdjust: Float, pitch: Float, dest: Quaterniond): Quaterniond {
+internal object MixinCBCContraptionRotationStateLogic {
+    internal fun getRotationQuaternion(rotState: AbstractContraptionEntity.ContraptionRotationState, flag: Boolean, yawAdjust: Float, pitch: Float, dest: Quaterniond): Quaterniond {
         val newRot = dest.set(0.0, 0.0, 0.0, 1.0)
 
         if (rotState.hasVerticalRotation()) {

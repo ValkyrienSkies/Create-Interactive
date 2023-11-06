@@ -18,7 +18,7 @@ public class MixinContraptionRotationState implements ContraptionRotationStateDu
 
     @Override
     public Quaterniond ci$getRotationQuaternion(final Quaterniond dest) {
-        return MixinContraptionRotationStateLogic.INSTANCE.getRotationQuaternion(
+        return MixinContraptionRotationStateLogic.INSTANCE.getRotationQuaternion$create_interactive(
             AbstractContraptionEntity.ContraptionRotationState.class.cast(this),
             xRotation,
             yRotation,

@@ -2,8 +2,6 @@ package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.AllInteractionBehaviours;
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour;
-import com.simibubi.create.content.contraptions.behaviour.SimpleBlockMovingInteraction;
-import com.simibubi.create.content.kinetics.deployer.DeployerMovingInteraction;
 import com.simibubi.create.foundation.utility.AttachedRegistry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -12,7 +10,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.valkyrienskies.create_interactive.mixin_logic.MixinAllInteractionBehavioursLogic;
 
 import java.util.List;
 
@@ -32,27 +30,6 @@ public class MixinAllInteractionBehaviours {
     @Nullable
     @Overwrite
     public static MovingInteractionBehaviour getBehaviour(BlockState state) {
-        MovingInteractionBehaviour behaviour = BLOCK_BEHAVIOURS.get(state.getBlock());
-        if (behaviour != null) {
-            return ci$wrapGetBehavior(behaviour);
-        }
-
-        for (AllInteractionBehaviours.BehaviourProvider provider : GLOBAL_BEHAVIOURS) {
-            behaviour = provider.getBehaviour(state);
-            if (behaviour != null) {
-                return ci$wrapGetBehavior(behaviour);
-            }
-        }
-
-        return null;
-    }
-
-    @Unique
-    private static MovingInteractionBehaviour ci$wrapGetBehavior(final MovingInteractionBehaviour behaviour) {
-        if ((behaviour instanceof SimpleBlockMovingInteraction) || (behaviour instanceof DeployerMovingInteraction)) {
-            // Disable the dumb ones
-            return null;
-        }
-        return behaviour;
+        return MixinAllInteractionBehavioursLogic.INSTANCE.getBehaviour$create_interactive(state, BLOCK_BEHAVIOURS, GLOBAL_BEHAVIOURS);
     }
 }

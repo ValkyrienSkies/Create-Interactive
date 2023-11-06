@@ -4,13 +4,22 @@ import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
+import com.simibubi.create.content.contraptions.elevator.ElevatorColumn
+import com.simibubi.create.content.contraptions.elevator.ElevatorContraption
+import com.simibubi.create.content.decoration.slidingDoor.DoorControl
+import com.simibubi.create.content.decoration.slidingDoor.DoorControlBehaviour
+import com.simibubi.create.content.decoration.slidingDoor.SlidingDoorBlock
+import com.simibubi.create.content.decoration.slidingDoor.SlidingDoorBlockEntity
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import com.simibubi.create.content.trains.entity.Train
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
@@ -97,7 +106,7 @@ internal object MixinAbstractContraptionEntityLogic {
         }
     }
 
-    internal fun postTick(thisEntity: AbstractContraptionEntity, oldShadowShipId: ShipId?): ShipId? {
+    internal fun postTick(thisEntity: AbstractContraptionEntity, oldShadowShipId: ShipId?, extraData: ExtraData): ShipId? {
         // TODO: Its sus af that we have to keep linking the ship, but just do it!
         if (oldShadowShipId != null) {
             if (thisEntity is CarriageContraptionEntity) {
@@ -129,7 +138,83 @@ internal object MixinAbstractContraptionEntityLogic {
             }
         }
 
+        if (!thisEntity.level.isClientSide && oldShadowShipId != null) {
+            val serverShip: ServerShip? =
+                (thisEntity.level as ServerLevel).shipObjectWorld.allShips.getById(oldShadowShipId)
+            if (serverShip != null) {
+                val prevControl: DoorControl? = extraData.forcedDoorControls
+                extraData.forcedDoorControls = getCurrentDoorControl(thisEntity)
+                // Skip when ci$forcedDoorFinishedFirstTick is false
+                if (extraData.forcedDoorFinishedFirstTick && prevControl != extraData.forcedDoorControls) {
+                    val shouldOpen: Boolean
+                    val toUse: DoorControl?
+                    if (extraData.forcedDoorControls == null) {
+                        // Close all doors matching the prev direction
+                        shouldOpen = false
+                        toUse = prevControl
+                    } else {
+                        // Open all doors matching the direction
+                        shouldOpen = true
+                        toUse = extraData.forcedDoorControls
+                    }
+                    serverShip.activeChunksSet.forEach { chunkX: Int, chunkZ: Int ->
+                        val levelChunk: LevelChunk = thisEntity.level.getChunk(chunkX, chunkZ)
+                        for ((key, value) in levelChunk.blockEntities) {
+                            if (value !is SlidingDoorBlockEntity) continue
+                            val blockState: BlockState = value.getBlockState()
+                            val block = blockState.block
+                            if (block !is SlidingDoorBlock) continue
+                            if (toUse != DoorControl.NONE) {
+                                // TODO: Check if door direction matches door control
+                                block.setOpen(null, thisEntity.level, blockState, key, shouldOpen)
+                            }
+                        }
+                    }
+                }
+                extraData.forcedDoorFinishedFirstTick = true
+            }
+        }
+
         return oldShadowShipId
+    }
+
+    private fun getCurrentDoorControl(entity: AbstractContraptionEntity): DoorControl? {
+        val contraption = entity.contraption
+        val motion: Vector3dc =
+            Vector3d(entity.position().x - entity.xo, entity.position().y - entity.yo, entity.position().z - entity.zo)
+        // Tick sliding doors
+        val canOpen = (motion.length() < 1 / 128f && !contraption.entity.isStalled
+            || contraption is ElevatorContraption && contraption.arrived)
+        if (!canOpen) return null
+        var doorControlBehaviour: DoorControlBehaviour? = null
+        if (contraption is ElevatorContraption) doorControlBehaviour = getElevatorDoorControl(entity, contraption)
+        if (entity is CarriageContraptionEntity) doorControlBehaviour =
+            getTrainStationDoorControl(entity)
+        return doorControlBehaviour?.mode
+    }
+
+    private fun getElevatorDoorControl(entity: AbstractContraptionEntity, ec: ElevatorContraption): DoorControlBehaviour? {
+        val level = entity.level
+        val currentTargetY = ec.getCurrentTargetY(level) ?: return null
+        val columnCoords = ec.globalColumn ?: return null
+        val elevatorColumn = ElevatorColumn.get(level, columnCoords)
+            ?: return null
+        return BlockEntityBehaviour.get(level, elevatorColumn.contactAt(currentTargetY), DoorControlBehaviour.TYPE)
+    }
+
+    private fun getTrainStationDoorControl(cce: CarriageContraptionEntity): DoorControlBehaviour? {
+        val carriage = cce.carriage
+        if (carriage?.train == null) return null
+        val currentStation = carriage.train.getCurrentStation() ?: return null
+        val stationPos = currentStation.getBlockEntityPos()
+        val stationDim = currentStation.getBlockEntityDimension()
+        val server = cce.level.server ?: return null
+        val stationLevel = server.getLevel(stationDim)
+        return if (stationLevel == null || !stationLevel.isLoaded(stationPos)) null else BlockEntityBehaviour.get(
+            stationLevel,
+            stationPos,
+            DoorControlBehaviour.TYPE
+        )
     }
 
     internal fun writeAdditional(compound: CompoundTag, shadowShipId: ShipId?) {
@@ -197,4 +282,9 @@ internal object MixinAbstractContraptionEntityLogic {
             || (context.relativeMotion.length() > 0 || context.contraption is CarriageContraption)
             && context.firstMovement)
     }
+
+    data class ExtraData(
+        var forcedDoorControls: DoorControl? = null,
+        var forcedDoorFinishedFirstTick: Boolean = false,
+    )
 }
