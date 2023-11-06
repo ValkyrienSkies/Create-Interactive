@@ -283,7 +283,7 @@ internal object MixinAbstractContraptionEntityLogic {
             && context.firstMovement)
     }
 
-    data class ExtraData(
+    internal data class ExtraData(
         var forcedDoorControls: DoorControl? = null,
         var forcedDoorFinishedFirstTick: Boolean = false,
     )
