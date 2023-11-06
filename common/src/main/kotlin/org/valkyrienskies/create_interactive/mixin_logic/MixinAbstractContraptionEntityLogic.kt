@@ -14,7 +14,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient.addShipToContraptionRef
@@ -77,7 +76,7 @@ internal object MixinAbstractContraptionEntityLogic {
         return newShadowShipId
     }
 
-    internal fun preReadAdditional(thisEntity: AbstractContraptionEntity, oldShadowShipId: ShipId?, compound: CompoundTag, spawnData: Boolean, ci: CallbackInfo): ShipId? {
+    internal fun preReadAdditional(thisEntity: AbstractContraptionEntity, oldShadowShipId: ShipId?, compound: CompoundTag, spawnData: Boolean): ShipId? {
         if (thisEntity.level.isClientSide) {
             return if (spawnData && compound.contains(SHADOW_SHIP_ID_NBT_KEY)) {
                 val shadowShipId = compound.getLong(SHADOW_SHIP_ID_NBT_KEY)
@@ -170,8 +169,12 @@ internal object MixinAbstractContraptionEntityLogic {
 
                 val speed = max(angleSpeed, motionSpeed)
 
-                // It seems that the actual vector for this doesn't matter, only the magnitude does
-                motion.set(speed, 0.0, 0.0)
+                if (motion.lengthSquared() > 1e-8) {
+                    motion.normalize().mul(speed)
+                } else {
+                    // I just hope this works!
+                    motion.set(speed, 0.0, 0.0)
+                }
             }
 
             context.motion = motion.toMinecraft()

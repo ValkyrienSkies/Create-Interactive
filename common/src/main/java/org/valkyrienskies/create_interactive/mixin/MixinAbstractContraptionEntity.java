@@ -76,7 +76,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Inject(method = "readAdditional", at = @At("RETURN"))
     private void preReadAdditional(final CompoundTag compound, final boolean spawnData, final CallbackInfo ci) {
         vs$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.preReadAdditional$create_interactive(
-            AbstractContraptionEntity.class.cast(this), vs$shadowShipId, compound, spawnData, ci
+            AbstractContraptionEntity.class.cast(this), vs$shadowShipId, compound, spawnData
         );
     }
 
