@@ -50,7 +50,7 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
      */
     @Inject(method = "tick", at = @At("HEAD"), remap = false)
     private void preTick(final CallbackInfo ci) {
-        MixinFlwContraptionLogic.INSTANCE.preTick$create_interactive(instanceWorld, ci$actorToInstanceMap, contraption, ci);
+        MixinFlwContraptionLogic.INSTANCE.preTick$create_interactive(instanceWorld, ci$actorToInstanceMap, contraption);
     }
 
     @Inject(method = "buildActors", at = @At("HEAD"), cancellable = true, remap = false)
@@ -63,5 +63,10 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
     @Inject(method = "renderStructureLayer", at = @At("HEAD"), cancellable = true, remap = false)
     private void preRenderStructureLayer(final RenderType layer, final ContraptionProgram shader, final CallbackInfo ci) {
         MixinFlwContraptionLogic.INSTANCE.preRenderStructureLayer$create_interactive(contraption, ci);
+    }
+
+    @Inject(method = "buildInstancedBlockEntities", at = @At("HEAD"), cancellable = true, remap = false)
+    private void preBuildInstancedBlockEntities(final CallbackInfo ci) {
+        MixinFlwContraptionLogic.INSTANCE.preBuildInstancedBlockEntities$create_interactive(contraption, ci);
     }
 }

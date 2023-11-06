@@ -5,6 +5,7 @@ import com.jozufozu.flywheel.core.virtual.VirtualRenderWorld
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.foundation.render.SuperByteBuffer
 import net.minecraft.client.renderer.RenderType
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.doesContraptionHaveShipLoaded
 
@@ -23,6 +24,13 @@ internal object MixinContraptionRenderDispatcherLogic {
             val sbb = SuperByteBuffer(data)
             data.release()
             cir.setReturnValue(sbb)
+        }
+    }
+
+    internal fun preRenderBlockEntities(c: Contraption, ci: CallbackInfo) {
+        // Only disable block entity rendering if the contraption has a ship
+        if (doesContraptionHaveShipLoaded(c)) {
+            ci.cancel()
         }
     }
 }

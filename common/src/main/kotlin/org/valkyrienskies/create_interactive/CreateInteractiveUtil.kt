@@ -23,6 +23,7 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.core.impl.hooks.VSEvents
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
@@ -39,6 +40,10 @@ import kotlin.time.toJavaDuration
 
 object CreateInteractiveUtil {
     private val printRateLimiter = RateLimiter(10.seconds.toJavaDuration())
+
+    init {
+        VSEvents.shipUnloadEventClient.on { (ship) -> shipIdToContraptionEntityClientInternal.remove(ship.id) }
+    }
 
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos): ShipId? {
         if (contraption.javaClass.packageName.contains("createbigcannons")) {

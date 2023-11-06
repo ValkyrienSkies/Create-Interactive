@@ -29,7 +29,7 @@ internal object MixinFlwContraptionLogic {
         }
     }
 
-    internal fun preTick(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance?>, contraption: Contraption, ci: CallbackInfo) {
+    internal fun preTick(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance?>, contraption: Contraption) {
         for (blockPos in (contraption as ContraptionDuck).`ci$getChangedActors`()) {
             val actor: MutablePair<StructureTemplate.StructureBlockInfo, MovementContext>? =
                 contraption.getActorAt(blockPos)
@@ -37,7 +37,7 @@ internal object MixinFlwContraptionLogic {
             // Remove old instance, if one exists
             val oldActorInstance: ActorInstance? = actorToInstanceMap.remove(blockPos)
             if (oldActorInstance != null) {
-                ((instanceWorld as ContraptionInstanceWorldAccessor).getBlockEntityInstanceManager() as ContraptionInstanceManagerDuck).deleteActorInstance(
+                ((instanceWorld as ContraptionInstanceWorldAccessor).getBlockEntityInstanceManager() as ContraptionInstanceManagerDuck).`ci$deleteActorInstance`(
                     oldActorInstance
                 )
             }
@@ -79,6 +79,12 @@ internal object MixinFlwContraptionLogic {
     }
 
     internal fun preRenderStructureLayer(contraption: Contraption, ci: CallbackInfo) {
+        if (doesContraptionHaveShipLoaded(contraption)) {
+            ci.cancel()
+        }
+    }
+
+    internal fun preBuildInstancedBlockEntities(contraption: Contraption, ci: CallbackInfo) {
         if (doesContraptionHaveShipLoaded(contraption)) {
             ci.cancel()
         }
