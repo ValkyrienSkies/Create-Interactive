@@ -13,6 +13,8 @@ public interface ContraptionDuck {
 
     boolean ci$hasActorAtPos(BlockPos localPos, boolean isCheckingMechanicalBearing);
 
+    boolean ci$hasBogeyAtPos(BlockPos localPos);
+
     @Nullable
     Pair<StructureTemplate.StructureBlockInfo, MovementContext> ci$getActorAtPos(BlockPos localPos);
 

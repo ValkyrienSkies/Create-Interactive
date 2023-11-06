@@ -1,6 +1,5 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
-import com.simibubi.create.content.trains.bogey.AbstractBogeyBlockEntity
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
@@ -10,7 +9,7 @@ internal object MixinBlockEntityRenderDispatcherLogic {
         ci: CallbackInfo
     ) {
         // Don't render bogeys or actors
-        if (blockEntity is AbstractBogeyBlockEntity || MixinInstanceManagerLogic.shouldRemoveBlockEntityInShip(blockEntity) ) {
+        if (MixinInstanceManagerLogic.shouldRemoveBlockEntityInShip(blockEntity) ) {
             // Cancel the rendering
             ci.cancel()
         }

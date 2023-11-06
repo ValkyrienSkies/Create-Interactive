@@ -27,6 +27,7 @@
   "minVersion": "0.8",
   "mixins": [
     "AbstractContraptionEntityAccessor",
+    "CarriageBogeyAccessor",
     "ControlledContraptionEntityAccessor",
     "MixinAbstractContraptionEntity",
     "MixinAllInteractionBehaviours",

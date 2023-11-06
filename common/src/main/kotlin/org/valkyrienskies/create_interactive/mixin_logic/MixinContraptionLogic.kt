@@ -7,6 +7,8 @@ import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
+import com.simibubi.create.content.trains.entity.Carriage
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -23,6 +25,7 @@ import org.apache.commons.lang3.tuple.Pair
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -30,7 +33,11 @@ import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 
 internal object MixinContraptionLogic {
-    internal fun preOnEntityCreated(initialBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, anchor: BlockPos, entity: AbstractContraptionEntity) {
+    internal fun preOnEntityCreated(
+        initialBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>,
+        anchor: BlockPos,
+        entity: AbstractContraptionEntity
+    ) {
         val level = entity.level
         if (level.isClientSide) {
             return
@@ -48,7 +55,12 @@ internal object MixinContraptionLogic {
 
         val blockPos = BlockPos(entity.position())
         val serverShip: ServerShip =
-            (level as ServerLevel).shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
+            (level as ServerLevel).shipObjectWorld.createNewShipAtBlock(
+                blockPos.toJOML(),
+                false,
+                1.0,
+                level.dimensionId
+            )
         val shipId: Long = serverShip.id
 
         // Anchor at ship center
@@ -85,7 +97,13 @@ internal object MixinContraptionLogic {
         (entity as AbstractContraptionEntityDuck).`ci$setShadowShipId`(shipId)
     }
 
-    internal fun preAddBlocksToWorld(disassembled: Boolean, entity: AbstractContraptionEntity?, blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>, world: Level, getBlockEntityNBT: (Level, BlockPos) -> CompoundTag?) {
+    internal fun preAddBlocksToWorld(
+        disassembled: Boolean,
+        entity: AbstractContraptionEntity?,
+        blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>,
+        world: Level,
+        getBlockEntityNBT: (Level, BlockPos) -> CompoundTag?
+    ) {
         if (disassembled) {
             // Do nothing
             return
@@ -205,7 +223,11 @@ internal object MixinContraptionLogic {
         }
     }
 
-    internal fun hasActorAtPos(localPos: BlockPos, isCheckingMechanicalBearing: Boolean, actors: List<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>): Boolean {
+    internal fun hasActorAtPos(
+        localPos: BlockPos,
+        isCheckingMechanicalBearing: Boolean,
+        actors: List<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>
+    ): Boolean {
         for (actor in actors) {
             if (actor.left.pos == localPos) {
                 return if (isCheckingMechanicalBearing) {
@@ -216,7 +238,27 @@ internal object MixinContraptionLogic {
         return false
     }
 
-    internal fun getActorAtPos(localPos: BlockPos, actors: List<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>): Pair<StructureTemplate.StructureBlockInfo, MovementContext?>? {
+    internal fun hasBogeyAtPos(entity: AbstractContraptionEntity, localPos: BlockPos): Boolean {
+        if (entity !is CarriageContraptionEntity) return false
+        val carriage: Carriage = entity.carriage
+        val bogeySpacing = carriage.bogeySpacing
+        for (bogey in carriage.bogeys) {
+            if (bogey == null) continue
+            val bogeyPos =
+                if ((bogey as CarriageBogeyAccessor).getIsLeading()) BlockPos.ZERO else BlockPos.ZERO.relative(
+                    entity.initialOrientation.counterClockWise, bogeySpacing
+                )
+            if (bogeyPos == localPos) {
+                return true
+            }
+        }
+        return false
+    }
+
+    internal fun getActorAtPos(
+        localPos: BlockPos,
+        actors: List<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>
+    ): Pair<StructureTemplate.StructureBlockInfo, MovementContext?>? {
         for (actor in actors) {
             if (actor.left.pos == localPos) {
                 return actor

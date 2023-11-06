@@ -101,6 +101,11 @@ public abstract class MixinContraption implements ContraptionDuck {
         return MixinContraptionLogic.INSTANCE.hasActorAtPos$create_interactive(localPos, isCheckingMechanicalBearing, actors);
     }
 
+    @Override
+    public boolean ci$hasBogeyAtPos(final BlockPos localPos) {
+        return MixinContraptionLogic.INSTANCE.hasBogeyAtPos$create_interactive(entity, localPos);
+    }
+
     @Nullable
     @Override
     public Pair<StructureBlockInfo, MovementContext> ci$getActorAtPos(BlockPos localPos) {
