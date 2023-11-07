@@ -1,6 +1,7 @@
 package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
+import com.simibubi.create.content.contraptions.Contraption;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -13,4 +14,7 @@ public interface AbstractContraptionEntityAccessor {
 
     @Accessor("STALLED")
     EntityDataAccessor<Boolean> getStalled();
+
+    @Accessor("contraption")
+    Contraption getContraption();
 }

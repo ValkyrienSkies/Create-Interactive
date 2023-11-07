@@ -32,6 +32,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.linkShipToCon
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.teleportShipToPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.unlinkShipToContraption
 import org.valkyrienskies.create_interactive.mixin.ControlledContraptionEntityAccessor
+import org.valkyrienskies.create_interactive.mixin.MovementContextAccessor
 import org.valkyrienskies.create_interactive.mixinducks.CarriageDuck
 import org.valkyrienskies.create_interactive.mixinducks.TrainDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
@@ -237,8 +238,11 @@ internal object MixinAbstractContraptionEntityLogic {
 
         val ship = context.world.getShipManagingPos(actorPosition)
 
+        // This accessor is used because progaurd breaks when using some MovementContext fields
+        val contextAccessor = context as MovementContextAccessor
+
         if (ship == null) {
-            context.motion = actorPosition.subtract(previousPosition)
+            contextAccessor.motion = actorPosition.subtract(previousPosition)
         } else {
             val prevPos: Vector3dc = ship.prevTickTransform.shipToWorld.transformPosition(previousPosition.toJOML())
             val curPos: Vector3dc = ship.transform.shipToWorld.transformPosition(actorPosition.toJOML())
@@ -262,25 +266,25 @@ internal object MixinAbstractContraptionEntityLogic {
                 }
             }
 
-            context.motion = motion.toMinecraft()
+            contextAccessor.motion = motion.toMinecraft()
         }
 
-        val contraptionEntity = context.contraption.entity
+        val contraptionEntity = contextAccessor.contraption.entity
 
         if (!entity.level.isClientSide() && contraptionEntity is CarriageContraptionEntity && contraptionEntity.carriage != null) {
             val train: Train = contraptionEntity.carriage.train
             val actualSpeed = if (train.speedBeforeStall != null) train.speedBeforeStall else train.speed
-            context.motion = context.motion.normalize()
+            contextAccessor.motion = context.motion.normalize()
                 .scale(abs(actualSpeed))
         }
 
-        var relativeMotion = context.motion
+        var relativeMotion = contextAccessor.motion
         relativeMotion = entity.reverseRotation(relativeMotion, 1f)
-        context.relativeMotion = relativeMotion
+        contextAccessor.relativeMotion = relativeMotion
 
         return (BlockPos(previousPosition) != gridPosition
-            || (context.relativeMotion.length() > 0 || context.contraption is CarriageContraption)
-            && context.firstMovement)
+            || (contextAccessor.relativeMotion.length() > 0 || contextAccessor.contraption is CarriageContraption)
+            && contextAccessor.firstMovement)
     }
 
     internal data class ExtraData(

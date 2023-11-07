@@ -7,6 +7,7 @@ import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.mixin.AbstractContraptionEntityAccessor
+import org.valkyrienskies.create_interactive.mixin.ContraptionAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.isBlockInShipyard
@@ -75,12 +76,13 @@ internal object MixinMinecraftServerLogic {
         }
 
         fun setStalled(entity: AbstractContraptionEntity, stalled: Boolean) {
-            entity as AbstractContraptionEntityAccessor
-            val stalledPreviously = entity.contraption.stalled
-            entity.contraption.stalled = stalled
-            if (!stalledPreviously && entity.contraption.stalled)
+            val entityAccessor = entity as AbstractContraptionEntityAccessor
+            val contraptionAccessor = entityAccessor.contraption as ContraptionAccessor
+            val stalledPreviously = contraptionAccessor.stalled
+            contraptionAccessor.stalled = stalled
+            if (!stalledPreviously && contraptionAccessor.stalled)
                 entity.invokeOnContraptionStalled()
-            entity.entityData.set(entity.stalled, entity.contraption.stalled)
+            entity.entityData.set(entityAccessor.stalled, contraptionAccessor.stalled)
             (entity as MixinAbstractContraptionEntityDuck).`vs$setForceStall`(true)
         }
 
