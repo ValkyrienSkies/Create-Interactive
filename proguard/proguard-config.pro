@@ -37,10 +37,11 @@ org.valkyrienskies.create_interactive.fabric.ValkyrienPreLaunch
 -keep @org.spongepowered.asm.mixin.Mixin class *
 
 
-# Keep shadowed field/methods names the same
+# Keep shadowed/overwritten field/methods names the same
 -keepclassmembers class * {
     @org.spongepowered.asm.mixin.Shadow <fields>;
     @org.spongepowered.asm.mixin.Shadow <methods>;
+    @org.spongepowered.asm.mixin.Overwrite <methods>;
 }
 
 # Obfuscate mixin class names in the mixins json file, and fabric entry class names and json file
