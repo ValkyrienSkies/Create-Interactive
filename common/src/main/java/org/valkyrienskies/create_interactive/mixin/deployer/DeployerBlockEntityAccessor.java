@@ -9,4 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface DeployerBlockEntityAccessor {
     @Accessor("filtering")
     FilteringBehaviour getFiltering();
+
+    @Accessor("reach")
+    float getReach();
 }

@@ -1,23 +1,14 @@
 package org.valkyrienskies.create_interactive.mixin_logic.deployer
 
-import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
 import com.simibubi.create.foundation.utility.AnimationTickHolder
 import com.simibubi.create.foundation.utility.VecHelper
 import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
-import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.phys.Vec3
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getActorAtPos
 
 internal object MixinDeployerRendererLogic {
-    internal fun preGetHandOffset(
-        be: DeployerBlockEntity,
-        partialTicks: Float,
-        blockState: BlockState,
-        cir: CallbackInfoReturnable<Vec3>
-    ) {
+    internal fun preGetHandOffset(be: DeployerBlockEntity): Double? {
         val actorAtPos = getActorAtPos(
             be.level!!, be.blockPos
         )
@@ -37,11 +28,8 @@ internal object MixinDeployerRendererLogic {
                         1.0
                     )
                 }
-            val offset = Vec3.atLowerCornerOf(
-                blockState.getValue(DirectionalKineticBlock.FACING)
-                    .normal
-            ).scale(factor)
-            cir.setReturnValue(offset)
+            return factor
         }
+        return null
     }
 }

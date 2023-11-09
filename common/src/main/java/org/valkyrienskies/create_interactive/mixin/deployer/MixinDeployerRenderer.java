@@ -10,6 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.create_interactive.mixin_logic.deployer.MixinDeployerRendererLogic;
 
+import static com.simibubi.create.content.kinetics.base.DirectionalKineticBlock.FACING;
+
 @Mixin(DeployerRenderer.class)
 public class MixinDeployerRenderer {
     /**
@@ -17,6 +19,10 @@ public class MixinDeployerRenderer {
      */
     @Inject(method = "getHandOffset", at = @At("HEAD"), cancellable = true, remap = false)
     private void preGetHandOffset(final DeployerBlockEntity be, final float partialTicks, final BlockState blockState, final CallbackInfoReturnable<Vec3> cir) {
-        MixinDeployerRendererLogic.INSTANCE.preGetHandOffset$create_interactive(be, partialTicks, blockState, cir);
+        // Get the offset from the actor, if there is one
+        final Double actorDistance = MixinDeployerRendererLogic.INSTANCE.preGetHandOffset$create_interactive(be);
+        if (actorDistance != null) {
+            cir.setReturnValue(Vec3.atLowerCornerOf(blockState.getValue(FACING).getNormal()).scale(actorDistance));
+        }
     }
 }

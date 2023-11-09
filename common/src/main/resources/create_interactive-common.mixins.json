@@ -42,6 +42,7 @@
     "MixinTrain",
     "MovementContextAccessor",
     "deployer.DeployerBlockEntityAccessor",
+    "deployer.MixinDeployerInstance",
     "deployer.MixinDeployerMovementBehaviour",
     "sliding_door.MixinSlidingDoorMovementBehaviour"
   ]
