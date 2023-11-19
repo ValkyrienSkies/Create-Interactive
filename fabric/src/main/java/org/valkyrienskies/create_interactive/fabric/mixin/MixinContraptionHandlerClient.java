@@ -3,9 +3,13 @@ package org.valkyrienskies.create_interactive.fabric.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.simibubi.create.content.contraptions.ContraptionHandlerClient;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.create_interactive.fabric.mixin_logic.MixinContraptionHandlerClientLogic;
 
 @Mixin(ContraptionHandlerClient.class)
@@ -22,5 +26,17 @@ public class MixinContraptionHandlerClient {
     )
     private static double wrapGetRayInputs(final Vec3 instance, final Vec3 target, final Operation<Double> distanceTo) {
         return MixinContraptionHandlerClientLogic.INSTANCE.wrapGetRayInputs$create_interactive(instance, target, distanceTo);
+    }
+
+    /**
+     * Cancel handling train interactions if the hit result was a block, we'll handle them later
+     */
+    @Inject(method = "handleSpecialInteractions", at = @At("HEAD"), cancellable = true)
+    private static void preHandleSpecialInteractions(final CallbackInfoReturnable<Boolean> cir) {
+        final HitResult hitResult = Minecraft.getInstance().hitResult;
+        if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
+            // Don't handle train interactions if the hit result was a block, we'll handle these later
+            cir.setReturnValue(false);
+        }
     }
 }
