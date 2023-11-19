@@ -40,10 +40,12 @@
     "MixinLevelChunk",
     "MixinMinecraftServer",
     "MixinTrain",
+    "MixinTranslatingContraption",
     "MovementContextAccessor",
     "deployer.DeployerBlockEntityAccessor",
     "deployer.MixinDeployerInstance",
     "deployer.MixinDeployerMovementBehaviour",
+    "gantry.MixinGantryCarriageBlockEntity",
     "sliding_door.MixinSlidingDoorMovementBehaviour"
   ]
 }

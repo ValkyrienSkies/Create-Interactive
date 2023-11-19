@@ -199,6 +199,14 @@ object CreateInteractiveUtil {
     val shipIdToContraptionEntityServer: Map<ShipId, WeakReference<AbstractContraptionEntity>>
         get() = shipIdToContraptionEntityServerInternal
 
+    fun getContraptionEntityForShip(shipId: ShipId, clientSide: Boolean): AbstractContraptionEntity? {
+        return if (clientSide) {
+            shipIdToContraptionEntityClient[shipId]?.get()
+        } else {
+            shipIdToContraptionEntityServer[shipId]?.get()
+        }
+    }
+
     fun linkShipToContraption(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
         if (contraptionEntity.level.isClientSide) {
             shipIdToContraptionEntityClientInternal[shipId] = WeakReference(contraptionEntity)
