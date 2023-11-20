@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
+import com.simibubi.create.AllBlocks
 import com.simibubi.create.AllInteractionBehaviours
 import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
@@ -9,8 +10,11 @@ import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
 import com.simibubi.create.content.trains.entity.Carriage
+import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer
+import com.simibubi.create.foundation.utility.Couple
+import com.simibubi.create.foundation.utility.Iterate
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
@@ -180,13 +184,15 @@ internal object MixinContraptionLogic {
             // Remove existing seat
             val indexOf = contraption.seats.indexOf(localPos)
             if (indexOf != -1) {
-                if (structureBlockInfo.state.block !is SeatBlock) {
-                    contraption.seats[indexOf] = null
-                    // Remove values from seatMapping that are equal to [indexOf]
-                    val removedEntities = contraption.seatMapping.removeValues(indexOf)
-                    removedEntities.forEach { uuid ->
-                        contraption.entity.passengers.find { it.uuid == uuid }?.removeVehicle()
-                    }
+                contraption.seats[indexOf] = null
+                // Remove values from seatMapping that are equal to [indexOf]
+                val removedEntities = contraption.seatMapping.removeValues(indexOf)
+                removedEntities.forEach { uuid ->
+                    contraption.entity.passengers.find { it.uuid == uuid }?.removeVehicle()
+                }
+                // Remove the conductor seat
+                if (contraption is CarriageContraption) {
+                    contraption.conductorSeats.remove(localPos)
                 }
             }
         } else if (!prevWasSeat && newIsSeat) {
@@ -197,9 +203,39 @@ internal object MixinContraptionLogic {
             } else {
                 contraption.seats.add(localPos)
             }
+            // Add a conductor seat
+            if (contraption is CarriageContraption) {
+                for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
+                    if (contraption.inControl(localPos, direction)) {
+                        contraption.conductorSeats.computeIfAbsent(localPos) { Couple.create(false, false) }
+                            .set(direction != contraption.assemblyDirection, true)
+                    }
+                }
+            }
         }
 
-        if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) { // && AllMovementBehaviours.getBehaviour(structureBlockInfo.state) !is DeployerMovementBehaviour) {
+        if (contraption is CarriageContraption) {
+            // Add/Remove conductor seats when train controls are placed
+            val prevWasTrainControls = if (prevBlockState != null) AllBlocks.TRAIN_CONTROLS.has(prevBlockState) else false
+            val newIsTrainControls = AllBlocks.TRAIN_CONTROLS.has(structureBlockInfo.state)
+            if (prevWasTrainControls || newIsTrainControls) {
+                // Remove the train controls, remove any conductor seats using this
+                for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
+                    val seatPos = localPos.relative(direction.opposite)
+                    // Remove the conductor seat
+                    contraption.conductorSeats.remove(seatPos)
+                    // Add it again if the conductor seat is still valid
+                    for (direction2 in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
+                        if (contraption.inControl(seatPos, direction2)) {
+                            contraption.conductorSeats.computeIfAbsent(seatPos) { Couple.create(false, false) }
+                                .set(direction2 != contraption.assemblyDirection, true)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) {
             val context = MovementContext(
                 contraption.entity.level, structureBlockInfo, contraption
             )
