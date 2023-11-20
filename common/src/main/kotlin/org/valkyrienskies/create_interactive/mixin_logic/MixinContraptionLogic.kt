@@ -150,12 +150,6 @@ internal object MixinContraptionLogic {
         interactors: MutableMap<BlockPos, MovingInteractionBehaviour>,
         contraption: Contraption,
     ) {
-        val prevState: StructureTemplate.StructureBlockInfo? = blocks[localPos]
-        // Check the block to fix sliding doors!
-        if (prevState != null && prevState.state.block === structureBlockInfo.state.block) {
-            return
-        }
-
         if (structureBlockInfo.state.block != Blocks.AIR) {
             blocks[localPos] = structureBlockInfo
             setBounds(bounds.minmax(AABB(localPos)))
@@ -163,33 +157,6 @@ internal object MixinContraptionLogic {
             // Remove air blocks
             blocks.remove(localPos)
         }
-
-        /* I really hate sliding doors!
-        if (prevState != null && prevState.state.block == structureBlockInfo.state.block && structureBlockInfo.state.block is DoorBlock) {
-            // Sliding doors are special, keep the actor the same in this case
-            val entity = contraption.entity
-            if (entity != null && prevState.state != structureBlockInfo.state) {
-                if (entity.level.isClientSide) {
-                    return
-                }
-                val duck = entity as AbstractContraptionEntityDuck
-                val shipId: ShipId? = duck.getShadowShipId()
-                if (shipId != null) {
-                    val serverShip: ServerShip? =
-                        (entity.level as ServerLevel).shipObjectWorld.allShips.getById(shipId)
-                    if (serverShip != null) {
-                        // Anchor at ship center
-                        val shipCenter: Vector3ic =
-                            serverShip.chunkClaim.getCenterBlockCoordinates(entity.level.yRange, Vector3i())
-                        val newPos = localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
-                        entity.level.setBlock(newPos, structureBlockInfo.state, 11)
-                        return
-                    }
-                }
-            }
-            return
-        }
-         */
 
         if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) { // && AllMovementBehaviours.getBehaviour(structureBlockInfo.state) !is DeployerMovementBehaviour) {
             val context = MovementContext(
