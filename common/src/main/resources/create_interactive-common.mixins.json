@@ -46,6 +46,7 @@
     "deployer.MixinDeployerInstance",
     "deployer.MixinDeployerMovementBehaviour",
     "gantry.MixinGantryCarriageBlockEntity",
+    "seat.MixinSeatBlock",
     "sliding_door.MixinSlidingDoorMovementBehaviour"
   ]
 }
