@@ -156,6 +156,9 @@ internal object MixinContraptionLogic {
         return removed
     }
 
+    // Ideally this would be null, but just use this instead to fix NPE
+    private val INVALID_SEAT_POS = BlockPos(-100000, 0, -100000)
+
     internal fun setBlock(
         blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>,
         actors: MutableList<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>,
@@ -184,7 +187,7 @@ internal object MixinContraptionLogic {
             // Remove existing seat
             val indexOf = contraption.seats.indexOf(localPos)
             if (indexOf != -1) {
-                contraption.seats[indexOf] = null
+                contraption.seats[indexOf] = INVALID_SEAT_POS
                 // Remove values from seatMapping that are equal to [indexOf]
                 val removedEntities = contraption.seatMapping.removeValues(indexOf)
                 removedEntities.forEach { uuid ->
@@ -197,9 +200,9 @@ internal object MixinContraptionLogic {
             }
         } else if (!prevWasSeat && newIsSeat) {
             // Add a new seat, fill an empty seat index if one exists, otherwise append to the seats list
-            val nullIndexOf = contraption.seats.indexOf(null)
-            if (nullIndexOf != -1) {
-                contraption.seats[nullIndexOf] = localPos
+            val invalidIndexOf = contraption.seats.indexOf(INVALID_SEAT_POS)
+            if (invalidIndexOf != -1) {
+                contraption.seats[invalidIndexOf] = localPos
             } else {
                 contraption.seats.add(localPos)
             }
