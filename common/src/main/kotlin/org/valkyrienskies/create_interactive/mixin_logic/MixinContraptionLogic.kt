@@ -5,6 +5,7 @@ import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
+import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
 import com.simibubi.create.content.trains.entity.Carriage
@@ -138,6 +139,19 @@ internal object MixinContraptionLogic {
         }
     }
 
+    private fun <K, V> MutableMap<K, V>.removeValues(value: V): List<K> {
+        val removed: MutableList<K> = ArrayList(0)
+        val it = iterator()
+        while (it.hasNext()) {
+            val next = it.next()
+            if (next.value == value) {
+                removed.add(next.key)
+                it.remove()
+            }
+        }
+        return removed
+    }
+
     internal fun setBlock(
         blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>,
         actors: MutableList<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>,
@@ -150,12 +164,39 @@ internal object MixinContraptionLogic {
         interactors: MutableMap<BlockPos, MovingInteractionBehaviour>,
         contraption: Contraption,
     ) {
+        val prevBlockState = blocks[localPos]?.state
         if (structureBlockInfo.state.block != Blocks.AIR) {
             blocks[localPos] = structureBlockInfo
             setBounds(bounds.minmax(AABB(localPos)))
         } else {
             // Remove air blocks
             blocks.remove(localPos)
+        }
+
+        // Update seats
+        val prevWasSeat = prevBlockState?.block is SeatBlock
+        val newIsSeat = structureBlockInfo.state.block is SeatBlock
+        if (prevWasSeat && !newIsSeat) {
+            // Remove existing seat
+            val indexOf = contraption.seats.indexOf(localPos)
+            if (indexOf != -1) {
+                if (structureBlockInfo.state.block !is SeatBlock) {
+                    contraption.seats[indexOf] = null
+                    // Remove values from seatMapping that are equal to [indexOf]
+                    val removedEntities = contraption.seatMapping.removeValues(indexOf)
+                    removedEntities.forEach { uuid ->
+                        contraption.entity.passengers.find { it.uuid == uuid }?.removeVehicle()
+                    }
+                }
+            }
+        } else if (!prevWasSeat && newIsSeat) {
+            // Add a new seat, fill an empty seat index if one exists, otherwise append to the seats list
+            val nullIndexOf = contraption.seats.indexOf(null)
+            if (nullIndexOf != -1) {
+                contraption.seats[nullIndexOf] = localPos
+            } else {
+                contraption.seats.add(localPos)
+            }
         }
 
         if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) { // && AllMovementBehaviours.getBehaviour(structureBlockInfo.state) !is DeployerMovementBehaviour) {
