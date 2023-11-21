@@ -7,8 +7,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
-import org.apache.commons.lang3.tuple.Pair
 import org.joml.Quaterniond
 import org.joml.Quaterniondc
 import org.joml.Vector3d
@@ -35,12 +33,8 @@ import org.valkyrienskies.mod.common.util.toBlockPos
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 object CreateInteractiveUtil {
-    private val printRateLimiter = RateLimiter(10.seconds.toJavaDuration())
-
     init {
         VSEvents.shipUnloadEventClient.on { (ship) -> shipIdToContraptionEntityClientInternal.remove(ship.id) }
     }
@@ -177,7 +171,7 @@ object CreateInteractiveUtil {
         return contraptionEntity.level.shipObjectWorld.allShips.getById(shadowShipId)
     }
 
-    fun getActorAtPos(level: Level, pos: BlockPos): Pair<StructureTemplate.StructureBlockInfo, MovementContext?>? {
+    fun getActorAtPos(level: Level, pos: BlockPos): CreateActorImmutable? {
         val ship = level.getShipManagingPos(pos) ?: return null
         val contraptionEntityWeakReference =
             shipIdToContraptionEntityClient[ship.id] ?: return null

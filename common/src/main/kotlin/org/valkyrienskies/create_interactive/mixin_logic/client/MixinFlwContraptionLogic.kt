@@ -1,16 +1,17 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation
+import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.Contraption
-import com.simibubi.create.content.contraptions.behaviour.MovementContext
+import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
 import com.simibubi.create.content.contraptions.render.ActorInstance
 import com.simibubi.create.content.contraptions.render.FlwContraption
+import com.simibubi.create.content.kinetics.deployer.DeployerMovementBehaviour
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
-import org.apache.commons.lang3.tuple.MutablePair
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
+import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.doesContraptionHaveShipLoaded
-import org.valkyrienskies.create_interactive.CreateInteractiveUtilClient.removeActorRendererInContraption
 import org.valkyrienskies.create_interactive.mixin.client.ContraptionInstanceWorldAccessor
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionInstanceManagerDuck
@@ -30,8 +31,7 @@ internal object MixinFlwContraptionLogic {
 
     internal fun preTick(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance?>, contraption: Contraption) {
         for (blockPos in (contraption as ContraptionDuck).`ci$getChangedActors`()) {
-            val actor: MutablePair<StructureTemplate.StructureBlockInfo, MovementContext>? =
-                contraption.getActorAt(blockPos)
+            val actor = contraption.getActorAt(blockPos)
 
             // Remove old instance, if one exists
             val oldActorInstance: ActorInstance? = actorToInstanceMap.remove(blockPos)
@@ -85,5 +85,11 @@ internal object MixinFlwContraptionLogic {
         if (doesContraptionHaveShipLoaded(contraption)) {
             ci.cancel()
         }
+    }
+
+    private fun removeActorRendererInContraption(actor: CreateActor): Boolean {
+        val behaviour = AllMovementBehaviours.getBehaviour(actor.left.state)
+        // Do not create actor render instances for deployers or mechanical bearings
+        return behaviour is DeployerMovementBehaviour || behaviour is StabilizedBearingMovementBehaviour
     }
 }

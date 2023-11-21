@@ -14,6 +14,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.phys.AABB;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -73,7 +74,10 @@ public abstract class MixinContraption implements ContraptionDuck {
     }
 
     @Override
-    public void ci$setBlock(final BlockPos localPos, final StructureTemplate.StructureBlockInfo structureBlockInfo) {
+    public void ci$setBlock(
+        final @NotNull BlockPos localPos,
+        final StructureTemplate.@NotNull StructureBlockInfo structureBlockInfo
+    ) {
         MixinContraptionLogic.INSTANCE.setBlock$create_interactive(
             blocks,
             actors,
@@ -95,23 +99,23 @@ public abstract class MixinContraption implements ContraptionDuck {
     }
 
     @Override
-    public boolean ci$hasActorAtPos(final BlockPos localPos) {
+    public boolean ci$hasActorAtPos(final @NotNull BlockPos localPos) {
         return MixinContraptionLogic.INSTANCE.hasActorAtPos$create_interactive(localPos, actors);
     }
 
     @Override
-    public boolean ci$hasBogeyAtPos(final BlockPos localPos) {
+    public boolean ci$hasBogeyAtPos(final @NotNull BlockPos localPos) {
         return MixinContraptionLogic.INSTANCE.hasBogeyAtPos$create_interactive(entity, localPos);
     }
 
     @Nullable
     @Override
-    public Pair<StructureBlockInfo, MovementContext> ci$getActorAtPos(BlockPos localPos) {
+    public Pair<StructureBlockInfo, MovementContext> ci$getActorAtPos(@NotNull BlockPos localPos) {
         return MixinContraptionLogic.INSTANCE.getActorAtPos$create_interactive(localPos, actors);
     }
 
     @Override
-    public Collection<BlockPos> ci$getChangedActors() {
+    public @NotNull Collection<BlockPos> ci$getChangedActors() {
         return ci$changedActors;
     }
 

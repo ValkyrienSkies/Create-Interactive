@@ -27,10 +27,11 @@ import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
 import org.apache.commons.lang3.tuple.MutablePair
-import org.apache.commons.lang3.tuple.Pair
 import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.create_interactive.CreateActor
+import org.valkyrienskies.create_interactive.CreateActorImmutable
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
@@ -161,7 +162,7 @@ internal object MixinContraptionLogic {
 
     internal fun setBlock(
         blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>,
-        actors: MutableList<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>,
+        actors: MutableList<CreateActor>,
         bounds: AABB,
         localPos: BlockPos,
         structureBlockInfo: StructureTemplate.StructureBlockInfo,
@@ -247,7 +248,7 @@ internal object MixinContraptionLogic {
             val behaviour = AllMovementBehaviours.getBehaviour(structureBlockInfo.state)
             behaviour?.startMoving(context)
             if (behaviour is ContraptionControlsMovement) disableActorOnStart(context)
-            actors.removeIf { next: MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?> -> next.left.pos == structureBlockInfo.pos }
+            actors.removeIf { next: CreateActor -> next.left.pos == structureBlockInfo.pos }
             actors.add(
                 MutablePair.of(
                     structureBlockInfo,
@@ -258,7 +259,7 @@ internal object MixinContraptionLogic {
         } else {
             // Remove actor if one exists
             val anyRemoved: Boolean =
-                actors.removeIf { next: MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?> -> next.left.pos == structureBlockInfo.pos }
+                actors.removeIf { next: CreateActor -> next.left.pos == structureBlockInfo.pos }
             if (anyRemoved) {
                 changedActors.add(structureBlockInfo.pos)
             }
@@ -273,9 +274,8 @@ internal object MixinContraptionLogic {
     }
 
     internal fun hasActorAtPos(
-        localPos: BlockPos,
-        actors: List<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>
-    ): Boolean = actors.any { it.left.pos == localPos }
+        localPos: BlockPos, actors: List<CreateActor>
+    ): Boolean = getActorAtPos(localPos, actors) != null
 
     internal fun hasBogeyAtPos(entity: AbstractContraptionEntity, localPos: BlockPos): Boolean {
         if (entity !is CarriageContraptionEntity) return false
@@ -295,14 +295,6 @@ internal object MixinContraptionLogic {
     }
 
     internal fun getActorAtPos(
-        localPos: BlockPos,
-        actors: List<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>
-    ): Pair<StructureTemplate.StructureBlockInfo, MovementContext?>? {
-        for (actor in actors) {
-            if (actor.left.pos == localPos) {
-                return actor
-            }
-        }
-        return null
-    }
+        localPos: BlockPos, actors: List<CreateActor>
+    ): CreateActorImmutable? = actors.firstOrNull { it.left.pos == localPos }
 }
