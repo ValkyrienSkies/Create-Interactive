@@ -16,7 +16,6 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient.postTickClient
 import java.lang.ref.WeakReference
 

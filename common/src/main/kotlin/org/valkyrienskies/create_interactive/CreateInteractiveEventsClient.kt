@@ -3,6 +3,10 @@ package org.valkyrienskies.create_interactive
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import io.netty.util.collection.LongObjectHashMap
 import io.netty.util.collection.LongObjectMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.longs.LongSet
 import net.minecraft.client.Minecraft
 import org.joml.Vector3d
 import org.joml.Vector3ic
@@ -10,21 +14,32 @@ import org.valkyrienskies.core.api.ships.ClientShipTransformProvider
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.world.ClientShipWorldCore
+import org.valkyrienskies.core.impl.game.ships.ShipObjectClient
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.core.impl.hooks.VSEvents
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRotForRender
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
+import org.valkyrienskies.mod.common.getShipManagingPos
 import java.lang.ref.WeakReference
 
 object CreateInteractiveEventsClient {
     private val shipToContraptions: LongObjectMap<WeakReference<AbstractContraptionEntity>> = LongObjectHashMap()
+    private val updatedShips: LongSet = LongOpenHashSet()
+    private val cachedRenderTransforms: Long2ObjectMap<ShipTransform> = Long2ObjectOpenHashMap()
+
+    init {
+        VSEvents.startUpdateRenderTransformsEvent.on { _ -> startUpdateRenderTransforms() }
+    }
 
     fun postTickClient() {
         val mc = Minecraft.getInstance()
         // Tick the ship world and then drag entities
         val shipObjectWorld: ClientShipWorldCore = (mc as IShipObjectWorldClientProvider).shipObjectWorld!!
 
-        val it: MutableIterator<LongObjectMap.PrimitiveEntry<WeakReference<AbstractContraptionEntity>>> = shipToContraptions.entries().iterator()
+        val it: MutableIterator<LongObjectMap.PrimitiveEntry<WeakReference<AbstractContraptionEntity>>> =
+            shipToContraptions.entries().iterator()
         while (it.hasNext()) {
             val next = it.next()
             val shipId = next.key()
@@ -61,13 +76,32 @@ object CreateInteractiveEventsClient {
                     shipTransform: ShipTransform,
                     partialTick: Double
                 ): ShipTransform? {
-                    // println("prevShipTransform is ${prevShipTransform.positionInShip.x()}, ${prevShipTransform.positionInShip.y()}, ${prevShipTransform.positionInShip.z()}")
-                    // println("shipTransform is ${shipTransform.positionInShip.x()}, ${shipTransform.positionInShip.y()}, ${shipTransform.positionInShip.z()}")
-                    // Don't override default behavior
+                    if (cachedRenderTransforms.contains(shipId)) {
+                        return cachedRenderTransforms[shipId]
+                    }
+                    val contraptionEntity = contraption.get()
+                    if (contraptionEntity != null) {
+                        val parentShip = contraptionEntity.level.getShipManagingPos(contraptionEntity.position()) as ShipObjectClient?
+                        if (parentShip != null && !updatedShips.contains(parentShip.id)) {
+                            parentShip.updateRenderShipTransform(partialTick)
+                            updatedShips.add(parentShip.id)
+                        }
+                        val (first, second) = getContraptionPosRotForRender(contraptionEntity, partialTick)
+                        val renderTransform = ShipTransformImpl.create(
+                            first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second
+                        )
+                        cachedRenderTransforms[shipId] = renderTransform
+                        return renderTransform
+                    }
                     return null
                 }
             }
         }
+    }
+
+    private fun startUpdateRenderTransforms() {
+        updatedShips.clear()
+        cachedRenderTransforms.clear()
     }
 
     fun addShipToContraptionRef(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {

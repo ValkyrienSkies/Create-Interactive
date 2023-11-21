@@ -13,6 +13,7 @@ import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.joml.Vector3ic
+import org.valkyrienskies.core.api.ships.ClientShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider
 import org.valkyrienskies.core.api.ships.Ship
@@ -135,16 +136,38 @@ object CreateInteractiveUtil {
     fun getContraptionPosRot(entity: AbstractContraptionEntity): ContraptionPosRot {
         val rotationStateOriginal = AbstractContraptionEntity::class.java.cast(entity).rotationState
         val newRot = (rotationStateOriginal as ContraptionRotationStateDuck).`ci$getRotationQuaternion`(Quaterniond())
+        val contraptionPos: Vector3dc = entity.anchorVec.toJOML().add(0.5, 0.5, 0.5)
 
         // Train on a train!!!
         val parentShip = entity.level.getShipManagingPos(entity.position())
         if (parentShip != null) {
-            val newNewPos = parentShip.transform.shipToWorld.transformPosition(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), Vector3d())
+            val newNewPos = parentShip.transform.shipToWorld.transformPosition(contraptionPos, Vector3d())
             val newNewRot = parentShip.transform.shipToWorldRotation.mul(newRot, Quaterniond())
             return ContraptionPosRot(newNewPos, newNewRot)
         }
 
-        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
+        return ContraptionPosRot(contraptionPos, newRot)
+    }
+
+    fun getContraptionPosRotForRender(entity: AbstractContraptionEntity, partialTick: Double): ContraptionPosRot {
+        val prevRot: Quaterniondc = ((entity as AbstractContraptionEntityDuck).`ci$getPrevTickRotationState`() as ContraptionRotationStateDuck).`ci$getRotationQuaternion`(Quaterniond())
+        val curRot: Quaterniondc = (AbstractContraptionEntity::class.java.cast(entity).rotationState as ContraptionRotationStateDuck).`ci$getRotationQuaternion`(Quaterniond())
+        val newRot = prevRot.slerp(curRot, partialTick, Quaterniond())
+        val contraptionPos: Vector3dc = Vector3d(
+            entity.anchorVec.x * partialTick + entity.prevAnchorVec.x * (1.0 - partialTick),
+            entity.anchorVec.y * partialTick + entity.prevAnchorVec.y * (1.0 - partialTick),
+            entity.anchorVec.z * partialTick + entity.prevAnchorVec.z * (1.0 - partialTick),
+        ).add(0.5, 0.5, 0.5)
+
+        // Train on a train!!!
+        val parentShip = entity.level.getShipManagingPos(entity.position()) as ClientShip?
+        if (parentShip != null) {
+            val newNewPos = parentShip.renderTransform.shipToWorld.transformPosition(contraptionPos, Vector3d())
+            val newNewRot = parentShip.renderTransform.shipToWorldRotation.mul(newRot, Quaterniond())
+            return ContraptionPosRot(newNewPos, newNewRot)
+        }
+
+        return ContraptionPosRot(contraptionPos, newRot)
     }
 
     fun getContraptionPosRot(entity: AbstractContraptionEntity, parentTransform: ShipTransform?): ContraptionPosRot {

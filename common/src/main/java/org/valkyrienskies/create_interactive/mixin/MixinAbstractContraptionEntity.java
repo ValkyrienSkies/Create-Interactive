@@ -26,8 +26,14 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Unique
     private Long ci$shadowShipId = null;
 
+    @Unique
+    private AbstractContraptionEntity.ContraptionRotationState ci$prevTickRotationState = null;
+
     @Shadow(remap = false)
     protected Contraption contraption;
+
+    @Shadow(remap = false)
+    public abstract AbstractContraptionEntity.ContraptionRotationState getRotationState();
 
     @Unique
     private MixinAbstractContraptionEntityLogic.ExtraData ci$extraData;
@@ -60,6 +66,11 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         );
     }
 
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void preTick(final CallbackInfo ci) {
+        ci$prevTickRotationState = getRotationState();
+    }
+
     @Inject(method = "tick", at = @At("RETURN"))
     private void postTick(final CallbackInfo ci) {
         ci$shadowShipId = MixinAbstractContraptionEntityLogic.INSTANCE.postTick$create_interactive(
@@ -83,5 +94,14 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Inject(method = "shouldActorTrigger", at = @At("HEAD"), cancellable = true, remap = false)
     protected void shouldActorTrigger(MovementContext context, StructureTemplate.StructureBlockInfo blockInfo, MovementBehaviour actor, Vec3 actorPosition, BlockPos gridPosition, CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(MixinAbstractContraptionEntityLogic.INSTANCE.overwriteShouldActorTrigger$create_interactive(AbstractContraptionEntity.class.cast(this), context, actorPosition, gridPosition));
+    }
+
+    @Override
+    public AbstractContraptionEntity.ContraptionRotationState ci$getPrevTickRotationState() {
+        if (ci$prevTickRotationState != null) {
+            return ci$prevTickRotationState;
+        } else {
+            return getRotationState();
+        }
     }
 }
