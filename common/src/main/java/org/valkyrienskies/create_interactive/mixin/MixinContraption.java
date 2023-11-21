@@ -34,8 +34,6 @@ import java.util.Set;
 public abstract class MixinContraption implements ContraptionDuck {
     @Unique
     private Set<BlockPos> ci$changedActors;
-    @Shadow
-    public BlockPos anchor;
     @Shadow(remap = false)
     public boolean disassembled;
     @Shadow(remap = false)
@@ -60,7 +58,7 @@ public abstract class MixinContraption implements ContraptionDuck {
 
     @Inject(method = "onEntityCreated", at = @At("HEAD"), remap = false)
     private void preOnEntityCreated(final AbstractContraptionEntity entity, final CallbackInfo ci) {
-        MixinContraptionLogic.INSTANCE.preOnEntityCreated$create_interactive(blocks, anchor, entity);
+        MixinContraptionLogic.INSTANCE.preOnEntityCreated$create_interactive(blocks, entity);
     }
 
     @Inject(method = "addBlocksToWorld", at = @At("HEAD"))
@@ -97,8 +95,8 @@ public abstract class MixinContraption implements ContraptionDuck {
     }
 
     @Override
-    public boolean ci$hasActorAtPos(final BlockPos localPos, boolean isCheckingMechanicalBearing) {
-        return MixinContraptionLogic.INSTANCE.hasActorAtPos$create_interactive(localPos, isCheckingMechanicalBearing, actors);
+    public boolean ci$hasActorAtPos(final BlockPos localPos) {
+        return MixinContraptionLogic.INSTANCE.hasActorAtPos$create_interactive(localPos, actors);
     }
 
     @Override

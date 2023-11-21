@@ -1,17 +1,16 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation
-import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.render.ActorInstance
 import com.simibubi.create.content.contraptions.render.FlwContraption
-import com.simibubi.create.content.kinetics.deployer.DeployerMovementBehaviour
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import org.apache.commons.lang3.tuple.MutablePair
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.doesContraptionHaveShipLoaded
+import org.valkyrienskies.create_interactive.CreateInteractiveUtilClient.removeActorRendererInContraption
 import org.valkyrienskies.create_interactive.mixin.client.ContraptionInstanceWorldAccessor
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionInstanceManagerDuck
@@ -43,8 +42,7 @@ internal object MixinFlwContraptionLogic {
             }
             try {
                 if (actor != null) {
-                    // Do not add deployers
-                    if (AllMovementBehaviours.getBehaviour(actor.left.state) is DeployerMovementBehaviour) {
+                    if (removeActorRendererInContraption(actor)) {
                         continue
                     }
                     // Add new instance
@@ -62,8 +60,7 @@ internal object MixinFlwContraptionLogic {
 
     internal fun preBuildActors(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance?>, contraption: Contraption, ci: CallbackInfo) {
         for (actor in contraption.actors) {
-            // Do not add deployers
-            if (AllMovementBehaviours.getBehaviour(actor.left.state) is DeployerMovementBehaviour) {
+            if (removeActorRendererInContraption(actor)) {
                 continue
             }
             try {

@@ -42,6 +42,8 @@
     "MixinTrain",
     "MixinTranslatingContraption",
     "MovementContextAccessor",
+    "bearing.MixinMechanicalBearingBlockEntity",
+    "bearing.StabilizedBearingMovementBehaviourAccessor",
     "deployer.DeployerBlockEntityAccessor",
     "deployer.MixinDeployerInstance",
     "deployer.MixinDeployerMovementBehaviour",

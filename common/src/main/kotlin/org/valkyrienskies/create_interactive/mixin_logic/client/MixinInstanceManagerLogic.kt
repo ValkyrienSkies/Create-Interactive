@@ -27,10 +27,10 @@ internal object MixinInstanceManagerLogic {
         if (blockEntity is AbstractBogeyBlockEntity) {
             return (contraptionEntity.contraption as ContraptionDuck).`ci$hasBogeyAtPos`(relativePos)
         }
-        return blockEntity !is DeployerBlockEntity && blockEntity !is SlidingDoorBlockEntity && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(
-            relativePos,
-            blockEntity is MechanicalBearingBlockEntity
-        )
+        return blockEntity !is DeployerBlockEntity
+            && blockEntity !is SlidingDoorBlockEntity
+            && blockEntity !is MechanicalBearingBlockEntity
+            && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(relativePos)
     }
 
     internal fun preCreateInternal(obj: Any, cir: CallbackInfoReturnable<AbstractInstance?>) {

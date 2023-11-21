@@ -7,6 +7,7 @@ import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
+import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
 import com.simibubi.create.content.trains.entity.Carriage
@@ -40,7 +41,6 @@ import org.valkyrienskies.mod.common.yRange
 internal object MixinContraptionLogic {
     internal fun preOnEntityCreated(
         initialBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>,
-        anchor: BlockPos,
         entity: AbstractContraptionEntity
     ) {
         val level = entity.level
@@ -238,7 +238,9 @@ internal object MixinContraptionLogic {
             }
         }
 
-        if (AllMovementBehaviours.getBehaviour(structureBlockInfo.state) != null) {
+        val newBehavior = AllMovementBehaviours.getBehaviour(structureBlockInfo.state)
+        // Don't create actors for new bearings
+        if (newBehavior != null && newBehavior !is StabilizedBearingMovementBehaviour) {
             val context = MovementContext(
                 contraption.entity.level, structureBlockInfo, contraption
             )
@@ -272,18 +274,8 @@ internal object MixinContraptionLogic {
 
     internal fun hasActorAtPos(
         localPos: BlockPos,
-        isCheckingMechanicalBearing: Boolean,
         actors: List<MutablePair<StructureTemplate.StructureBlockInfo, MovementContext?>>
-    ): Boolean {
-        for (actor in actors) {
-            if (actor.left.pos == localPos) {
-                return if (isCheckingMechanicalBearing) {
-                    actor.left.nbt != null
-                } else true
-            }
-        }
-        return false
-    }
+    ): Boolean = actors.any { it.left.pos == localPos }
 
     internal fun hasBogeyAtPos(entity: AbstractContraptionEntity, localPos: BlockPos): Boolean {
         if (entity !is CarriageContraptionEntity) return false
