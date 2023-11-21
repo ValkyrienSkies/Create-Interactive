@@ -1,5 +1,5 @@
-![Logo-Recovered](vs_eureka_logo.png)
+![Logo-Recovered](interactive_banner_logo.png)
 
-# Eureka
+# Create Interactive
 
-Basically Archimedes Ships, but with VS2 as the backend!
+Basically **Create** with **Interactive** contraptions!
