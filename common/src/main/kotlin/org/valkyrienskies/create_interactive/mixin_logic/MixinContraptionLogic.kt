@@ -27,17 +27,16 @@ import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
 import org.apache.commons.lang3.tuple.MutablePair
-import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toJOML
-import org.valkyrienskies.mod.common.yRange
 
 internal object MixinContraptionLogic {
     internal fun preOnEntityCreated(
@@ -70,7 +69,7 @@ internal object MixinContraptionLogic {
         val shipId: Long = serverShip.id
 
         // Anchor at ship center
-        val shipCenter: Vector3ic = serverShip.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
+        val shipCenter: Vector3ic = serverShip.getChunkClaimCenterPos(level)
         for ((pos, structureInfo) in initialBlocks.entries) {
             val localPos = pos // .subtract(anchor)
             val newPos = localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
@@ -123,7 +122,7 @@ internal object MixinContraptionLogic {
         val shadowShipId = duck.`ci$getShadowShipId`() ?: return
         val ship = world.shipObjectWorld.allShips.getById(shadowShipId) ?: return
         // Anchor at ship center
-        val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(world.yRange, Vector3i())
+        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(world)
 
         // Update contraption tile entities to match the contents of the shadow ship
         ship.activeChunksSet.forEach { chunkX: Int, chunkZ: Int ->

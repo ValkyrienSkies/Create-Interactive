@@ -9,16 +9,15 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
-import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.Ship
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.shipIdToContraptionEntityClient
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.shipIdToContraptionEntityServer
 import org.valkyrienskies.create_interactive.mixin_logic.client.MixinInstanceManagerLogic.shouldRemoveBlockEntityInShip
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toBlockPos
-import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 
 internal object MixinLevelChunkLogic {
@@ -33,7 +32,7 @@ internal object MixinLevelChunkLogic {
         val contraptionEntity = contraptionEntityWeakReference.get() ?: return
 
         // Anchor at ship center
-        val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
+        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(level)
         val relativePos = pos.subtract(shipCenter.toBlockPos())
 
         // Set the block

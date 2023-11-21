@@ -4,12 +4,11 @@ import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer
 import net.minecraft.world.item.ItemStack
-import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getShipForMovementContext
 import org.valkyrienskies.create_interactive.mixin.deployer.DeployerBlockEntityAccessor
-import org.valkyrienskies.mod.common.yRange
 import java.lang.reflect.Field
 
 internal object MixinDeployerMovementBehaviourLogic {
@@ -18,7 +17,7 @@ internal object MixinDeployerMovementBehaviourLogic {
 
     private fun getBlockEntity(context: MovementContext): DeployerBlockEntity? {
         val ship = getShipForMovementContext(context) ?: return null
-        val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(context.world.yRange, Vector3i())
+        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(context.world)
         val blockPos = context.localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
         val blockEntity = context.world.getBlockEntity(blockPos)
         return blockEntity as? DeployerBlockEntity

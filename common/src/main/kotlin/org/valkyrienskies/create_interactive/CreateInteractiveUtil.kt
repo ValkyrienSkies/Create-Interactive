@@ -48,7 +48,7 @@ object CreateInteractiveUtil {
         val serverShip: ServerShip = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
 
         // Anchor at ship center
-        val shipCenter: Vector3ic = serverShip.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
+        val shipCenter: Vector3ic = serverShip.getChunkClaimCenterPos(level)
 
         for ((pos, value) in contraption.blocks) {
             // TODO: Do I need to sub this???
@@ -75,7 +75,7 @@ object CreateInteractiveUtil {
 
         // Anchor at ship center of mass
         val cmInShip: Vector3dc = serverShip.inertiaData.centerOfMassInShip
-        val shipCenter: Vector3ic = serverShip.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
+        val shipCenter: Vector3ic = serverShip.getChunkClaimCenterPos(level)
         val offset = cmInShip.sub(
             shipCenter.x().toDouble(),
             shipCenter.y().toDouble(),
@@ -165,7 +165,7 @@ object CreateInteractiveUtil {
 
     fun getShipForMovementContext(context: MovementContext): Ship? = getShipForContraption(context.contraption)
 
-    fun getShipForContraption(contraption: Contraption): Ship? {
+    private fun getShipForContraption(contraption: Contraption): Ship? {
         val contraptionEntity = contraption.entity ?: return null
         val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
         return contraptionEntity.level.shipObjectWorld.allShips.getById(shadowShipId)
@@ -178,11 +178,14 @@ object CreateInteractiveUtil {
         val contraptionEntity = contraptionEntityWeakReference.get() ?: return null
 
         // Anchor at ship center
-        val shipCenter: Vector3ic = ship.chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
+        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(level)
         val relativePos = pos.subtract(shipCenter.toBlockPos())
 
         return (contraptionEntity.contraption as ContraptionDuck).`ci$getActorAtPos`(relativePos)
     }
+
+    fun Ship.getChunkClaimCenterPos(level: Level): Vector3ic =
+        chunkClaim.getCenterBlockCoordinates(level.yRange, Vector3i())
 
     private val shipIdToContraptionEntityClientInternal: MutableMap<ShipId, WeakReference<AbstractContraptionEntity>> = HashMap()
     private val shipIdToContraptionEntityServerInternal: MutableMap<ShipId, WeakReference<AbstractContraptionEntity>> = HashMap()

@@ -5,16 +5,15 @@ import io.netty.util.collection.LongObjectHashMap
 import io.netty.util.collection.LongObjectMap
 import net.minecraft.client.Minecraft
 import org.joml.Vector3d
-import org.joml.Vector3i
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ClientShipTransformProvider
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.world.ClientShipWorldCore
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
-import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 
 object CreateInteractiveEventsClient {
@@ -37,7 +36,7 @@ object CreateInteractiveEventsClient {
             }
             // Skip the ship if its null, but don't delete the map entry in case the ship packet was delayed
             val clientShip = shipObjectWorld.allShips.getById(shipId) ?: continue
-            val shipCenter: Vector3ic = clientShip.chunkClaim.getCenterBlockCoordinates(mc.level!!.yRange, Vector3i())
+            val shipCenter: Vector3ic = clientShip.getChunkClaimCenterPos(mc.level!!)
             clientShip.transformProvider = object : ClientShipTransformProvider {
                 override fun provideNextTransform(
                     prevShipTransform: ShipTransform,

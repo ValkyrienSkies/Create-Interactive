@@ -7,7 +7,6 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -40,7 +39,7 @@ public abstract class MixinGantryCarriageBlockEntity extends KineticBlockEntity 
         }
         // Don't tick this block on other gantry contraptions
         if (contraptionEntity instanceof GantryContraptionEntity) {
-            final Vector3ic shipCenter = ship.getChunkClaim().getCenterBlockCoordinates(VSGameUtilsKt.getYRange(level), new Vector3i());
+            final Vector3ic shipCenter = CreateInteractiveUtil.INSTANCE.getChunkClaimCenterPos(ship, level);
             final BlockPos relativePos = getBlockPos().subtract(VectorConversionsMCKt.toBlockPos(shipCenter));
             if (relativePos.equals(BlockPos.ZERO)) {
                 // Only partially run this on contraption ships
