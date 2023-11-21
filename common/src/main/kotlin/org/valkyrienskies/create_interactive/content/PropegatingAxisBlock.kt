@@ -8,7 +8,9 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.create_interactive.GameContent
+import org.valkyrienskies.create_interactive.directions
 
 abstract class PropegatingAxisBlock(properties: Properties) : RotatedPillarKineticBlock(properties) {
     init {
@@ -29,6 +31,34 @@ abstract class PropegatingAxisBlock(properties: Properties) : RotatedPillarKinet
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState {
         val axisState = super.getStateForPlacement(context)!!
         return axisState.setValue(GameContent.CONNECTED, PropegatingTools.checkIfConnected(context.level, axisState, context.clickedPos, null))
+    }
+
+    override fun onPlace(state: BlockState, worldIn: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
+        super.onPlace(state, worldIn, pos, oldState, isMoving)
+
+        if (worldIn.isClientSide) return
+        if (!state.getValue(GameContent.CONNECTED)) return
+
+        state.getValue(AXIS).directions.forEach { dir ->
+            val otherPos = pos.relative(dir)
+            val otherState = worldIn.getBlockState(otherPos)
+            if (PropegatingTools.isPropegateBase(otherState)) {
+                //uh lets hope all bases have facing values??
+                val baseDir = worldIn.getBlockState(otherPos).getValue(BlockStateProperties.FACING)
+                if (baseDir == dir.opposite) return@forEach // we don't want to be mad at the unassembled bearing
+
+                for (it in Direction.entries) {
+                    if (it == dir.opposite) continue
+                    if (it == baseDir) continue // we don't want to be mad at the unassembled bearing
+
+                    val possiblePropegator = worldIn.getBlockState(otherPos.relative(it))
+                    if (PropegatingTools.isConnectedPropagator(possiblePropegator)) {
+                        worldIn.destroyBlock(pos, true)
+                        return
+                    }
+                }
+            }
+        }
     }
 
     override fun neighborChanged(
