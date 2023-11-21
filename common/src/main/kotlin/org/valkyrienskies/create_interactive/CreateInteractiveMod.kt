@@ -8,6 +8,8 @@ object CreateInteractiveMod {
     @JvmStatic
     fun init() {
         VSConfigClass.registerConfig("create_interactive", CreateInteractiveConfig::class.java)
+
+        GameContent.init()
     }
 
     @JvmStatic
