@@ -16,8 +16,12 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.piston.PistonBaseBlock
 import net.minecraft.world.level.block.state.BlockState
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.directions
+import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.util.toJOML
 
 object PropegatingTools {
 
@@ -41,7 +45,7 @@ object PropegatingTools {
             val isPropegating = isConnectedPropagator(blockState) &&
                     blockState.getValue(RotatedPillarKineticBlock.AXIS) == state.getValue(RotatedPillarKineticBlock.AXIS)
 
-            isPropegating || isPropegateBase(blockState)
+            isPropegating || isPropegateBase(blockState) || isContraptionBase(level, pos.relative(direction))
         }
     }
 
@@ -50,7 +54,6 @@ object PropegatingTools {
     }
 
     fun isContraptionBase(level: Level, location: BlockPos): Boolean {
-        return false; //Not yet implemented
+        return level.getShipManagingPos(location)?.getChunkClaimCenterPos(level) == location.toJOML()
     }
-
 }

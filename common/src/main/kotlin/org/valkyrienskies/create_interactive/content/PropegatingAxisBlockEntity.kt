@@ -6,8 +6,10 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.directions
+import org.valkyrienskies.mod.common.getShipManagingPos
 
 abstract class PropegatingAxisBlockEntity(
     type: BlockEntityType<out PropegatingAxisBlockEntity>, pos: BlockPos, state: BlockState
@@ -30,7 +32,10 @@ abstract class PropegatingAxisBlockEntity(
                     return PropegatingTools.getContraptionOfPropegateBase(level!!.getBlockEntity(shift)!!)?.contraption
 
                 if (PropegatingTools.isContraptionBase(level!!, location))
-                    return TODO()
+                    return ((CreateInteractiveUtil.shipIdToContraptionEntityServer[level.getShipManagingPos(location)!!.id]
+                        ?: throw IllegalStateException("Can't find owning contraption entity!"))
+                        .get() ?: throw IllegalStateException("Owner contraption entity is no more?"))
+                        .contraption
 
             } while(PropegatingTools.isConnectedPropagator(state))
         }
