@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin_logic
 
 import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.contraptions.ContraptionHandler
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.elevator.ElevatorColumn
@@ -40,6 +41,7 @@ import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.settings
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toMinecraft
+import java.lang.ref.WeakReference
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -221,6 +223,25 @@ internal object MixinAbstractContraptionEntityLogic {
     internal fun writeAdditional(compound: CompoundTag, shadowShipId: ShipId?) {
         if (shadowShipId != null) {
             compound.putLong(SHADOW_SHIP_ID_NBT_KEY, shadowShipId)
+        }
+    }
+
+    internal fun preDisassemble(entity: AbstractContraptionEntity, level: Level, shadowShipId: ShipId?) {
+        if (shadowShipId == null) return
+        if (!entity.isAlive) return
+        if (entity.contraption == null) return
+        val contraptionsInLevel = ContraptionHandler.loadedContraptions.get(level).values
+        for (contraptionEntityRef: WeakReference<AbstractContraptionEntity> in contraptionsInLevel) {
+            val contraptionEntity = contraptionEntityRef.get() ?: continue
+            if (level.getShipManagingPos(contraptionEntity.anchorVec)?.id == shadowShipId) {
+                val vehicle = contraptionEntity.vehicle
+                if (vehicle is AbstractContraptionEntity) {
+                    // This is a stabilized bearing contraption, disassemble the vehicle instead
+                    vehicle.disassemble()
+                } else {
+                    contraptionEntity.disassemble()
+                }
+            }
         }
     }
 
