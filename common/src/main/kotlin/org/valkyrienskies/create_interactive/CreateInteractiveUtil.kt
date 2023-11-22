@@ -22,7 +22,6 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
-import org.valkyrienskies.core.impl.hooks.VSEvents
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
@@ -36,10 +35,6 @@ import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 
 object CreateInteractiveUtil {
-    init {
-        VSEvents.shipUnloadEventClient.on { (ship) -> shipIdToContraptionEntityClientInternal.remove(ship.id) }
-    }
-
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos): ShipId? {
         if (contraption.javaClass.packageName.contains("createbigcannons")) {
             // Do not create shadow ships for CBC, too hard
@@ -247,6 +242,10 @@ object CreateInteractiveUtil {
                 shipIdToContraptionEntityServerInternal.remove(shipId)
             }
         }
+    }
+
+    internal fun onShipUnloadEventClient(clientShip: ClientShip) {
+        shipIdToContraptionEntityClientInternal.remove(clientShip.id)
     }
 
     data class ShipTeleportDataImplFixed(

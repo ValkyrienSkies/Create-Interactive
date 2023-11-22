@@ -16,7 +16,6 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.world.ClientShipWorldCore
 import org.valkyrienskies.core.impl.game.ships.ShipObjectClient
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
-import org.valkyrienskies.core.impl.hooks.VSEvents
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRotForRender
@@ -29,11 +28,7 @@ object CreateInteractiveEventsClient {
     private val updatedShips: LongSet = LongOpenHashSet()
     private val cachedRenderTransforms: Long2ObjectMap<ShipTransform> = Long2ObjectOpenHashMap()
 
-    init {
-        VSEvents.startUpdateRenderTransformsEvent.on { _ -> startUpdateRenderTransforms() }
-    }
-
-    fun postTickClient() {
+    internal fun postTickClient() {
         val mc = Minecraft.getInstance()
         // Tick the ship world and then drag entities
         val shipObjectWorld: ClientShipWorldCore = (mc as IShipObjectWorldClientProvider).shipObjectWorld!!
@@ -99,12 +94,12 @@ object CreateInteractiveEventsClient {
         }
     }
 
-    private fun startUpdateRenderTransforms() {
+    internal fun onStartUpdateRenderTransforms() {
         updatedShips.clear()
         cachedRenderTransforms.clear()
     }
 
-    fun addShipToContraptionRef(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
+    internal fun addShipToContraptionRef(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
         shipToContraptions[shipId] = WeakReference(contraptionEntity)
     }
 }
