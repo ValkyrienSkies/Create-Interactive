@@ -1,12 +1,7 @@
 package org.valkyrienskies.create_interactive.content
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
-import com.simibubi.create.content.contraptions.Contraption
-import com.simibubi.create.content.contraptions.ControlledContraptionEntity
-import com.simibubi.create.content.contraptions.IControlContraption
 import com.simibubi.create.content.contraptions.bearing.BearingBlock
-import com.simibubi.create.content.contraptions.bearing.ClockworkBearingBlock
-import com.simibubi.create.content.contraptions.bearing.ClockworkBearingBlockEntity
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
 import com.simibubi.create.content.contraptions.piston.LinearActuatorBlockEntity
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock
@@ -16,16 +11,15 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.piston.PistonBaseBlock
 import net.minecraft.world.level.block.state.BlockState
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.directions
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toJOML
 
-object PropegatingTools {
+object PropagatingTools {
 
-    fun getContraptionOfPropegateBase(be: BlockEntity): AbstractContraptionEntity? {
+    fun getContraptionOfPropagateBase(be: BlockEntity): AbstractContraptionEntity? {
         return when(be) {
             is MechanicalBearingBlockEntity -> be.movedContraption
             is LinearActuatorBlockEntity -> be.movedContraption
@@ -33,7 +27,7 @@ object PropegatingTools {
         }
     }
 
-    fun isPropegateBase(blockState: BlockState): Boolean {
+    fun isPropagateBase(blockState: BlockState): Boolean {
         return blockState.block is BearingBlock || blockState.block is PistonBaseBlock
     }
 
@@ -42,15 +36,15 @@ object PropegatingTools {
             state.getValue(RotatedPillarKineticBlock.AXIS).directions.any { checkIfConnected(level, state, pos, it) }
         } else {
             val blockState = level.getBlockState(pos.relative(direction))
-            val isPropegating = isConnectedPropagator(blockState) &&
+            val isPropagating = isConnectedPropagator(blockState) &&
                     blockState.getValue(RotatedPillarKineticBlock.AXIS) == state.getValue(RotatedPillarKineticBlock.AXIS)
 
-            isPropegating || isPropegateBase(blockState) || isContraptionBase(level, pos.relative(direction))
+            isPropagating || isPropagateBase(blockState) || isContraptionBase(level, pos.relative(direction))
         }
     }
 
     fun isConnectedPropagator(blockState: BlockState): Boolean {
-        return blockState.block is PropegatingAxisBlock && blockState.getValue(GameContent.CONNECTED)
+        return blockState.block is PropagatingAxisBlock && blockState.getValue(GameContent.CONNECTED)
     }
 
     fun isContraptionBase(level: Level, location: BlockPos): Boolean {

@@ -12,9 +12,8 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
-import net.minecraft.world.level.block.state.properties.Property
-import org.valkyrienskies.create_interactive.content.PropegatorBlock
-import org.valkyrienskies.create_interactive.content.PropegatorBlockEntity
+import org.valkyrienskies.create_interactive.content.PropagatorBlock
+import org.valkyrienskies.create_interactive.content.PropagatorBlockEntity
 import org.valkyrienskies.create_interactive.registry.DeferredRegister
 import org.valkyrienskies.create_interactive.registry.RegistrySupplier
 
@@ -36,9 +35,9 @@ object GameContent {
 
     val CONNECTED = BooleanProperty.create("connected")
 
-    val PROPEGATOR = BLOCKS.register("propegator") { PropegatorBlock }
-    val PROPEGATOR_BE: RegistrySupplier<BlockEntityType<PropegatorBlockEntity>> =
-        PROPEGATOR.hasBE { pos, state -> PropegatorBlockEntity(::PROPEGATOR_BE.get().get(), pos, state) }.byName("propegator")
+    val PROPAGATOR = BLOCKS.register("propagator") { PropagatorBlock }
+    val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
+        PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
 
 
 

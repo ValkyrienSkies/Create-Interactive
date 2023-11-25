@@ -6,8 +6,8 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 
-class PropegatorBlockEntity(type: BlockEntityType<out PropegatorBlockEntity>, pos: BlockPos, state: BlockState) :
-    PropegatingAxisBlockEntity(type, pos, state) {
+class PropagatorBlockEntity(type: BlockEntityType<out PropagatorBlockEntity>, pos: BlockPos, state: BlockState) :
+    PropagatingAxisBlockEntity(type, pos, state) {
 
     override fun isNoisy(): Boolean = true
 

@@ -11,13 +11,13 @@ import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.directions
 import org.valkyrienskies.mod.common.getShipManagingPos
 
-abstract class PropegatingAxisBlockEntity(
-    type: BlockEntityType<out PropegatingAxisBlockEntity>, pos: BlockPos, state: BlockState
+abstract class PropagatingAxisBlockEntity(
+    type: BlockEntityType<out PropagatingAxisBlockEntity>, pos: BlockPos, state: BlockState
 ) : DirectionalShaftHalvesBlockEntity(type, pos, state) {
     val axis get() = blockState.getValue(BlockStateProperties.AXIS)
     val isConnected get() = blockState.getValue(GameContent.CONNECTED)
 
-    val contraption: Contraption? get() = if(isConnected) null else _contraption ?: findBase().apply { _contraption = this };
+    val contraption: Contraption? get() = if(isConnected) null else _contraption ?: findBase().apply { _contraption = this }
     private var _contraption : Contraption? = null
 
     private fun findBase(): Contraption? {
@@ -28,16 +28,16 @@ abstract class PropegatingAxisBlockEntity(
                 val state = level!!.getBlockState(shift)
                 location = shift
 
-                if (PropegatingTools.isPropegateBase(state))
-                    return PropegatingTools.getContraptionOfPropegateBase(level!!.getBlockEntity(shift)!!)?.contraption
+                if (PropagatingTools.isPropagateBase(state))
+                    return PropagatingTools.getContraptionOfPropagateBase(level!!.getBlockEntity(shift)!!)?.contraption
 
-                if (PropegatingTools.isContraptionBase(level!!, location))
+                if (PropagatingTools.isContraptionBase(level!!, location))
                     return ((CreateInteractiveUtil.shipIdToContraptionEntityServer[level.getShipManagingPos(location)!!.id]
                         ?: throw IllegalStateException("Can't find owning contraption entity!"))
                         .get() ?: throw IllegalStateException("Owner contraption entity is no more?"))
                         .contraption
 
-            } while(PropegatingTools.isConnectedPropagator(state))
+            } while(PropagatingTools.isConnectedPropagator(state))
         }
 
         if (isConnected)
