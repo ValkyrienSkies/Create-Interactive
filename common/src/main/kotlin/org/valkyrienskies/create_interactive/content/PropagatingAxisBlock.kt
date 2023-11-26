@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.directions
+import org.valkyrienskies.create_interactive.services.NoOptimize
 
 abstract class PropagatingAxisBlock(properties: Properties) : RotatedPillarKineticBlock(properties) {
     init {
@@ -21,18 +22,22 @@ abstract class PropagatingAxisBlock(properties: Properties) : RotatedPillarKinet
         )
     }
 
+    @NoOptimize
     override fun getRotationAxis(state: BlockState): Direction.Axis = state.getValue(AXIS)
 
+    @NoOptimize
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         super.createBlockStateDefinition(builder)
         builder.add(GameContent.CONNECTED)
     }
 
+    @NoOptimize
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState {
         val axisState = super.getStateForPlacement(context)!!
         return axisState.setValue(GameContent.CONNECTED, PropagatingTools.checkIfConnected(context.level, axisState, context.clickedPos, null))
     }
 
+    @NoOptimize
     override fun onPlace(state: BlockState, worldIn: Level, pos: BlockPos, oldState: BlockState, isMoving: Boolean) {
         super.onPlace(state, worldIn, pos, oldState, isMoving)
 
@@ -61,6 +66,7 @@ abstract class PropagatingAxisBlock(properties: Properties) : RotatedPillarKinet
         }
     }
 
+    @NoOptimize
     override fun neighborChanged(
         state: BlockState,
         level: Level,
