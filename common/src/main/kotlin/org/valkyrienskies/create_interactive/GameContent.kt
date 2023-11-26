@@ -12,6 +12,8 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
+import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingBlock
+import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingBlockEntity
 import org.valkyrienskies.create_interactive.content.PropagatorBlock
 import org.valkyrienskies.create_interactive.content.PropagatorBlockEntity
 import org.valkyrienskies.create_interactive.registry.DeferredRegister
@@ -38,8 +40,9 @@ object GameContent {
     val PROPAGATOR = BLOCKS.register("propagator") { PropagatorBlock }
     val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
         PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
-
-
+    val MECHANICAL_PROPAGATOR_BEARING_BLOCK = BLOCKS.register("mechanical_bearing_propagator") { MechanicalPropagatorBearingBlock }
+    val MECHANICAL_PROPAGATOR_BEARING_BE: RegistrySupplier<BlockEntityType<MechanicalPropagatorBearingBlockEntity>> =
+        MECHANICAL_PROPAGATOR_BEARING_BLOCK.hasBE { pos, state -> MechanicalPropagatorBearingBlockEntity(::MECHANICAL_PROPAGATOR_BEARING_BE.get().get(), pos, state) }.byName("mechanical_bearing_propagator")
 
     private fun <T : BlockEntity> RegistrySupplier<out Block>.hasBE(blockEntity: (BlockPos, BlockState) -> T) = Pair(setOf(this), blockEntity)
     private fun <T : BlockEntity> Pair<Set<RegistrySupplier<out Block>>, (BlockPos, BlockState) -> T>.byName(name: String): RegistrySupplier<BlockEntityType<T>> =
