@@ -37,6 +37,7 @@
     "MixinContraption",
     "MixinContraptionCollider",
     "MixinContraptionRotationState",
+    "MixinEntity",
     "MixinLevelChunk",
     "MixinMinecraftServer",
     "MixinTrain",
