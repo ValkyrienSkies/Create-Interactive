@@ -20,6 +20,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.directions
+import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toJOML
 
@@ -55,5 +56,9 @@ object PropegatingTools {
 
     fun isContraptionBase(level: Level, location: BlockPos): Boolean {
         return level.getShipManagingPos(location)?.getChunkClaimCenterPos(level) == location.toJOML()
+    }
+
+    fun Contraption.getPropegators(): MutableList<Pair<BlockPos?, BlockPos?>?> {
+        return (this.entity as AbstractContraptionEntityDuck).`ci$getPropegators`()
     }
 }

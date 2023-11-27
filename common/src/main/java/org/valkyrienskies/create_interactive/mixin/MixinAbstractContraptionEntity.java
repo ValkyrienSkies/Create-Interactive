@@ -4,6 +4,7 @@ import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
+import kotlin.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -21,6 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.create_interactive.mixin_logic.MixinAbstractContraptionEntityLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mixin(AbstractContraptionEntity.class)
 public abstract class MixinAbstractContraptionEntity extends Entity implements AbstractContraptionEntityDuck {
     @Unique
@@ -28,6 +32,9 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 
     @Unique
     private AbstractContraptionEntity.ContraptionRotationState ci$prevTickRotationState = null;
+
+    @Unique
+    private List<Pair<BlockPos, BlockPos>> ci$propegators = new ArrayList<>();
 
     @Shadow(remap = false)
     protected Contraption contraption;
