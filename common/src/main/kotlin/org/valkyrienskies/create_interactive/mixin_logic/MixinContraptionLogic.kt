@@ -33,6 +33,8 @@ import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
+import org.valkyrienskies.create_interactive.mixin.ContraptionAccessor
+import org.valkyrienskies.create_interactive.mixin.StructureBlockInfoAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -296,4 +298,17 @@ internal object MixinContraptionLogic {
     internal fun getActorAtPos(
         localPos: BlockPos, actors: List<CreateActor>
     ): CreateActorImmutable? = actors.firstOrNull { it.left.pos == localPos }
+
+    internal fun preWriteBlocksCompound(contraption: Contraption) {
+        val contraptionEntity = contraption.entity ?: return
+        val level = contraption.entity.level
+        val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
+        val ship = level.shipObjectWorld.allShips.getById(shipId) ?: return
+        val centerPos = ship.getChunkClaimCenterPos(level)
+        for (block in contraption.blocks.values) {
+            // Update the nbt of each tile entity
+            val pos = block.pos.offset(centerPos.x(), centerPos.y(), centerPos.z())
+            (block as StructureBlockInfoAccessor).setNbt((contraption as ContraptionAccessor).invokeGetBlockEntityNBT(level, pos))
+        }
+    }
 }

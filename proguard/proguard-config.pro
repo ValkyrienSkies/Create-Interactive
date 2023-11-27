@@ -17,6 +17,13 @@
     public static ** valueOf(java.lang.String);
 }
 
+# Keep all services as entrypoints, but obfuscating is OK
+-keep class
+org.valkyrienskies.create_interactive.services.**,
+org.valkyrienskies.create_interactive.fabric.services.**,
+org.valkyrienskies.create_interactive.forge.services.**
+{ *; }
+
 # Keep annotations
 -keepattributes RuntimeVisibleAnnotations, RuntimeInvisibleAnnotations
 
@@ -37,15 +44,16 @@ org.valkyrienskies.create_interactive.fabric.ValkyrienPreLaunch
 -keep @org.spongepowered.asm.mixin.Mixin class *
 
 
-# Keep shadowed/overwritten field/methods names the same
+# Keep shadowed/overwritten/override field/methods names the same
 -keepclassmembers class * {
     @org.spongepowered.asm.mixin.Shadow <fields>;
     @org.spongepowered.asm.mixin.Shadow <methods>;
     @org.spongepowered.asm.mixin.Overwrite <methods>;
+    @org.valkyrienskies.create_interactive.services.NoOptimize <methods>;
 }
 
 # Obfuscate mixin class names in the mixins json file, and fabric entry class names and json file
--adaptresourcefilecontents **.mixins.json**, fabric.mod.json
+-adaptresourcefilecontents **.mixins.json**, fabric.mod.json, META-INF/services/org.valkyrienskies.create_interactive.services.CreateInteractivePlatformHelper, META-INF/services/org.valkyrienskies.create_interactive.services.DeferredRegisterBackend
 
 # Dont obfuscate library classes
 -keep class !org.valkyrienskies.create_interactive.** { *; }
@@ -82,6 +90,6 @@ com.github.victools.**
     public static ** valueOf(java.lang.String);
 }
 -obfuscate-strings class !**.mixin.** { *; }
--obfuscate-control-flow class * { *; }
+# -obfuscate-control-flow class * { *; } This just breaks things randomly, not very good sadly
 -obfuscate-constants class !**.mixin.** { *; }
 -obfuscate-arithmetic,medium class * { *;}

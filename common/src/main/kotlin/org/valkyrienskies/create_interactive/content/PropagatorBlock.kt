@@ -8,14 +8,18 @@ import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.Material
 import org.valkyrienskies.create_interactive.GameContent
+import org.valkyrienskies.create_interactive.services.NoOptimize
 
-object PropegatorBlock : PropegatingAxisBlock(
+object PropagatorBlock : PropagatingAxisBlock(
     Properties.of(Material.STONE)
-), IBE<PropegatorBlockEntity> {
+), IBE<PropagatorBlockEntity> {
+    @NoOptimize
+    override fun getBlockEntityClass(): Class<PropagatorBlockEntity> = PropagatorBlockEntity::class.java
 
-    override fun getBlockEntityClass(): Class<PropegatorBlockEntity> = PropegatorBlockEntity::class.java
-    override fun getBlockEntityType(): BlockEntityType<out PropegatorBlockEntity> = GameContent.PROPEGATOR_BE.get()
+    @NoOptimize
+    override fun getBlockEntityType(): BlockEntityType<out PropagatorBlockEntity> = GameContent.PROPAGATOR_BE.get()
 
+    @NoOptimize
     override fun hasShaftTowards(world: LevelReader, pos: BlockPos, state: BlockState, face: Direction): Boolean {
         return state.getValue(AXIS) != face.axis
     }

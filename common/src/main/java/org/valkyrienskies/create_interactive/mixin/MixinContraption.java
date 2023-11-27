@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.create_interactive.mixin_logic.MixinContraptionLogic;
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck;
 
@@ -122,5 +123,10 @@ public abstract class MixinContraption implements ContraptionDuck {
     @Override
     public void ci$clearChangedActors() {
         ci$changedActors.clear();
+    }
+
+    @Inject(method = "writeBlocksCompound", at = @At("HEAD"), remap = false)
+    private void preWriteBlocksCompound(final CallbackInfoReturnable<CompoundTag> cir) {
+        MixinContraptionLogic.INSTANCE.preWriteBlocksCompound$create_interactive(Contraption.class.cast(this));
     }
 }

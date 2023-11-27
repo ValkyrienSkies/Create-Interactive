@@ -6,14 +6,13 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
-import org.valkyrienskies.core.impl.shadow.id
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.directions
 import org.valkyrienskies.mod.common.getShipManagingPos
 
-abstract class PropegatingAxisBlockEntity(
-    type: BlockEntityType<out PropegatingAxisBlockEntity>, pos: BlockPos, state: BlockState
+abstract class PropagatingAxisBlockEntity(
+    type: BlockEntityType<out PropagatingAxisBlockEntity>, pos: BlockPos, state: BlockState
 ) : DirectionalShaftHalvesBlockEntity(type, pos, state) {
     val axis get() = blockState.getValue(BlockStateProperties.AXIS)
     val isConnected get() = blockState.getValue(GameContent.CONNECTED)
@@ -33,12 +32,12 @@ abstract class PropegatingAxisBlockEntity(
                 location = shift
                 length++
 
-                if (PropegatingTools.isPropegateBase(state)) {
+                if (PropagatingTools.isPropagateBase(state)) {
                     _id = length
                     return PropegatingTools.getContraptionOfPropegateBase(level!!.getBlockEntity(shift)!!)?.contraption
                 }
 
-                if (PropegatingTools.isContraptionBase(level!!, location)) {
+                if (PropagatingTools.isContraptionBase(level!!, location)) {
                     val weakEntity = CreateInteractiveUtil.shipIdToContraptionEntityServer[level.getShipManagingPos(location)!!.id]
                         ?: throw IllegalStateException("Can't find owning contraption entity!")
 
@@ -48,7 +47,7 @@ abstract class PropegatingAxisBlockEntity(
                     return entity.contraption
                 }
 
-            } while(PropegatingTools.isConnectedPropagator(state))
+            } while(PropagatingTools.isConnectedPropagator(state))
         }
 
         if (isConnected)

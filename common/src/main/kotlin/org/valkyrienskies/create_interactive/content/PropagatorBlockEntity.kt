@@ -5,11 +5,12 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
-import org.valkyrienskies.create_interactive.content.PropegatingTools.getPropegators
+import org.valkyrienskies.create_interactive.services.NoOptimize
 
-class PropegatorBlockEntity(type: BlockEntityType<out PropegatorBlockEntity>, pos: BlockPos, state: BlockState) :
-    PropegatingAxisBlockEntity(type, pos, state) {
+class PropagatorBlockEntity(type: BlockEntityType<out PropagatorBlockEntity>, pos: BlockPos, state: BlockState) :
+    PropagatingAxisBlockEntity(type, pos, state) {
 
+    @NoOptimize
     override fun isNoisy(): Boolean = true
 
     fun getOtherConnection(): BlockPos? {
@@ -48,6 +49,7 @@ class PropegatorBlockEntity(type: BlockEntityType<out PropegatorBlockEntity>, po
     }
 
     // Custom Propagation
+    @NoOptimize
     override fun addPropagationLocations(
         block: IRotate,
         state: BlockState,
@@ -63,6 +65,7 @@ class PropegatorBlockEntity(type: BlockEntityType<out PropegatorBlockEntity>, po
         return locations
     }
 
+    @NoOptimize
     override fun propagateRotationTo(
         target: KineticBlockEntity, stateFrom: BlockState, stateTo: BlockState, diff: BlockPos,
         connectedViaAxes: Boolean, connectedViaCogs: Boolean
