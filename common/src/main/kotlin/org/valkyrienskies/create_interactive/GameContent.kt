@@ -40,9 +40,9 @@ object GameContent {
     val PROPAGATOR = BLOCKS.register("propagator") { PropagatorBlock }
     val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
         PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
-    val MECHANICAL_PROPAGATOR_BEARING_BLOCK = BLOCKS.register("mechanical_bearing_propagator") { MechanicalPropagatorBearingBlock }
+    val MECHANICAL_PROPAGATOR_BEARING_BLOCK = BLOCKS.register("propagator_bearing") { MechanicalPropagatorBearingBlock }
     val MECHANICAL_PROPAGATOR_BEARING_BE: RegistrySupplier<BlockEntityType<MechanicalPropagatorBearingBlockEntity>> =
-        MECHANICAL_PROPAGATOR_BEARING_BLOCK.hasBE { pos, state -> MechanicalPropagatorBearingBlockEntity(::MECHANICAL_PROPAGATOR_BEARING_BE.get().get(), pos, state) }.byName("mechanical_bearing_propagator")
+        MECHANICAL_PROPAGATOR_BEARING_BLOCK.hasBE { pos, state -> MechanicalPropagatorBearingBlockEntity(::MECHANICAL_PROPAGATOR_BEARING_BE.get().get(), pos, state) }.byName("propagator_bearing")
 
     private fun <T : BlockEntity> RegistrySupplier<out Block>.hasBE(blockEntity: (BlockPos, BlockState) -> T) = Pair(setOf(this), blockEntity)
     private fun <T : BlockEntity> Pair<Set<RegistrySupplier<out Block>>, (BlockPos, BlockState) -> T>.byName(name: String): RegistrySupplier<BlockEntityType<T>> =

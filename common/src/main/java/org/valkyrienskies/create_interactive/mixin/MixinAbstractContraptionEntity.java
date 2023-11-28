@@ -49,6 +49,11 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         super(entityType, level);
     }
 
+    @Override
+    public List<Pair<BlockPos, BlockPos>> ci$getPropegators() {
+        return ci$propegators;
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     private void postInit(final CallbackInfo ci) {
         ci$extraData = new MixinAbstractContraptionEntityLogic.ExtraData();

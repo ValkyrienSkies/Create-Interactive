@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.directions
 import org.valkyrienskies.mod.common.getShipManagingPos
@@ -34,7 +35,7 @@ abstract class PropagatingAxisBlockEntity(
 
                 if (PropagatingTools.isPropagateBase(state)) {
                     _id = length
-                    return PropegatingTools.getContraptionOfPropegateBase(level!!.getBlockEntity(shift)!!)?.contraption
+                    return PropagatingTools.getContraptionOfPropagateBase(level!!.getBlockEntity(shift)!!)?.contraption
                 }
 
                 if (PropagatingTools.isContraptionBase(level!!, location)) {
@@ -48,6 +49,10 @@ abstract class PropagatingAxisBlockEntity(
                 }
 
             } while(PropagatingTools.isConnectedPropagator(state))
+        }
+
+        level!!.getShipManagingPos(blockPos)?.getChunkClaimCenterPos(level!!)?.let {
+            println("Found ship center at $it")
         }
 
         if (isConnected)

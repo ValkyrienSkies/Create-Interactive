@@ -1,6 +1,7 @@
 package org.valkyrienskies.create_interactive.content
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.bearing.BearingBlock
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
 import com.simibubi.create.content.contraptions.piston.LinearActuatorBlockEntity
@@ -49,10 +50,10 @@ object PropagatingTools {
     }
 
     fun isContraptionBase(level: Level, location: BlockPos): Boolean {
-        return level.getShipManagingPos(location)?.getChunkClaimCenterPos(level) == location.toJOML()
+        return level.getShipManagingPos(location)?.getChunkClaimCenterPos(level) == location.toJOML().sub(0, 1, 0)
     }
 
-    fun Contraption.getPropegators(): MutableList<Pair<BlockPos?, BlockPos?>?> {
-        return (this.entity as AbstractContraptionEntityDuck).`ci$getPropegators`()
+    fun getPropagators(contraption: Contraption): MutableList<Pair<BlockPos?, BlockPos?>?> {
+        return (contraption.entity as AbstractContraptionEntityDuck).`ci$getPropegators`()
     }
 }

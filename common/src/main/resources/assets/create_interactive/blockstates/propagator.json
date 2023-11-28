@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "axis=x,connected=false": {
+      "model": "create:block/gearbox/block",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y,connected=false": {
+      "model": "create:block/gearbox/block"
+    },
+    "axis=z,connected=false": {
+      "model": "create:block/gearbox/block",
+      "x": 90,
+      "y": 180
+    },
+    "axis=x,connected=true": {
+      "model": "create:block/gearbox/block",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y,connected=true": {
+      "model": "create:block/gearbox/block"
+    },
+    "axis=z,connected=true": {
+      "model": "create:block/gearbox/block",
+      "x": 90,
+      "y": 180
+    }
+  }
+}

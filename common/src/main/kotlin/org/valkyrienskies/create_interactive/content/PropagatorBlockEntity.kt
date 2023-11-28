@@ -13,37 +13,47 @@ class PropagatorBlockEntity(type: BlockEntityType<out PropagatorBlockEntity>, po
     @NoOptimize
     override fun isNoisy(): Boolean = true
 
-    fun getOtherConnection(): BlockPos? {
+    private fun getOtherConnection(): BlockPos? {
         if (level!!.isClientSide) return null
-
+        val contraption = this.contraption ?: return null
         if (id == -1) return null
-        val propegators = this.contraption!!.getPropegators()
 
-        if (propegators.size <= id) {
-            for (i in propegators.size until id) {
-                propegators.add(null)
+        val propagators = PropagatingTools.getPropagators(contraption)
+
+        if (propagators.size <= id) {
+            println("RESIZING PROPAGATORS FOR $id")
+            repeat(id - propagators.size + 1) {
+                propagators.add(null)
             }
         }
 
-        val (pos1, pos2) = propegators[id] ?: run {
-            propegators[id] = Pair(worldPosition, null)
-            return null
-        }
-
-        if (pos1 == null || pos2 == null) {
-            return if (pos1 == null && pos2 != worldPosition) {
-                propegators[id] = Pair(pos2, worldPosition)
-
-                pos2
-            } else if (pos2 == null && pos1 != worldPosition) {
-                propegators[id] = Pair(pos1, worldPosition)
-
-                pos1
-            } else throw IllegalStateException("We have a valid id and contraption, but we got a empty pair?")
+        val (pos1, pos2) = propagators[id] ?: run {
+            println("ADDED PROPAGATOR $id $worldPosition")
+            propagators[id] = Pair(worldPosition, null)
+            return@getOtherConnection null
         }
 
         if (pos1 == worldPosition) return pos2
         if (pos2 == worldPosition) return pos1
+
+        if (pos1 == null || pos2 == null) {
+            println("TRYING TO FULLFULL PROPAGATOR $id")
+            //TODO if we fullfill a pair, update the other pair to notice the change
+
+            if (pos1 == null && pos2 != worldPosition) {
+                propagators[id] = Pair(pos2, worldPosition)
+
+                return pos2
+            } else if (pos2 == null && pos1 != worldPosition) {
+                propagators[id] = Pair(pos1, worldPosition)
+
+                return pos1
+            } else if (pos1 == null && pos2 == null) {
+                throw IllegalStateException("We have a valid id and contraption, but we got a empty pair?")
+            }
+
+            println("FULLFILLED PROPAGATOR $id")
+        }
 
         throw IllegalStateException("We have a valid id and contraption, but we are the wrong blockpos?")
     }
