@@ -107,11 +107,13 @@ internal object MixinAbstractContraptionEntityLogic {
             return null
         }
         check(oldShadowShipId == null) { "Ship already exists" }
-        return if (compound.contains(SHADOW_SHIP_ID_NBT_KEY)) {
+        val shipId = if (compound.contains(SHADOW_SHIP_ID_NBT_KEY)) {
             compound.getLong(SHADOW_SHIP_ID_NBT_KEY)
         } else {
             setShadowShipId(thisEntity, oldShadowShipId, createShipForContraption((thisEntity.level as ServerLevel?)!!, thisEntity.contraption, BlockPos(thisEntity.position())))
         }
+        disableCollisions(thisEntity, null, shipId)
+        return shipId
     }
 
     internal fun postTick(thisEntity: AbstractContraptionEntity, oldShadowShipId: ShipId?, extraData: ExtraData): ShipId? {
