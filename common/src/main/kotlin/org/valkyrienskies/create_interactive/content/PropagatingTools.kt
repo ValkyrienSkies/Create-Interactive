@@ -54,6 +54,6 @@ object PropagatingTools {
     }
 
     fun getPropagators(contraption: Contraption): MutableList<Pair<BlockPos?, BlockPos?>?> {
-        return (contraption.entity as AbstractContraptionEntityDuck).`ci$getPropegators`()
+        return (contraption.entity as AbstractContraptionEntityDuck).`ci$getPropagators`()
     }
 }

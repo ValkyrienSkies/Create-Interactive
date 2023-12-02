@@ -34,7 +34,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     private AbstractContraptionEntity.ContraptionRotationState ci$prevTickRotationState = null;
 
     @Unique
-    private List<Pair<BlockPos, BlockPos>> ci$propegators = new ArrayList<>();
+    private List<Pair<BlockPos, BlockPos>> ci$propagators = null;
 
     @Shadow(remap = false)
     protected Contraption contraption;
@@ -50,13 +50,14 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     }
 
     @Override
-    public List<Pair<BlockPos, BlockPos>> ci$getPropegators() {
-        return ci$propegators;
+    public List<Pair<BlockPos, BlockPos>> ci$getPropagators() {
+        return ci$propagators;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     private void postInit(final CallbackInfo ci) {
         ci$extraData = new MixinAbstractContraptionEntityLogic.ExtraData();
+        ci$propagators = new ArrayList<>();
     }
 
     @Override

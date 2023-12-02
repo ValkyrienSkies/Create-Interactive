@@ -9,7 +9,7 @@ import java.util.List;
 public interface AbstractContraptionEntityDuck {
     void ci$setShadowShipId(final Long shadowShipId);
 
-    List<Pair<BlockPos, BlockPos>> ci$getPropegators();
+    List<Pair<BlockPos, BlockPos>> ci$getPropagators();
 
     Long ci$getShadowShipId();
 

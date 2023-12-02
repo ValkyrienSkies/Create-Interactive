@@ -25,9 +25,11 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.valkyrienskies.core.api.ships.ServerShip
+import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient.addShipToContraptionRef
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionEntityForShip
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.linkShipToContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.teleportShipToPosRot
@@ -85,6 +87,9 @@ internal object MixinAbstractContraptionEntityLogic {
         } else if (prevShipId != null) {
             unlinkShipToContraption(prevShipId, thisEntity)
         }
+
+        disableCollisions(thisEntity, prevShipId, newShadowShipId)
+
         return newShadowShipId
     }
 
@@ -306,6 +311,37 @@ internal object MixinAbstractContraptionEntityLogic {
         return (BlockPos(previousPosition) != gridPosition
             || (contextAccessor.relativeMotion.length() > 0 || contextAccessor.contraption is CarriageContraption)
             && contextAccessor.firstMovement)
+    }
+
+    private fun disableCollisions(thisEntity: AbstractContraptionEntity, prevShipId: ShipId?, newShadowShipId: ShipId?) {
+        // Disable collision between ships and sub-contraptions
+        if (!thisEntity.level.isClientSide) {
+            if (prevShipId != newShadowShipId) {
+                // Disable collision to base ship pls
+                var contraptionEntity: AbstractContraptionEntity? = thisEntity
+                var parentShip: Ship? = thisEntity.level.getShipManagingPos(thisEntity.contraption.anchor)
+                while (parentShip != null && contraptionEntity != null) {
+                    contraptionEntity = getContraptionEntityForShip(parentShip.id, false)
+                    if (contraptionEntity == null) break
+                    parentShip = thisEntity.level.getShipManagingPos(contraptionEntity.contraption.anchor)
+                }
+                if (parentShip != null) {
+                    // Disable collisions
+                    if (newShadowShipId != null) {
+                        ((thisEntity.level as ServerLevel).shipObjectWorld).disableCollisionBetweenBodies(
+                            newShadowShipId,
+                            parentShip.id,
+                        )
+                    }
+                    if (prevShipId != null) {
+                        ((thisEntity.level as ServerLevel).shipObjectWorld).enableCollisionBetweenBodies(
+                            prevShipId,
+                            parentShip.id,
+                        )
+                    }
+                }
+            }
+        }
     }
 
     internal data class ExtraData(
