@@ -18,6 +18,7 @@ object CreateInteractiveMod {
     @JvmStatic
     fun initClient() {
         registerClientEvents()
+        CreateInteractivePartialModels.init()
     }
 
     private fun registerCommonEvents() {
