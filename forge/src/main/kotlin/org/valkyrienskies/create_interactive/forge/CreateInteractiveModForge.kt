@@ -11,6 +11,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import org.valkyrienskies.core.impl.config.VSConfigClass.Companion.getRegisteredConfig
 import org.valkyrienskies.create_interactive.CreateInteractiveConfig
 import org.valkyrienskies.create_interactive.CreateInteractiveMod
+import org.valkyrienskies.create_interactive.CreateInteractiveMod.REGISTRATE
 import org.valkyrienskies.create_interactive.CreateInteractiveMod.init
 import org.valkyrienskies.create_interactive.CreateInteractiveMod.initClient
 import org.valkyrienskies.create_interactive.VS2KotlinHelper
@@ -48,6 +49,7 @@ class CreateInteractiveModForge {
                 )
             }
         }
+        REGISTRATE.register()
         init()
     }
 

@@ -1,7 +1,14 @@
 package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.AllCreativeModeTabs
+import com.simibubi.create.AllTags
+import com.simibubi.create.foundation.data.BuilderTransformers
+import com.simibubi.create.foundation.data.TagGen
+import com.tterrag.registrate.builders.BlockEntityBuilder
+import com.tterrag.registrate.util.nullness.NonNullFunction
 import net.minecraft.Util
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Registry
 import net.minecraft.util.datafix.fixes.References
@@ -10,10 +17,13 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
+import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
+import net.minecraft.world.level.material.MaterialColor
 import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingBlock
 import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingBlockEntity
+import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingRenderer
 import org.valkyrienskies.create_interactive.content.PropagatorBlock
 import org.valkyrienskies.create_interactive.content.PropagatorBlockEntity
 import org.valkyrienskies.create_interactive.registry.DeferredRegister
@@ -40,9 +50,36 @@ object GameContent {
     val PROPAGATOR = BLOCKS.register("propagator") { PropagatorBlock }
     val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
         PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
-    val MECHANICAL_PROPAGATOR_BEARING_BLOCK = BLOCKS.register("propagator_bearing") { MechanicalPropagatorBearingBlock }
-    val MECHANICAL_PROPAGATOR_BEARING_BE: RegistrySupplier<BlockEntityType<MechanicalPropagatorBearingBlockEntity>> =
-        MECHANICAL_PROPAGATOR_BEARING_BLOCK.hasBE { pos, state -> MechanicalPropagatorBearingBlockEntity(::MECHANICAL_PROPAGATOR_BEARING_BE.get().get(), pos, state) }.byName("propagator_bearing")
+
+    val MECHANICAL_PROPAGATOR_BEARING_BLOCK = CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
+        "propagator_bearing"
+    ) { properties: BlockBehaviour.Properties? ->
+        MechanicalPropagatorBearingBlock(
+            properties!!
+        )
+    }
+        .transform(TagGen.axeOrPickaxe())
+        .properties { p: BlockBehaviour.Properties ->
+            p.color(
+                MaterialColor.PODZOL
+            )
+        }
+        .transform(BuilderTransformers.bearing("mechanical", "gearbox"))
+        .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+        .register()
+
+    val MECHANICAL_PROPAGATOR_BEARING_BE = CreateInteractiveMod.REGISTRATE
+        .blockEntity("propagator_bearing",
+            BlockEntityBuilder.BlockEntityFactory<MechanicalPropagatorBearingBlockEntity> { type, pos, state -> MechanicalPropagatorBearingBlockEntity(type, pos, state) })
+        .validBlocks({ MECHANICAL_PROPAGATOR_BEARING_BLOCK.get() })
+        .renderer{
+            NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in MechanicalPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->
+                MechanicalPropagatorBearingRenderer(
+                    context
+                )
+            }
+        }
+        .register()
 
     private fun <T : BlockEntity> RegistrySupplier<out Block>.hasBE(blockEntity: (BlockPos, BlockState) -> T) = Pair(setOf(this), blockEntity)
     private fun <T : BlockEntity> Pair<Set<RegistrySupplier<out Block>>, (BlockPos, BlockState) -> T>.byName(name: String): RegistrySupplier<BlockEntityType<T>> =

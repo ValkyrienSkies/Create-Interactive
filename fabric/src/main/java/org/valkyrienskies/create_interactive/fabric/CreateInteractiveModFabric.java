@@ -11,5 +11,6 @@ public class CreateInteractiveModFabric implements ModInitializer {
         new ValkyrienSkiesModFabric().onInitialize();
 
         CreateInteractiveMod.init();
+        CreateInteractiveMod.INSTANCE.getREGISTRATE().register();
     }
 }
