@@ -1,6 +1,5 @@
 package org.valkyrienskies.create_interactive
 
-import com.simibubi.create.AllCreativeModeTabs
 import com.simibubi.create.AllTags
 import com.simibubi.create.foundation.data.BuilderTransformers
 import com.simibubi.create.foundation.data.TagGen
@@ -13,8 +12,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Registry
 import net.minecraft.util.datafix.fixes.References
-import net.minecraft.world.item.BlockItem
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
@@ -37,9 +34,10 @@ object GameContent {
 
     fun init() {
         BLOCKS.applyAll()
-        BLOCKS.forEach {
-            ITEMS.register(it.name) { BlockItem(it.get(), Item.Properties().tab(AllCreativeModeTabs.BASE_CREATIVE_TAB)) }
-        }
+        // Disable the creative tabs for the propagator
+        // BLOCKS.forEach {
+        //     ITEMS.register(it.name) { BlockItem(it.get(), Item.Properties().tab(AllCreativeModeTabs.BASE_CREATIVE_TAB)) }
+        // }
 
         BLOCK_ENTITIES.applyAll()
 
