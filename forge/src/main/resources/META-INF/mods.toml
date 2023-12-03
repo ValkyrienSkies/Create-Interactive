@@ -1,5 +1,5 @@
-modLoader = "kotlinforforge"
-loaderVersion = "[3.12.0,)"
+modLoader = "javafml"
+loaderVersion = "[40,)"
 issueTrackerURL = "https://github.com/StewStrong/Create-Interactive/issues"
 license = "All Rights Reserved"
 

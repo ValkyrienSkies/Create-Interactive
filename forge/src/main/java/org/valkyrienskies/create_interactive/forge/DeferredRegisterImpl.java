@@ -4,6 +4,7 @@ import java.util.Iterator;
 import kotlin.jvm.functions.Function0;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.create_interactive.registry.DeferredRegister;
@@ -40,7 +41,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
 
     @Override
     public void applyAll() {
-        forge.register(CreateInteractiveModForge.Companion.getModBus());
+        forge.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     @NotNull

@@ -1,28 +1,23 @@
 package org.valkyrienskies.create_interactive.forge
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.screens.Screen
-import net.minecraftforge.client.ConfigGuiHandler.ConfigGuiFactory
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers
 import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
+import net.minecraftforge.fml.DistExecutor
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
-import org.valkyrienskies.core.impl.config.VSConfigClass.Companion.getRegisteredConfig
-import org.valkyrienskies.create_interactive.CreateInteractiveConfig
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import org.valkyrienskies.create_interactive.CreateInteractiveMod
-import org.valkyrienskies.create_interactive.CreateInteractiveMod.REGISTRATE
 import org.valkyrienskies.create_interactive.CreateInteractiveMod.init
 import org.valkyrienskies.create_interactive.CreateInteractiveMod.initClient
-import org.valkyrienskies.create_interactive.VS2KotlinHelper
-import thedarkcolour.kotlinforforge.forge.LOADING_CONTEXT
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
 @Mod(CreateInteractiveMod.MOD_ID)
 class CreateInteractiveModForge {
-    private var happendClientSetup = false
-
     init {
+        val MOD_BUS = FMLJavaModLoadingContext.get().modEventBus
+        // val LOADING_CONTEXT = FMLJavaModLoadingContext.get()
         // Submit our event bus to let architectury register our content on the right time
         MOD_BUS.addListener { event: FMLClientSetupEvent? ->
             clientSetup(
@@ -39,6 +34,16 @@ class CreateInteractiveModForge {
                 event
             )
         }
+
+        CreateInteractiveModForgeHelper.registerRegistrate(MOD_BUS)
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT) {
+            Runnable {
+                initClient()
+            }
+        }
+
+        /*
         LOADING_CONTEXT.registerExtensionPoint(
             ConfigGuiFactory::class.java
         ) {
@@ -49,16 +54,11 @@ class CreateInteractiveModForge {
                 )
             }
         }
-        REGISTRATE.register()
+         */
         init()
     }
 
     private fun clientSetup(event: FMLClientSetupEvent?) {
-        if (happendClientSetup) {
-            return
-        }
-        happendClientSetup = true
-        initClient()
     }
 
     private fun entityRenderers(event: RegisterRenderers) {}
