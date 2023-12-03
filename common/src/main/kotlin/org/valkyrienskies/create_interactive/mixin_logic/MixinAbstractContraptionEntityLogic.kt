@@ -28,6 +28,7 @@ import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient.addShipToContraptionRef
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionEntityForShip
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
@@ -73,6 +74,13 @@ internal object MixinAbstractContraptionEntityLogic {
             if (serverShip == null) {
                 // How???!
                 println("Absolute giga-sus!!!")
+                return newShadowShipId
+            }
+            // Derailed trains can move freely
+            if (thisEntity is CarriageContraptionEntity && CreateInteractiveUtil.isTrainDerailed(thisEntity)) {
+                serverShip.isStatic = false
+                disableCollisions(thisEntity, prevShipId, newShadowShipId, disabled = false)
+                // TODO: Move the contraption to follow the train
                 return newShadowShipId
             }
             val contraptionPosRot = getContraptionPosRot(thisEntity)
@@ -315,7 +323,7 @@ internal object MixinAbstractContraptionEntityLogic {
             && contextAccessor.firstMovement)
     }
 
-    private fun disableCollisions(thisEntity: AbstractContraptionEntity, prevShipId: ShipId?, newShadowShipId: ShipId?) {
+    fun disableCollisions(thisEntity: AbstractContraptionEntity, prevShipId: ShipId?, newShadowShipId: ShipId?, disabled: Boolean = true) {
         // Disable collision between ships and sub-contraptions
         if (!thisEntity.level.isClientSide) {
             if (prevShipId != newShadowShipId) {
@@ -330,10 +338,17 @@ internal object MixinAbstractContraptionEntityLogic {
                 if (parentShip != null) {
                     // Disable collisions
                     if (newShadowShipId != null) {
-                        ((thisEntity.level as ServerLevel).shipObjectWorld).disableCollisionBetweenBodies(
-                            newShadowShipId,
-                            parentShip.id,
-                        )
+                        if (disabled) {
+                            ((thisEntity.level as ServerLevel).shipObjectWorld).disableCollisionBetweenBodies(
+                                newShadowShipId,
+                                parentShip.id,
+                            )
+                        } else {
+                            ((thisEntity.level as ServerLevel).shipObjectWorld).enableCollisionBetweenBodies(
+                                newShadowShipId,
+                                parentShip.id,
+                            )
+                        }
                     }
                     if (prevShipId != null) {
                         ((thisEntity.level as ServerLevel).shipObjectWorld).enableCollisionBetweenBodies(

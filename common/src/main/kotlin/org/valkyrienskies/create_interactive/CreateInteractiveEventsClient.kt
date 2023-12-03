@@ -1,6 +1,7 @@
 package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import io.netty.util.collection.LongObjectHashMap
 import io.netty.util.collection.LongObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
@@ -19,6 +20,7 @@ import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRotForRender
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.isTrainDerailed
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
 import org.valkyrienskies.mod.common.getShipManagingPos
 import java.lang.ref.WeakReference
@@ -55,6 +57,11 @@ object CreateInteractiveEventsClient {
                 ): ShipTransform? {
                     val contraptionEntity = contraption.get()
                     if (contraptionEntity != null) {
+                        // Derailed trains can move freely
+                        if (contraptionEntity is CarriageContraptionEntity && isTrainDerailed(contraptionEntity)) {
+                            return null
+                        }
+
                         val (first, second) = getContraptionPosRot(contraptionEntity)
 
                         // The contraption center block is at the same position as the ship center, so create the
@@ -76,6 +83,11 @@ object CreateInteractiveEventsClient {
                     }
                     val contraptionEntity = contraption.get()
                     if (contraptionEntity != null) {
+                        // Derailed trains can move freely
+                        if (contraptionEntity is CarriageContraptionEntity && isTrainDerailed(contraptionEntity)) {
+                            return null
+                        }
+
                         val parentShip = contraptionEntity.level.getShipManagingPos(contraptionEntity.position()) as ShipObjectClient?
                         if (parentShip != null && !updatedShips.contains(parentShip.id)) {
                             parentShip.updateRenderShipTransform(partialTick)

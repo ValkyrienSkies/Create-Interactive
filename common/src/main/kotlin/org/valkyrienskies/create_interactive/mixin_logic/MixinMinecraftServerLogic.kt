@@ -1,6 +1,7 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import net.minecraft.server.level.ServerLevel
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.properties.ShipId
@@ -68,6 +69,28 @@ internal object MixinMinecraftServerLogic {
                 }
                 val parentTransform: ShipTransform? = if (parentNode != null)
                     parentTransformMap[parentNode.serverShip]!! else null
+
+                val thisEntity = curNode.contraptionEntity
+                val serverShip = curNode.serverShip
+                // Derailed trains can move freely
+                if (thisEntity is CarriageContraptionEntity && CreateInteractiveUtil.isTrainDerailed(thisEntity)) {
+                    serverShip.isStatic = false
+                    val parentShipId = parentNode?.serverShip?.id
+                    if (parentShipId != null) {
+                        // TODO: Move the contraption to follow the train
+                        MixinAbstractContraptionEntityLogic.disableCollisions(
+                            thisEntity,
+                            null,
+                            parentShipId,
+                            disabled = false
+                        )
+                    }
+                    parentTransformMap[curNode.serverShip] = serverShip.transform
+                    return@exploreDag
+                } else {
+                    serverShip.isStatic = true
+                }
+
                 val newPosRot = CreateInteractiveUtil.getContraptionPosRot(curNode.contraptionEntity, parentTransform)
                 val newTransform =
                     CreateInteractiveUtil.updateShipShadow(curNode.contraptionEntity, curNode.serverShip, newPosRot)
