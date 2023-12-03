@@ -3,6 +3,7 @@ package org.valkyrienskies.create_interactive
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
@@ -109,7 +110,10 @@ object CreateInteractiveUtil {
             override fun provideNextTransform(
                 prevShipTransform: ShipTransform,
                 shipTransform: ShipTransform
-            ): ShipTransform {
+            ): ShipTransform? {
+                if (entity is CarriageContraptionEntity && isTrainDerailed(entity)) {
+                    return null
+                }
                 return transform
             }
         }
@@ -254,6 +258,10 @@ object CreateInteractiveUtil {
         val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(context.world)
         val blockPos = context.localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
         return context.world.getBlockEntity(blockPos)
+    }
+
+    fun isTrainDerailed(carriageEntity: CarriageContraptionEntity): Boolean {
+        return carriageEntity.carriage?.train?.derailed == true
     }
 
     data class ShipTeleportDataImplFixed(
