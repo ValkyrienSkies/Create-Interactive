@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(StructureTemplate.StructureBlockInfo.class)
 public interface StructureBlockInfoAccessor {
-    @Accessor(value = "nbt", remap = false)
+    @Accessor(value = "nbt")
     @Mutable
     void setNbt(CompoundTag nbt);
 }
