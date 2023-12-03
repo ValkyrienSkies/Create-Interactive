@@ -1,6 +1,7 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
@@ -8,7 +9,7 @@ import org.valkyrienskies.mod.common.shipObjectWorld
 
 internal object MixinEntityLogic {
     internal fun postDiscard(entity: Entity) {
-        if (entity !is AbstractContraptionEntity) return
+        if (entity !is AbstractContraptionEntity || entity is CarriageContraptionEntity) return
         val duck = entity as AbstractContraptionEntityDuck
         val shipId = duck.`ci$getShadowShipId`() ?: return
         val level = entity.level as? ServerLevel ?: return
