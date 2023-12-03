@@ -103,6 +103,11 @@ allprojects {
             url = 'https://thedarkcolour.github.io/KotlinForForge/'
             content { includeGroup "thedarkcolour" }
         }
+        // Create
+        maven {
+            name = 'tterrag maven'
+            url = 'https://maven.tterrag.com/'
+        }
         maven {
             name = "Valkyrien Skies Internal"
             url = project.vs_maven_url ?: 'https://maven.valkyrienskies.org'

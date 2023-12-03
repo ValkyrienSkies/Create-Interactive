@@ -4,10 +4,8 @@ import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer
 import net.minecraft.world.item.ItemStack
-import org.joml.Vector3ic
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getShipForMovementContext
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.mixin.deployer.DeployerBlockEntityAccessor
 import java.lang.reflect.Field
 
@@ -16,11 +14,7 @@ internal object MixinDeployerMovementBehaviourLogic {
         DeployerBlockEntity::class.java.getDeclaredField("mode").apply { isAccessible = true }
 
     private fun getBlockEntity(context: MovementContext): DeployerBlockEntity? {
-        val ship = getShipForMovementContext(context) ?: return null
-        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(context.world)
-        val blockPos = context.localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
-        val blockEntity = context.world.getBlockEntity(blockPos)
-        return blockEntity as? DeployerBlockEntity
+        return CreateInteractiveUtil.getBlockEntity(context) as? DeployerBlockEntity
     }
 
     internal fun preGetPlayer(context: MovementContext, cir: CallbackInfoReturnable<DeployerFakePlayer>) {

@@ -21,7 +21,10 @@ public class MixinDeployerMovementBehaviour {
         MixinDeployerMovementBehaviourLogic.INSTANCE.preGetPlayer$create_interactive(context, cir);
     }
 
-    @Inject(method = "getFilter", at = @At("HEAD"), cancellable = true, remap = false)
+    /**
+     * Require none of these because this doesn't work on create 0.5.1f
+     */
+    @Inject(method = "getFilter", at = @At("HEAD"), cancellable = true, require = 0, remap = false)
     private void preGetFilter(final MovementContext context, final CallbackInfoReturnable<ItemStack> cir) {
         MixinDeployerMovementBehaviourLogic.INSTANCE.preGetFilter$create_interactive(context, cir);
     }

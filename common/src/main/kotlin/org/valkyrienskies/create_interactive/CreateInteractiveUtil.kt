@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.entity.BlockEntity
 import org.joml.Quaterniond
 import org.joml.Quaterniondc
 import org.joml.Vector3d
@@ -246,6 +247,13 @@ object CreateInteractiveUtil {
 
     internal fun onShipUnloadEventClient(clientShip: ClientShip) {
         shipIdToContraptionEntityClientInternal.remove(clientShip.id)
+    }
+
+    fun getBlockEntity(context: MovementContext): BlockEntity? {
+        val ship = getShipForMovementContext(context) ?: return null
+        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(context.world)
+        val blockPos = context.localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
+        return context.world.getBlockEntity(blockPos)
     }
 
     data class ShipTeleportDataImplFixed(
