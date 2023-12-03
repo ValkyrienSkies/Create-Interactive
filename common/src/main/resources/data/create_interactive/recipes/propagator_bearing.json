@@ -1,15 +1,22 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    {
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "EBE",
+    " E "
+  ],
+  "key": {
+    "B": {
       "item": "create:mechanical_bearing"
     },
-    {
+    "S": {
       "item": "create:shaft"
+    },
+    "E": {
+      "item": "create:iron_sheet"
     }
-  ],
+  },
   "result": {
-    "item": "create_interactive:propagator_bearing",
-    "count": 1
+    "item": "create_interactive:propagator_bearing"
   }
 }
