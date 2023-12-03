@@ -1,3 +1,4 @@
 {
-  "block.create_interactive.propagator_bearing": "Propagator Bearing"
+  "block.create_interactive.propagator_bearing": "Propagator Bearing",
+  "itemGroup.create_interactive.create_interactive": "Create Interactive"
 }

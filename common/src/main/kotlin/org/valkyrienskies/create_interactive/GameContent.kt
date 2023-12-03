@@ -5,6 +5,7 @@ import com.simibubi.create.AllTags
 import com.simibubi.create.foundation.data.BuilderTransformers
 import com.simibubi.create.foundation.data.TagGen
 import com.tterrag.registrate.builders.BlockEntityBuilder
+import com.tterrag.registrate.util.entry.BlockEntry
 import com.tterrag.registrate.util.nullness.NonNullFunction
 import net.minecraft.Util
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
@@ -51,7 +52,7 @@ object GameContent {
     val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
         PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
 
-    val MECHANICAL_PROPAGATOR_BEARING_BLOCK = CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
+    val MECHANICAL_PROPAGATOR_BEARING_BLOCK: BlockEntry<MechanicalPropagatorBearingBlock> = CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
         "propagator_bearing"
     ) { properties: BlockBehaviour.Properties? ->
         MechanicalPropagatorBearingBlock(
