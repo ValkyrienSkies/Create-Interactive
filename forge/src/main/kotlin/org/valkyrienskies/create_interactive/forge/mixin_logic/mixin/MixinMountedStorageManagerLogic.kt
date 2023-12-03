@@ -26,47 +26,45 @@ internal object MixinMountedStorageManagerLogic {
         fluidInventory: CombinedTankWrapper,
     ) {
         if (shipId != null) {
-            val serverShip: ServerShip = VS2KotlinHelper.getShipById(entity.level as ServerLevel, shipId)
+            val serverShip: ServerShip? = VS2KotlinHelper.getShipById(entity.level as ServerLevel, shipId)
             val inventories: MutableList<IItemHandlerModifiable> = ArrayList()
             val fuelInventories: MutableList<IItemHandlerModifiable> = ArrayList()
             val fluidInventories: MutableList<IFluidHandler> = ArrayList()
-            if (serverShip != null) {
-                serverShip.activeChunksSet.forEach { chunkX: Int, chunkZ: Int ->
-                    val chunk = entity.level.getChunk(chunkX, chunkZ)
-                    for (be in chunk.blockEntities.values) {
-                        // TODO: Do we want to do this?
-                        // if (!MountedStorage.canUseAsStorage(be)) {
-                        //     continue;
-                        // }
-                        if (be is ItemVaultBlockEntity) {
-                            inventories.add(be.inventoryOfBlock)
-                        } else {
-                            val newInv =
-                                be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve()
-                                    .orElse(null)
-                            if (newInv != null) {
-                                if (newInv is IItemHandlerModifiable) {
-                                    inventories.add(newInv)
-                                    fuelInventories.add(newInv)
-                                } else {
-                                    // Wrap newInv
-                                    val wrappedNewInv: IItemHandlerModifiable = WrappedIItemHandlerModifiable(newInv)
-                                    inventories.add(wrappedNewInv)
-                                    fuelInventories.add(wrappedNewInv)
-                                }
+            serverShip?.activeChunksSet?.forEach { chunkX: Int, chunkZ: Int ->
+                val chunk = entity.level.getChunk(chunkX, chunkZ)
+                for (be in chunk.blockEntities.values) {
+                    // TODO: Do we want to do this?
+                    // if (!MountedStorage.canUseAsStorage(be)) {
+                    //     continue;
+                    // }
+                    if (be is ItemVaultBlockEntity) {
+                        inventories.add(be.inventoryOfBlock)
+                    } else {
+                        val newInv =
+                            be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve()
+                                .orElse(null)
+                        if (newInv != null) {
+                            if (newInv is IItemHandlerModifiable) {
+                                inventories.add(newInv)
+                                fuelInventories.add(newInv)
+                            } else {
+                                // Wrap newInv
+                                val wrappedNewInv: IItemHandlerModifiable = WrappedIItemHandlerModifiable(newInv)
+                                inventories.add(wrappedNewInv)
+                                fuelInventories.add(wrappedNewInv)
                             }
                         }
                     }
-                    for (be in chunk.blockEntities.values) {
-                        val newFluidInv =
-                            be.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-                                .orElse(null)
-                                ?: continue
-                        // TODO: Do we want to do this?
-                        // if (!(teHandler instanceof SmartFluidTank))
-                        //     continue;
-                        fluidInventories.add(newFluidInv)
-                    }
+                }
+                for (be in chunk.blockEntities.values) {
+                    val newFluidInv =
+                        be.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+                            .orElse(null)
+                            ?: continue
+                    // TODO: Do we want to do this?
+                    // if (!(teHandler instanceof SmartFluidTank))
+                    //     continue;
+                    fluidInventories.add(newFluidInv)
                 }
             }
             inventories.addAll(externalStorages)
