@@ -22,7 +22,7 @@ public class MixinCarriageContraptionEntityRenderer {
         final CallbackInfo ci
     ) {
         MixinCarriageContraptionEntityRendererLogic.INSTANCE.preTranslateBogey$create_interactive(
-            ms, bogey, bogeySpacing, viewYRot, viewXRot, partialTicks, ci
+            ms, bogey
         );
     }
 }

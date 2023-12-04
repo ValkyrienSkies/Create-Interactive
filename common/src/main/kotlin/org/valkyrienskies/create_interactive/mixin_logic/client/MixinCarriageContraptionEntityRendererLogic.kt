@@ -3,7 +3,6 @@ package org.valkyrienskies.create_interactive.mixin_logic.client
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.trains.entity.CarriageBogey
 import net.minecraft.client.multiplayer.ClientLevel
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -13,11 +12,6 @@ internal object MixinCarriageContraptionEntityRendererLogic {
     internal fun preTranslateBogey(
         ms: PoseStack,
         bogey: CarriageBogey,
-        bogeySpacing: Int,
-        viewYRot: Float,
-        viewXRot: Float,
-        partialTicks: Float,
-        ci: CallbackInfo
     ) {
         val contraptionEntity = bogey.carriage.anyAvailableEntity()
         val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
