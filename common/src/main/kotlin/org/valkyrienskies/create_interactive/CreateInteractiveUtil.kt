@@ -154,9 +154,9 @@ object CreateInteractiveUtil {
             Vector3d()
         )
 
-        val newPos: Vector3dc = shipTransform.positionInWorld.sub(offset, Vector3d()).sub(0.5, 0.5, 0.5)
+        val newPos: Vector3dc = shipTransform.shipToWorld.transformPosition(Vector3d(shipCenter).add(0.5, 0.5, 0.5))
         // Add (.5, 0, .5) to compensate for the anchorVec offset
-        entity.setPosRaw(newPos.x() + 0.5, newPos.y(), newPos.z() + 0.5)
+        entity.setPos(newPos.x(), newPos.y() - 0.5, newPos.z())
     }
 
     data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc)
