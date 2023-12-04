@@ -21,6 +21,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaim
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRotForRender
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.isTrainDerailed
+import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntityDuck
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
 import org.valkyrienskies.mod.common.getShipManagingPos
 import java.lang.ref.WeakReference
@@ -41,14 +42,24 @@ object CreateInteractiveEventsClient {
             val next = it.next()
             val shipId = next.key()
             val contraption = next.value()
-            // Remove stale references
-            if (contraption.get() == null) {
-                it.remove()
-                continue
-            }
+
             // Skip the ship if its null, but don't delete the map entry in case the ship packet was delayed
             val clientShip = shipObjectWorld.allShips.getById(shipId) ?: continue
             val shipCenter: Vector3ic = clientShip.getChunkClaimCenterPos(mc.level!!)
+
+            // Remove stale references
+            val contraptionEntityCopy = contraption.get()
+            if (contraptionEntityCopy == null) {
+                it.remove()
+                continue
+            } else {
+                if (contraptionEntityCopy is CarriageContraptionEntity && isTrainDerailed(contraptionEntityCopy)) {
+                    CreateInteractiveUtil.moveContraptionToTransform(contraptionEntityCopy, clientShip)
+                } else if (contraptionEntityCopy is OrientedContraptionEntityDuck) {
+                    contraptionEntityCopy.`ci$setForcedRotation`(null)
+                }
+            }
+
             clientShip.transformProvider = object : ClientShipTransformProvider {
                 override fun provideNextTransform(
                     prevShipTransform: ShipTransform,
