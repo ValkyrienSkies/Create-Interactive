@@ -19,16 +19,16 @@ internal object MixinOrientedContraptionEntityLogic {
         if (contraptionEntity is CarriageContraptionEntity && CreateInteractiveUtil.isTrainDerailed(contraptionEntity)) {
             val rotationTransform = clientShip.renderTransform.shipToWorldRotation
 
-            val angles: Vector3dc = rotationTransform.getEulerAnglesZYX(Vector3d())
+            val angles: Vector3dc = rotationTransform.getEulerAnglesXYZ(Vector3d())
 
             matrixStack.translate(-.5, 0.0, -.5)
 
             TransformStack.cast(matrixStack)
                 .nudge(contraptionEntity.getId())
                 .centre()
-                .rotateZ(Math.toDegrees(angles.z()))
-                .rotateY(Math.toDegrees(angles.y()))
                 .rotateX(Math.toDegrees(angles.x()))
+                .rotateY(Math.toDegrees(angles.y()))
+                .rotateZ(Math.toDegrees(angles.z()))
                 // .rotateY(180.0)
                 .unCentre()
 
