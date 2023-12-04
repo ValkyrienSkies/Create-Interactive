@@ -7,9 +7,11 @@ import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.moveContraptionToTransform
 import org.valkyrienskies.create_interactive.mixin.AbstractContraptionEntityAccessor
 import org.valkyrienskies.create_interactive.mixin.ContraptionAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
+import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntityDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.isBlockInShipyard
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -86,9 +88,13 @@ internal object MixinMinecraftServerLogic {
                         )
                     }
                     parentTransformMap[curNode.serverShip] = serverShip.transform
+                    moveContraptionToTransform(thisEntity, serverShip)
                     return@exploreDag
                 } else {
                     serverShip.isStatic = true
+                    if (thisEntity is OrientedContraptionEntityDuck) {
+                        thisEntity.`ci$setForcedRotation`(null)
+                    }
                 }
 
                 val newPosRot = CreateInteractiveUtil.getContraptionPosRot(curNode.contraptionEntity, parentTransform)

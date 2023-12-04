@@ -24,9 +24,11 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.create_interactive.mixin.ContraptionRotationStateAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
+import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntityDuck
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -129,6 +131,32 @@ object CreateInteractiveUtil {
         serverShip.settings.changeDimensionOnTouchPortals = false
 
         return transform
+    }
+
+    fun moveContraptionToTransform(entity: CarriageContraptionEntity, ship: Ship) {
+        val shipTransform = ship.transform
+        val angles: Vector3dc = shipTransform.shipToWorldRotation.getEulerAnglesZYX(Vector3d())
+
+        val rotState = AbstractContraptionEntity.ContraptionRotationState()
+        rotState as ContraptionRotationStateAccessor
+        rotState.setXRotation(Math.toDegrees(angles.x()).toFloat())
+        rotState.setYRotation(Math.toDegrees(angles.y()).toFloat())
+        rotState.setZRotation(Math.toDegrees(angles.z()).toFloat())
+        (entity as OrientedContraptionEntityDuck).`ci$setForcedRotation`(rotState)
+
+        // Anchor at ship center of mass
+        val cmInShip: Vector3dc = shipTransform.positionInShip
+        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(entity.level)
+        val offset = cmInShip.sub(
+            shipCenter.x().toDouble(),
+            shipCenter.y().toDouble(),
+            shipCenter.z().toDouble(),
+            Vector3d()
+        )
+
+        val newPos: Vector3dc = shipTransform.positionInWorld.sub(offset, Vector3d()).sub(0.5, 0.5, 0.5)
+        // Add (.5, 0, .5) to compensate for the anchorVec offset
+        entity.setPosRaw(newPos.x() + 0.5, newPos.y(), newPos.z() + 0.5)
     }
 
     data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc)
