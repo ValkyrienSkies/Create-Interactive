@@ -145,15 +145,7 @@ object CreateInteractiveUtil {
         (entity as OrientedContraptionEntityDuck).`ci$setForcedRotation`(rotState)
 
         // Anchor at ship center of mass
-        val cmInShip: Vector3dc = shipTransform.positionInShip
         val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(entity.level)
-        val offset = cmInShip.sub(
-            shipCenter.x().toDouble(),
-            shipCenter.y().toDouble(),
-            shipCenter.z().toDouble(),
-            Vector3d()
-        )
-
         val newPos: Vector3dc = shipTransform.shipToWorld.transformPosition(Vector3d(shipCenter).add(0.5, 0.5, 0.5))
         // Add (.5, 0, .5) to compensate for the anchorVec offset
         entity.setPos(newPos.x(), newPos.y() - 0.5, newPos.z())
