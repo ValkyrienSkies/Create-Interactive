@@ -3,9 +3,9 @@
   "package": "org.valkyrienskies.create_interactive.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "client.MixinCarriageContraptionEntityRenderer",
     "client.ContraptionInstanceWorldAccessor",
     "client.MixinBlockEntityRenderDispatcher",
+    "client.MixinCarriageContraptionEntityRenderer",
     "client.MixinContraptionInstanceManager",
     "client.MixinContraptionRenderDispatcher",
     "client.MixinFlwContraption",
@@ -41,6 +41,7 @@
     "MixinContraptionCollider",
     "MixinContraptionRotationState",
     "MixinEntity",
+    "MixinFunnelMovementBehaviour",
     "MixinLevelChunk",
     "MixinMinecraftServer",
     "MixinOrientedContraptionEntity",
