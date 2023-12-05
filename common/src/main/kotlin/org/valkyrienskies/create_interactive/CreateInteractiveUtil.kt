@@ -15,6 +15,8 @@ import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.joml.Vector3ic
+import org.joml.primitives.AABBd
+import org.joml.primitives.AABBdc
 import org.valkyrienskies.core.api.ships.ClientShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider
@@ -36,6 +38,7 @@ import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.settings
 import org.valkyrienskies.mod.common.util.toBlockPos
 import org.valkyrienskies.mod.common.util.toJOML
+import org.valkyrienskies.mod.common.util.toMinecraft
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 
@@ -160,6 +163,14 @@ object CreateInteractiveUtil {
         accessor.setPrevYaw(entity.yawOffset)
         accessor.setYaw(entity.yawOffset)
         accessor.setPitch(0.0f)
+
+        // Update the bounding box too to handle ship rotation
+        val box = entity.contraption.bounds
+        if (box != null) {
+            val boxInLocal: AABBdc = box.toJOML().translate(shipCenter.x() + 0.5, shipCenter.y() + 0.5, shipCenter.z() + 0.5)
+            val boxInGlobal: AABBdc = boxInLocal.transform(shipTransform.shipToWorld, AABBd())
+            entity.boundingBox = boxInGlobal.toMinecraft()
+        }
     }
 
     data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc)
