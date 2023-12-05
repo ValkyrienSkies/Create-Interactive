@@ -25,6 +25,7 @@ import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.create_interactive.mixin.ContraptionRotationStateAccessor
+import org.valkyrienskies.create_interactive.mixin.OrientedContraptionEntityAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
@@ -153,9 +154,12 @@ object CreateInteractiveUtil {
         // Remove the rotation from the contraption
         entity.yRot = 0.0f
         entity.xRot = 0.0f
-        entity.prevYaw = entity.yawOffset
-        entity.yaw = entity.yawOffset
-        entity.pitch = 0.0f
+
+        // Use an accessor for these fields because proguard breaks if we don't
+        val accessor = entity as OrientedContraptionEntityAccessor
+        accessor.setPrevYaw(entity.yawOffset)
+        accessor.setYaw(entity.yawOffset)
+        accessor.setPitch(0.0f)
     }
 
     data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc)
