@@ -26,8 +26,6 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
-import org.valkyrienskies.create_interactive.mixin.ContraptionRotationStateAccessor
-import org.valkyrienskies.create_interactive.mixin.OrientedContraptionEntityAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
@@ -139,13 +137,7 @@ object CreateInteractiveUtil {
 
     fun moveContraptionToTransform(entity: CarriageContraptionEntity, ship: Ship) {
         val shipTransform = ship.transform
-        val angles: Vector3dc = shipTransform.shipToWorldRotation.getEulerAnglesZYX(Vector3d())
-
-        val rotState = AbstractContraptionEntity.ContraptionRotationState()
-        rotState as ContraptionRotationStateAccessor
-        rotState.setXRotation(Math.toDegrees(angles.x()).toFloat())
-        rotState.setYRotation(Math.toDegrees(angles.y()).toFloat())
-        rotState.setZRotation(Math.toDegrees(angles.z()).toFloat())
+        val rotState = CreateInteractiveContraptionRotationState(shipTransform.shipToWorldRotation)
         (entity as OrientedContraptionEntityDuck).`ci$setForcedRotation`(rotState)
 
         // Anchor at ship center of mass
@@ -153,16 +145,6 @@ object CreateInteractiveUtil {
         val newPos: Vector3dc = shipTransform.shipToWorld.transformPosition(Vector3d(shipCenter).add(0.5, 0.5, 0.5))
         // Add (.5, 0, .5) to compensate for the anchorVec offset
         entity.setPos(newPos.x(), newPos.y() - 0.5, newPos.z())
-
-        // Remove the rotation from the contraption
-        // entity.yRot = 0.0f
-        // entity.xRot = 0.0f
-
-        // Use an accessor for these fields because proguard breaks if we don't
-        val accessor = entity as OrientedContraptionEntityAccessor
-//        accessor.setPrevYaw(90.0f)
-//        accessor.setYaw(90.0f)
-        accessor.setPitch(0.0f)
 
         // Update the bounding box too to handle ship rotation
         val box = entity.contraption.bounds

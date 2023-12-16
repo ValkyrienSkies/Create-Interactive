@@ -32,6 +32,7 @@
     "ContraptionAccessor",
     "ContraptionRotationStateAccessor",
     "ControlledContraptionEntityAccessor",
+    "Matrix3dAccessor",
     "MixinAbstractContraptionEntity",
     "MixinAllInteractionBehaviours",
     "MixinCarriage",

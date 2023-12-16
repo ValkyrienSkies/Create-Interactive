@@ -12,6 +12,6 @@ internal object MixinContraptionRotationStateLogic {
             Math.toRadians(xRot.toDouble()),
         )
         newRot.rotateLocalY(Math.toRadians(rotState.yawOffset.toDouble()))
-        return newRot
+        return newRot.normalize()
     }
 }
