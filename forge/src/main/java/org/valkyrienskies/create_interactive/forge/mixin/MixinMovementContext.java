@@ -18,7 +18,7 @@ import org.valkyrienskies.create_interactive.mixin.deployer.DeployerBlockEntityA
 @Pseudo
 @Mixin(MovementContext.class)
 public class MixinMovementContext {
-    @Inject(method = "getFilterFromBE", at = @At("TAIL"), cancellable = true, require = 0, remap = false)
+    @Inject(method = "getFilterFromBE", at = @At("RETURN"), cancellable = true, require = 0, remap = false)
     private void preGetPlayer(CallbackInfoReturnable<FilterItemStack> cir) {
         final BlockEntity blockEntity = CreateInteractiveUtil.INSTANCE.getBlockEntity(MovementContext.class.cast(this));
         if (blockEntity instanceof final DeployerBlockEntity deployerBlockEntity) {

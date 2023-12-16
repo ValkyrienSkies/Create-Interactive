@@ -16,7 +16,7 @@ public abstract class MixinMinecraftServer {
 
     @Inject(
         method = "tickServer",
-        at = @At("TAIL")
+        at = @At("RETURN")
     )
     private void postTick(final CallbackInfo ci) {
         MixinMinecraftServerLogic.INSTANCE.postTick(getAllLevels());

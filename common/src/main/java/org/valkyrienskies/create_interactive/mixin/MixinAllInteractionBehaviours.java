@@ -14,7 +14,7 @@ public class MixinAllInteractionBehaviours {
      * @author Triode
      * @reason Disable the dumb ones
      */
-    @Inject(method = "getBehaviour", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "getBehaviour", at = @At("RETURN"), cancellable = true)
     private static void postGetBehaviour(final CallbackInfoReturnable<MovingInteractionBehaviour> cir) {
         cir.setReturnValue(MixinAllInteractionBehavioursLogic.INSTANCE.postGetBehavior$create_interactive(cir.getReturnValue()));
     }
