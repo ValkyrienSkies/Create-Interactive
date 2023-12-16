@@ -139,7 +139,7 @@ object CreateInteractiveUtil {
 
     fun moveContraptionToTransform(entity: CarriageContraptionEntity, ship: Ship) {
         val shipTransform = ship.transform
-        val angles: Vector3dc = shipTransform.shipToWorldRotation.getEulerAnglesXYZ(Vector3d())
+        val angles: Vector3dc = shipTransform.shipToWorldRotation.getEulerAnglesZYX(Vector3d())
 
         val rotState = AbstractContraptionEntity.ContraptionRotationState()
         rotState as ContraptionRotationStateAccessor
