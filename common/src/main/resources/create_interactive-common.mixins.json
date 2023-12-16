@@ -30,7 +30,6 @@
     "AbstractContraptionEntityAccessor",
     "CarriageBogeyAccessor",
     "ContraptionAccessor",
-    "ContraptionRotationStateAccessor",
     "ControlledContraptionEntityAccessor",
     "Matrix3dAccessor",
     "MixinAbstractContraptionEntity",
