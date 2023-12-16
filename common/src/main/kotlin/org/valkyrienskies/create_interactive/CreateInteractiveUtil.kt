@@ -155,13 +155,13 @@ object CreateInteractiveUtil {
         entity.setPos(newPos.x(), newPos.y() - 0.5, newPos.z())
 
         // Remove the rotation from the contraption
-        entity.yRot = 0.0f
-        entity.xRot = 0.0f
+        // entity.yRot = 0.0f
+        // entity.xRot = 0.0f
 
         // Use an accessor for these fields because proguard breaks if we don't
         val accessor = entity as OrientedContraptionEntityAccessor
-        accessor.setPrevYaw(entity.yawOffset)
-        accessor.setYaw(entity.yawOffset)
+//        accessor.setPrevYaw(90.0f)
+//        accessor.setYaw(90.0f)
         accessor.setPitch(0.0f)
 
         // Update the bounding box too to handle ship rotation
