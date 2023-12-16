@@ -48,7 +48,6 @@
     "MixinTrain",
     "MixinTranslatingContraption",
     "MovementContextAccessor",
-    "OrientedContraptionEntityAccessor",
     "StructureBlockInfoAccessor",
     "bearing.MixinMechanicalBearingBlockEntity",
     "bearing.StabilizedBearingMovementBehaviourAccessor",
