@@ -24,7 +24,7 @@ internal object MixinCarriageContraptionEntityLogic {
         val trainCarriages: List<Carriage> = carriageEntity.carriage.train.carriages
         if (carriageIndex + 1 < trainCarriages.size) {
             val frontCar = trainCarriages[carriageIndex + 1]
-            val frontCarEntity = frontCar.anyAvailableEntity()
+            val frontCarEntity = frontCar.anyAvailableEntity() ?: return null
             if (frontCarEntity.level === level) {
                 val frontCarShipId = (frontCarEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
                 if (frontCarShipId != null) {
