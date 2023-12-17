@@ -11,7 +11,7 @@ import org.valkyrienskies.create_interactive.mixin_logic.client.MixinCarriageCon
 
 @Mixin(CarriageContraptionEntityRenderer.class)
 public class MixinCarriageContraptionEntityRenderer {
-    @Inject(method = "translateBogey", at = @At("HEAD"))
+    @Inject(method = "translateBogey", at = @At("HEAD"), cancellable = true)
     private static void preTranslateBogey(
         final PoseStack ms,
         final CarriageBogey bogey,
@@ -22,7 +22,7 @@ public class MixinCarriageContraptionEntityRenderer {
         final CallbackInfo ci
     ) {
         MixinCarriageContraptionEntityRendererLogic.INSTANCE.preTranslateBogey$create_interactive(
-            ms, bogey
+            ms, bogey, bogeySpacing, partialTicks, ci
         );
     }
 }
