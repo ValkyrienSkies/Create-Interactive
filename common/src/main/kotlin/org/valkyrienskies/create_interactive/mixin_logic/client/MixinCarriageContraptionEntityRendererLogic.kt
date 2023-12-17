@@ -8,6 +8,7 @@ import org.joml.Quaterniondc
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
+import org.valkyrienskies.core.api.ships.ClientShip
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
@@ -22,9 +23,8 @@ internal object MixinCarriageContraptionEntityRendererLogic {
         partialTicks: Float,
         ci: CallbackInfo,
     ) {
+        val clientShip = getClientShipForBogey(bogey) ?: return
         val contraptionEntity = bogey.carriage.anyAvailableEntity()
-        val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
-        val clientShip = (contraptionEntity.level as ClientLevel).shipObjectWorld.allShips.getById(shipId) ?: return
         if (CreateInteractiveUtil.isTrainDerailed(contraptionEntity)) {
             val rotationTransform = clientShip.renderTransform.shipToWorldRotation
             translateBogeyWithShip(ms, bogey, bogeySpacing, partialTicks, rotationTransform)
@@ -56,5 +56,11 @@ internal object MixinCarriageContraptionEntityRendererLogic {
             .translate(0.0, .5, 0.0)
             .rotateZ((if (selfUpsideDown) 180 else 0).toDouble())
             .translateY((if (selfUpsideDown != leadingUpsideDown) 2 else 0).toDouble())
+    }
+
+    internal fun getClientShipForBogey(bogey: CarriageBogey): ClientShip? {
+        val contraptionEntity = bogey.carriage.anyAvailableEntity()
+        val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
+        return (contraptionEntity.level as ClientLevel).shipObjectWorld.allShips.getById(shipId)
     }
 }

@@ -35,6 +35,7 @@
     "MixinAbstractContraptionEntity",
     "MixinAllInteractionBehaviours",
     "MixinCarriage",
+    "MixinCarriageBogey",
     "MixinCarriageContraptionEntity",
     "MixinCBCContraptionRotationState",
     "MixinContraption",
