@@ -6,12 +6,18 @@ import org.joml.Quaterniond
 import org.joml.Quaterniondc
 import org.valkyrienskies.create_interactive.mixin.Matrix3dAccessor
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
+import org.valkyrienskies.create_interactive.services.NoOptimize
 
 internal class CreateInteractiveContraptionRotationState(private val rotation: Quaterniondc) :
     AbstractContraptionEntity.ContraptionRotationState(),
     ContraptionRotationStateDuck {
     private var cached: Matrix3d? = null
-    override fun asMatrix(): Matrix3d {
+
+    @NoOptimize
+    override fun asMatrix(): Matrix3d = asMatrixInternal()
+
+    // Make an internal function so proguard can obfuscate this
+    private fun asMatrixInternal(): Matrix3d {
         if (cached == null) {
             val jomlMatrix = org.joml.Matrix3d().rotate(rotation)
             val cachedLocal = Matrix3d()
