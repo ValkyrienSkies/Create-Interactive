@@ -21,7 +21,7 @@ internal object MixinTrainLogic {
         val carriages = train.carriages
         val carriageSpacing = train.carriageSpacing
         for (i in carriages.indices) {
-            val carriage: Carriage = carriages.get(i)
+            val carriage: Carriage = carriages[i]
             val entity = carriage.anyAvailableEntity() ?: return
             if (entity.contraption.blocks.isEmpty()) {
                 if (carriages.size == 1) {
@@ -83,6 +83,7 @@ internal object MixinTrainLogic {
 
                      */
                 }
+                return
             }
         }
     }
