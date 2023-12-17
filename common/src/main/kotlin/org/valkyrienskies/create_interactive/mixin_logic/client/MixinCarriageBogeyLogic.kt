@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin_logic.client
 
 import com.simibubi.create.content.trains.entity.CarriageBogey
 import com.simibubi.create.foundation.utility.VecHelper
+import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
@@ -32,7 +33,13 @@ object MixinCarriageBogeyLogic {
 
         thisOffset = VecHelper.rotate(thisOffset, bogey.pitch.getValue(partialTicks).toDouble(), Direction.Axis.X)
         thisOffset = VecHelper.rotate(thisOffset, bogey.yaw.getValue(partialTicks).toDouble(), Direction.Axis.Y)
-        thisOffset = thisOffset.add(0.0, 0.0, (if (leading) 0 else -bogeySpacing).toDouble())
+
+        val carEntity = bogey.carriage.anyAvailableEntity()
+        val bogeyPos = if (bogey.getIsLeading()) BlockPos.ZERO else BlockPos.ZERO.relative(
+            carEntity.initialOrientation.counterClockWise, carEntity.carriage.bogeySpacing
+        )
+
+        thisOffset = thisOffset.add(bogeyPos.x.toDouble(), bogeyPos.y.toDouble(), bogeyPos.z.toDouble())
 
         if (selfUpsideDown != leadingUpsideDown) thisOffset =
             thisOffset.add(0.0, (if (selfUpsideDown) -2 else 2).toDouble(), 0.0)
