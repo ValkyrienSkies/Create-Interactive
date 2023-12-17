@@ -2,7 +2,6 @@ package org.valkyrienskies.create_interactive.mixin_logic.client
 
 import com.simibubi.create.content.trains.entity.CarriageBogey
 import com.simibubi.create.foundation.utility.VecHelper
-import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
@@ -10,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
-import org.valkyrienskies.mod.common.util.toJOMLD
 import org.valkyrienskies.mod.common.util.toMinecraft
 
 object MixinCarriageBogeyLogic {
@@ -39,13 +37,8 @@ object MixinCarriageBogeyLogic {
         if (selfUpsideDown != leadingUpsideDown) thisOffset =
             thisOffset.add(0.0, (if (selfUpsideDown) -2 else 2).toDouble(), 0.0)
 
-        val bogeyPosRelativeToShipCenter =
-            if (bogey.getIsLeading()) BlockPos.ZERO else BlockPos.ZERO.relative(
-                carriageEntity.initialOrientation.counterClockWise, carriageEntity.carriage.bogeySpacing
-            )
-
         val shipPos = clientShip.getChunkClaimCenterPos(carriageEntity.level)
-        val bogeyPosLocal = bogeyPosRelativeToShipCenter.toJOMLD().add(shipPos.x().toDouble(), shipPos.y().toDouble(), shipPos.z().toDouble()).add(0.5, 0.0, 0.5).add(thisOffset.x, thisOffset.y, thisOffset.z)
+        val bogeyPosLocal = Vector3d(shipPos).add(0.5, 0.0, 0.5).add(thisOffset.x, thisOffset.y, thisOffset.z)
 
         bogey.couplingAnchors.set(leading, clientShip.renderTransform.shipToWorld.transformPosition(bogeyPosLocal, Vector3d()).toMinecraft())
 
