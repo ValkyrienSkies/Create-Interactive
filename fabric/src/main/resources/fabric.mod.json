@@ -36,6 +36,7 @@
   "depends": {
     "minecraft": ">=1.18.2",
     "valkyrienskies": ">=${vs2_version}",
-    "fabricloader": ">=0.14.21"
+    "fabricloader": ">=0.14.21",
+    "create": ">=${create_fabric_version}"
   }
 }

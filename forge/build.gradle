@@ -84,7 +84,7 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("META-INF/mods.toml") {
-        expand "version": project.version, "vs2_version": project.vs2_version.substring(0, project.vs2_version.indexOf('+')), "forge_version" : forge_version
+        expand "version": project.version, "vs2_version": project.vs2_version.substring(0, project.vs2_version.indexOf('+')), "forge_version" : forge_version, "create_forge_version": project.create_forge_version.split("-")[0] // cut off build number
     }
 }
 
