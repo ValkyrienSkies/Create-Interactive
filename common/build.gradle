@@ -14,7 +14,7 @@ buildscript {
         classpath 're.obfuscator:dprotect-gradle:1.0.0'
     }
     sourceSets {
-        main.java.srcDirs += 'src/main/generated_sources'
+        main.kotlin.srcDirs += 'src/main/generated_sources'
     }
 }
 
@@ -64,19 +64,22 @@ dependencies {
 }
 
 // region Generate random classes to pollute the jar to make reverse engineering harder
-static def generateRandomCode(packageName, className) {
-    return """
-            package $packageName;
-            
-            public class $className {
-                // Add unique code for each class
-                private int randomField = ${Math.abs(new Random().nextInt())};
-                
-                public void doSomething() {
-                    System.out.println("This is ${className}'s unique code!");
-                }
-            }
-        """
+static def extractPackageName(file) {
+    def packageMatcher = file.text =~ /package\s+([\w.]+)/
+    if (packageMatcher) {
+        return packageMatcher[0][1]
+    } else {
+        throw new RuntimeException("Package not found for file $file")
+    }
+}
+
+static def extractClassName(file) {
+    def classMatcher = file.text =~ /(?:class|interface|object)\s+([\w$]+)/
+    if (classMatcher) {
+        return classMatcher[0][1]
+    } else {
+        throw new RuntimeException("Class not found for file $file")
+    }
 }
 
 tasks.register('generateRandomGarbageTask') {
@@ -90,13 +93,31 @@ tasks.register('generateRandomGarbageTask') {
         // Create the directory if it doesn't exist
         file(srcDir).mkdirs()
 
+        def sourceFiles = fileTree('src/main/kotlin/org/valkyrienskies/create_interactive').include('**/*.kt')
+
+        ArrayList validFiles = new ArrayList()
+        sourceFiles.files.each { sourceFile ->
+            try {
+                def originalPackageName = extractPackageName(sourceFile)
+                def originalClassName = extractClassName(sourceFile)
+                validFiles.add(sourceFile)
+            } catch (Exception ignored) {
+                // Ignore
+            }
+        }
+
+        Random random = new Random()
         // Generate 100 random classes
         (1..100).each { index ->
             // Generate a unique class name
             def randomClassName = "RandomClass_$index"
 
+            def sourceFile = validFiles[random.nextInt(validFiles.size)]
+            def originalPackageName = extractPackageName(sourceFile)
+            def originalClassName = extractClassName(sourceFile)
+
             // Create a new Java file with a random class and unique code
-            file(srcDir + '/' + randomClassName + '.java').text = generateRandomCode(packageName, randomClassName)
+            file(srcDir + '/' + randomClassName + '.kt').text = sourceFile.text.replaceFirst("package $originalPackageName", "package $packageName\n import $originalPackageName.*").replaceAll(originalClassName, randomClassName)
         }
     }
 }
