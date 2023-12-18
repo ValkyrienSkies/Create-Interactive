@@ -13,6 +13,9 @@ buildscript {
         // Proguard
         classpath 're.obfuscator:dprotect-gradle:1.0.0'
     }
+    sourceSets {
+        main.java.srcDirs += 'src/main/generated_sources'
+    }
 }
 
 plugins {
@@ -59,6 +62,49 @@ dependencies {
     modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${port_lib_version}+${minecraft_version}")
     modCompileOnly("com.rbasamoyai:createbigcannons-fabric-${minecraft_version}:${createbigcannons_version}")
 }
+
+// region Generate random classes to pollute the jar to make reverse engineering harder
+static def generateRandomCode(packageName, className) {
+    return """
+            package $packageName;
+            
+            public class $className {
+                // Add unique code for each class
+                private int randomField = ${Math.abs(new Random().nextInt())};
+                
+                public void doSomething() {
+                    System.out.println("This is ${className}'s unique code!");
+                }
+            }
+        """
+}
+
+tasks.register('generateRandomGarbageTask') {
+    doLast {
+        // Specify the package name for the random classes
+        def packageName = "org.valkyrienskies.create_interactive.random_garbage"
+
+        // Specify the directory for the generated source files
+        def srcDir = "src/main/generated_sources/${packageName.replace('.', '/')}"
+
+        // Create the directory if it doesn't exist
+        file(srcDir).mkdirs()
+
+        // Generate 100 random classes
+        (1..100).each { index ->
+            // Generate a unique class name
+            def randomClassName = "RandomClass_$index"
+
+            // Create a new Java file with a random class and unique code
+            file(srcDir + '/' + randomClassName + '.java').text = generateRandomCode(packageName, randomClassName)
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    dependsOn generateRandomGarbageTask
+}
+// endregion
 
 def proguardJarFile = layout.buildDirectory.file("libs/common-proguarded-minified.jar")
 

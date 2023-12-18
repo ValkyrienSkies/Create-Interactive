@@ -6,7 +6,7 @@
 -ignorewarnings
 #-dontobfuscate
 #-dontoptimize
-#-dontshrink
+-dontshrink
 
 -overloadaggressively
 
