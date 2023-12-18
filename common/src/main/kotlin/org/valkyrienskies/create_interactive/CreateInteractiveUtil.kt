@@ -1,14 +1,19 @@
 package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.contraptions.BlockMovementChecks
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
+import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer
 import net.minecraft.core.BlockPos
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import org.joml.Quaterniond
 import org.joml.Quaterniondc
 import org.joml.Vector3d
@@ -41,7 +46,7 @@ import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 
 object CreateInteractiveUtil {
-    fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos): ShipId? {
+    fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
         if (contraption.javaClass.packageName.contains("createbigcannons")) {
             // Do not create shadow ships for CBC, too hard
             return null
@@ -52,17 +57,41 @@ object CreateInteractiveUtil {
         // Anchor at ship center
         val shipCenter: Vector3ic = serverShip.getChunkClaimCenterPos(level)
 
-        for ((pos, value) in contraption.blocks) {
-            // TODO: Do I need to sub this???
-            val localPos = pos // .subtract(contraption.anchor)
-            val newPos = localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
-            val flags =
-                Block.UPDATE_MOVE_BY_PISTON or Block.UPDATE_SUPPRESS_DROPS or Block.UPDATE_KNOWN_SHAPE or Block.UPDATE_CLIENTS or Block.UPDATE_IMMEDIATE
-            level.setBlock(newPos, value.state, flags)
+        // Order the blocks such that we place non-brittle blocks first, then brittle blocks (Inspired by Contraption.addBlocksToWorld())
+        val nonBrittleBlocks = blocks.entries.filter { !BlockMovementChecks.isBrittle(it.value.state) }
+        val brittleBlocks = blocks.entries.filter { BlockMovementChecks.isBrittle(it.value.state) }
+        val blocksOrderedCorrectly = nonBrittleBlocks + brittleBlocks
+
+        for ((pos, structureInfo) in blocksOrderedCorrectly) {
+            val newPos = pos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
+
+            val flags = Block.UPDATE_MOVE_BY_PISTON or Block.UPDATE_ALL
+            level.setBlock(newPos, structureInfo.state, flags)
+
+            // region Copy the tile entity to the ship
+            val newBlockEntity = level.getBlockEntity(newPos)
+            if (newBlockEntity != null) {
+                // Transform the block entity, put it in the ship
+                val tag: CompoundTag? = structureInfo.nbt
+                if (tag != null) {
+                    tag.putInt("x", newPos.x)
+                    tag.putInt("y", newPos.y)
+                    tag.putInt("z", newPos.z)
+                    if (newBlockEntity is IMultiBlockEntityContainer && tag.contains("LastKnownPos")) tag.put(
+                        "LastKnownPos", NbtUtils.writeBlockPos(
+                            BlockPos.ZERO.below(
+                                Int.MAX_VALUE - 1
+                            )
+                        )
+                    )
+                    newBlockEntity.load(tag)
+                    level.setBlockEntity(newBlockEntity)
+                }
+            }
+            // endregion
         }
 
         serverShip.isStatic = true
-
         return serverShip.id
     }
 

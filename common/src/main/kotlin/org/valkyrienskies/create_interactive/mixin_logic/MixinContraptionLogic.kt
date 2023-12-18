@@ -13,32 +13,27 @@ import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehav
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
-import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer
 import com.simibubi.create.foundation.utility.Couple
 import com.simibubi.create.foundation.utility.Iterate
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
 import org.apache.commons.lang3.tuple.MutablePair
 import org.joml.Vector3ic
-import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixin.ContraptionAccessor
 import org.valkyrienskies.create_interactive.mixin.StructureBlockInfoAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
-import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.shipObjectWorld
-import org.valkyrienskies.mod.common.util.toJOML
 
 internal object MixinContraptionLogic {
     internal fun preOnEntityCreated(
@@ -61,46 +56,7 @@ internal object MixinContraptionLogic {
         }
 
         val blockPos = BlockPos(entity.position())
-        val serverShip: ServerShip =
-            (level as ServerLevel).shipObjectWorld.createNewShipAtBlock(
-                blockPos.toJOML(),
-                false,
-                1.0,
-                level.dimensionId
-            )
-        val shipId: Long = serverShip.id
-
-        // Anchor at ship center
-        val shipCenter: Vector3ic = serverShip.getChunkClaimCenterPos(level)
-        for ((pos, structureInfo) in initialBlocks.entries) {
-            val localPos = pos // .subtract(anchor)
-            val newPos = localPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
-            val flags =
-                Block.UPDATE_MOVE_BY_PISTON or Block.UPDATE_SUPPRESS_DROPS or Block.UPDATE_KNOWN_SHAPE or Block.UPDATE_CLIENTS or Block.UPDATE_IMMEDIATE
-            level.setBlock(newPos, structureInfo.state, flags)
-
-            // region Copy the tile entity to the ship
-            val newBlockEntity = level.getBlockEntity(newPos)
-            if (newBlockEntity != null) {
-                // Transform the block entity, put it in the ship
-                val tag: CompoundTag? = structureInfo.nbt
-                if (tag != null) {
-                    tag.putInt("x", newPos.x)
-                    tag.putInt("y", newPos.y)
-                    tag.putInt("z", newPos.z)
-                    if (newBlockEntity is IMultiBlockEntityContainer && tag.contains("LastKnownPos")) tag.put(
-                        "LastKnownPos", NbtUtils.writeBlockPos(
-                            BlockPos.ZERO.below(
-                                Int.MAX_VALUE - 1
-                            )
-                        )
-                    )
-                    newBlockEntity.load(tag)
-                    level.setBlockEntity(newBlockEntity)
-                }
-            }
-            // endregion
-        }
+        val shipId = createShipForContraption(level as ServerLevel, entity.contraption, blockPos, initialBlocks) ?: return
         (entity as AbstractContraptionEntityDuck).`ci$setShadowShipId`(shipId)
     }
 
