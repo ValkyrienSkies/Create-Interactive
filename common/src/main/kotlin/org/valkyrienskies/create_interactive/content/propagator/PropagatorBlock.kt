@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.content
+package org.valkyrienskies.create_interactive.content.propagator
 
 import com.simibubi.create.foundation.block.IBE
 import net.minecraft.core.BlockPos
@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.material.Material
 import org.valkyrienskies.create_interactive.GameContent
+import org.valkyrienskies.create_interactive.content.propagating_axis.PropagatingAxisBlock
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
 object PropagatorBlock : PropagatingAxisBlock(

@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.piston.PistonBaseBlock
 import net.minecraft.world.level.block.state.BlockState
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.GameContent
+import org.valkyrienskies.create_interactive.content.propagating_axis.PropagatingAxisBlock
 import org.valkyrienskies.create_interactive.directions
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.getShipManagingPos

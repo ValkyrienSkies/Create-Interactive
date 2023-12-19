@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.content
+package org.valkyrienskies.create_interactive.content.mechanical_propagator
 
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlock
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity

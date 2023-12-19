@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionEntityForShip
-import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingBlockEntity
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlockEntity
 import org.valkyrienskies.create_interactive.mixin.contraptins.ControlledContraptionEntityAccessor
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toBlockPos

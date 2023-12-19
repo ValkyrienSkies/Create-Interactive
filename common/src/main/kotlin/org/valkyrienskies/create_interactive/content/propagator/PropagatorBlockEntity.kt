@@ -1,10 +1,12 @@
-package org.valkyrienskies.create_interactive.content
+package org.valkyrienskies.create_interactive.content.propagator
 
 import com.simibubi.create.content.kinetics.base.IRotate
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
+import org.valkyrienskies.create_interactive.content.PropagatingTools
+import org.valkyrienskies.create_interactive.content.propagating_axis.PropagatingAxisBlockEntity
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
 class PropagatorBlockEntity(type: BlockEntityType<out PropagatorBlockEntity>, pos: BlockPos, state: BlockState) :

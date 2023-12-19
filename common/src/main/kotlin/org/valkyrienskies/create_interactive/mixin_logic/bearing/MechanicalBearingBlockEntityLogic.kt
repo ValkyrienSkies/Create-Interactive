@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.bearing
+package org.valkyrienskies.create_interactive.mixin_logic.bearing
 
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
 import com.simibubi.create.foundation.utility.AnimationTickHolder

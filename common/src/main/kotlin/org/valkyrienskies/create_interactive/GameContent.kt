@@ -19,11 +19,11 @@ import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.material.MaterialColor
-import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingBlock
-import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingBlockEntity
-import org.valkyrienskies.create_interactive.content.MechanicalPropagatorBearingRenderer
-import org.valkyrienskies.create_interactive.content.PropagatorBlock
-import org.valkyrienskies.create_interactive.content.PropagatorBlockEntity
+import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlock
+import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlockEntity
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlock
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlockEntity
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingRenderer
 import org.valkyrienskies.create_interactive.registry.DeferredRegister
 import org.valkyrienskies.create_interactive.registry.RegistrySupplier
 

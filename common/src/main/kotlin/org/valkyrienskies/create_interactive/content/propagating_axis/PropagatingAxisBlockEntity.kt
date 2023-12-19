@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.content
+package org.valkyrienskies.create_interactive.content.propagating_axis
 
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.kinetics.base.DirectionalShaftHalvesBlockEntity
@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.GameContent
+import org.valkyrienskies.create_interactive.content.PropagatingTools
 import org.valkyrienskies.create_interactive.directions
 import org.valkyrienskies.mod.common.getShipManagingPos
 
@@ -18,7 +19,7 @@ abstract class PropagatingAxisBlockEntity(
     val axis get() = blockState.getValue(BlockStateProperties.AXIS)
     val isConnected get() = blockState.getValue(GameContent.CONNECTED)
 
-    val contraption: Contraption? get() = if(!isConnected) null else _contraption ?: findBase().apply { _contraption = this };
+    val contraption: Contraption? get() = if(!isConnected) null else _contraption ?: findBase().apply { _contraption = this }
     val id get() = if(!isConnected) -1 else { if (_contraption == null) findBase(); _id}
     private var _contraption : Contraption? = null
     private var _id: Int = -1

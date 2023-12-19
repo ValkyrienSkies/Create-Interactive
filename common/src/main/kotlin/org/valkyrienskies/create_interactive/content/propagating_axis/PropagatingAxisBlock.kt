@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.content
+package org.valkyrienskies.create_interactive.content.propagating_axis
 
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock
 import net.minecraft.core.BlockPos
@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.create_interactive.GameContent
+import org.valkyrienskies.create_interactive.content.PropagatingTools
 import org.valkyrienskies.create_interactive.directions
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
@@ -34,7 +35,9 @@ abstract class PropagatingAxisBlock(properties: Properties) : RotatedPillarKinet
     @NoOptimize
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState {
         val axisState = super.getStateForPlacement(context)!!
-        return axisState.setValue(GameContent.CONNECTED, PropagatingTools.checkIfConnected(context.level, axisState, context.clickedPos, null))
+        return axisState.setValue(GameContent.CONNECTED,
+            PropagatingTools.checkIfConnected(context.level, axisState, context.clickedPos, null)
+        )
     }
 
     @NoOptimize

@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.content
+package org.valkyrienskies.create_interactive.content.mechanical_propagator
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.contraptions.bearing.BearingRenderer
