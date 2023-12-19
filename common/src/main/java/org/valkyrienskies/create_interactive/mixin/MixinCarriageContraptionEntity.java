@@ -3,6 +3,7 @@ package org.valkyrienskies.create_interactive.mixin;
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.mixin_logic.MixinCarriageContraptionEntityLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 @Mixin(CarriageContraptionEntity.class)
 public abstract class MixinCarriageContraptionEntity extends OrientedContraptionEntity implements AbstractContraptionEntityDuck {
@@ -29,7 +31,7 @@ public abstract class MixinCarriageContraptionEntity extends OrientedContraption
     }
 
     @Unique
-    private boolean ci$hasFrontConstraint = false;
+    private Integer ci$forceConstraintId = null;
 
     /**
      * Create the constraints between train cars
@@ -39,8 +41,17 @@ public abstract class MixinCarriageContraptionEntity extends OrientedContraption
         if (level.isClientSide) {
             return;
         }
-        if (!ci$hasFrontConstraint) {
-            ci$hasFrontConstraint = MixinCarriageContraptionEntityLogic.INSTANCE.preTick$create_interactive(CarriageContraptionEntity.class.cast(this)) != null;
+        final CarriageContraptionEntity thisAs = CarriageContraptionEntity.class.cast(this);
+        if (CreateInteractiveUtil.INSTANCE.isTrainDerailed(thisAs)) {
+            if (ci$forceConstraintId == null) {
+                // Compute this just in time to account for the distance between cars changing slightly during turns
+                ci$forceConstraintId = MixinCarriageContraptionEntityLogic.INSTANCE.preTick$create_interactive(thisAs);
+            }
+        } else {
+            if (ci$forceConstraintId != null) {
+                VSGameUtilsKt.getShipObjectWorld((ServerLevel) level).removeConstraint(ci$forceConstraintId);
+                ci$forceConstraintId = null;
+            }
         }
     }
 }
