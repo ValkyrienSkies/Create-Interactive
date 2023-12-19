@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.entity.TrainMigration;
+import com.simibubi.create.content.trains.graph.TrackGraph;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
@@ -11,4 +12,10 @@ import java.util.List;
 public interface TrainAccessor {
     @Accessor("migratingPoints")
     List<TrainMigration> getMigratingPoints();
+
+    @Accessor("graph")
+    void setGraph(TrackGraph graph);
+
+    @Accessor("derailed")
+    void setDerailed(boolean derailed);
 }

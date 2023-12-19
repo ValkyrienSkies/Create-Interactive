@@ -93,7 +93,7 @@ internal object MixinTrainLogic {
         // TODO: Only derail if the next block isn't a buffer stop
         (train as TrainAccessor).migratingPoints.clear()
         train.navigation.cancelNavigation()
-        train.graph = null
-        train.derailed = true
+        train.setGraph(null)
+        train.setDerailed(true)
     }
 }
