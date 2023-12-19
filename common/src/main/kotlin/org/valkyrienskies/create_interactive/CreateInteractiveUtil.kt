@@ -137,17 +137,25 @@ object CreateInteractiveUtil {
         level.shipObjectWorld.teleportShip(serverShip, shipTeleportData)
     }
 
-    fun updateShipShadow(entity: AbstractContraptionEntity, serverShip: ServerShip, posRot: ContraptionPosRot): ShipTransform {
+    fun updateShipShadow(
+        entity: AbstractContraptionEntity,
+        serverShip: ServerShip,
+        posRot: ContraptionPosRot,
+    ): ShipTransform {
         val transform = posRotToShipTransform(posRot, serverShip, entity.level as ServerLevel)
-        serverShip.transformProvider = object: ServerShipTransformProvider {
-            override fun provideNextTransform(
+        serverShip.transformProvider = object : ServerShipTransformProvider {
+            override fun provideNextTransformAndVelocity(
                 prevShipTransform: ShipTransform,
                 shipTransform: ShipTransform
-            ): ShipTransform? {
+            ): ServerShipTransformProvider.NextTransformAndVelocityData? {
                 if (entity is CarriageContraptionEntity && isTrainDerailed(entity)) {
                     return null
                 }
-                return transform
+                val prevPos = prevShipTransform.shipToWorld.transformPosition(transform.positionInShip, Vector3d())
+                val velocityAtContraptionPos: Vector3dc = transform.positionInWorld.sub(prevPos, Vector3d()).mul(20.0)
+                val rotDiff: Quaterniondc = transform.shipToWorldRotation.difference(prevShipTransform.shipToWorldRotation, Quaterniond()).normalize()
+                val omega: Vector3dc = Vector3d(rotDiff.x() * 2.0, rotDiff.y() * 2.0, rotDiff.z() * 2.0).apply { if (rotDiff.w() > 0.0) mul(-1.0) }.mul(20.0)
+                return ServerShipTransformProvider.NextTransformAndVelocityData(transform, velocityAtContraptionPos, omega)
             }
         }
 
@@ -158,6 +166,7 @@ object CreateInteractiveUtil {
 
         // Make the ship static, so it won't be affected by physics
         serverShip.isStatic = true
+        serverShip.enableKinematicVelocity = true
         // Don't let the ship teleport through dimensions on its own
         serverShip.settings.changeDimensionOnTouchPortals = false
 
