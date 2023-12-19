@@ -5,9 +5,10 @@ import com.simibubi.create.content.trains.entity.Train
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+import org.valkyrienskies.create_interactive.mixin.TrainAccessor
 
 internal object MixinTrainLogic {
-    fun preCanDisassemble(train: Train, cir: CallbackInfoReturnable<Boolean?>) {
+    internal fun preCanDisassemble(train: Train, cir: CallbackInfoReturnable<Boolean?>) {
         for (carriage in train.carriages) {
             val entity = carriage.anyAvailableEntity() ?: return
             if (entity.contraption.blocks.isNotEmpty()) {
@@ -17,7 +18,7 @@ internal object MixinTrainLogic {
         cir.setReturnValue(true)
     }
 
-    fun splitOrDisassemble(train: Train) {
+    internal fun splitOrDisassemble(train: Train) {
         val carriages = train.carriages
         val carriageSpacing = train.carriageSpacing
         for (i in carriages.indices) {
@@ -86,5 +87,13 @@ internal object MixinTrainLogic {
                 return
             }
         }
+    }
+
+    internal fun tickOnEndOfTrack(train: Train) {
+        // TODO: Only derail if the next block isn't a buffer stop
+        (train as TrainAccessor).migratingPoints.clear()
+        train.navigation.cancelNavigation()
+        train.graph = null
+        train.derailed = true
     }
 }
