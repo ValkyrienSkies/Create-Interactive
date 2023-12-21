@@ -106,23 +106,23 @@ internal object MixinTrainLogic {
     private fun TrackNodeLocation.getLocationVec3i() = Vector3i(x, y, z)
 
     private fun Train.collidingWithBufferStop(): Boolean {
-        val leadingCar = if (targetSpeed > 0.0) carriages.first() else carriages.last()
+        val isTrainMovingForward = targetSpeed >= 0.0
+        val leadingCar = if (isTrainMovingForward) carriages.first() else carriages.last()
 
         val leading = leadingCar.leadingPoint
         val trailing = leadingCar.trailingPoint
 
         if (leading.edge == null || trailing.edge == null) return false
 
-        val bufferPoint = if (targetSpeed > 0.0) leading else trailing
-
+        val bufferPoint = if (isTrainMovingForward) leading else trailing
         val position = bufferPoint.getPosition(graph)
-
         var bufferStopPos = BlockPos(position).offset(0, -1, 0)
 
         val node1Location: Vector3ic = bufferPoint.node1.location.getLocationVec3i()
         val node2Location: Vector3ic = bufferPoint.node2.location.getLocationVec3i()
 
-        val normal: Vector3dc = Vector3d(node1Location.sub(node2Location, Vector3i())).normalize().apply { if (targetSpeed <= 0.0) mul(-1.0) }
+        val normal: Vector3dc = Vector3d(node1Location.sub(node2Location, Vector3i())).normalize()
+            .apply { if (!isTrainMovingForward) mul(-1.0) }
 
         // I'm not entirely sure why this works, but create seems to apply an offset in some directions, and this logic
         // handles it
