@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
 import net.minecraft.client.Minecraft
+import net.minecraft.world.phys.AABB
 import org.joml.Vector3d
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ClientShipTransformProvider
@@ -38,26 +39,41 @@ object CreateInteractiveEventsClient {
 
         val it: MutableIterator<LongObjectMap.PrimitiveEntry<WeakReference<AbstractContraptionEntity>>> =
             shipToContraptions.entries().iterator()
+
         while (it.hasNext()) {
             val next = it.next()
             val shipId = next.key()
             val contraption = next.value()
-
-            // Skip the ship if its null, but don't delete the map entry in case the ship packet was delayed
-            val clientShip = shipObjectWorld.allShips.getById(shipId) ?: continue
-            val shipCenter: Vector3ic = clientShip.getChunkClaimCenterPos(mc.level!!)
 
             // Remove stale references
             val contraptionEntityCopy = contraption.get()
             if (contraptionEntityCopy == null) {
                 it.remove()
                 continue
-            } else {
-                if (contraptionEntityCopy is CarriageContraptionEntity && isTrainDerailed(contraptionEntityCopy)) {
-                    CreateInteractiveUtil.moveContraptionToTransform(contraptionEntityCopy, clientShip)
-                } else if (contraptionEntityCopy is OrientedContraptionEntityDuck) {
-                    contraptionEntityCopy.`ci$setForcedRotation`(null)
-                }
+            }
+
+            // Skip the ship if its null, but don't delete the map entry in case the ship packet was delayed
+            val clientShip = shipObjectWorld.allShips.getById(shipId)
+
+            if (clientShip == null) {
+                // If the client ship isn't loaded then send this contraption to Brazil.
+                // This fixes the bug of trains popping in and out of existence when they deviate too far from their
+                // original tracks.
+                val brazil = 1e6
+                contraptionEntityCopy.setPos(contraptionEntityCopy.x, brazil, contraptionEntityCopy.z)
+                contraptionEntityCopy.boundingBox = AABB(
+                    contraptionEntityCopy.x, brazil, contraptionEntityCopy.z,
+                    contraptionEntityCopy.x, brazil, contraptionEntityCopy.z
+                )
+                continue
+            }
+
+            val shipCenter: Vector3ic = clientShip.getChunkClaimCenterPos(mc.level!!)
+
+            if (contraptionEntityCopy is CarriageContraptionEntity && isTrainDerailed(contraptionEntityCopy)) {
+                CreateInteractiveUtil.moveContraptionToTransform(contraptionEntityCopy, clientShip)
+            } else if (contraptionEntityCopy is OrientedContraptionEntityDuck) {
+                contraptionEntityCopy.`ci$setForcedRotation`(null)
             }
 
             clientShip.transformProvider = object : ClientShipTransformProvider {
@@ -77,6 +93,7 @@ object CreateInteractiveEventsClient {
 
                         // The contraption center block is at the same position as the ship center, so create the
                         // transform to apply that
+                        // TODO: Use CreateInteractiveUtil.posRotToShipTransform()
                         return ShipTransformImpl.create(
                             first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second
                         )
@@ -105,6 +122,7 @@ object CreateInteractiveEventsClient {
                             updatedShips.add(parentShip.id)
                         }
                         val (first, second) = getContraptionPosRotForRender(contraptionEntity, partialTick)
+                        // TODO: Use CreateInteractiveUtil.posRotToShipTransform()
                         val renderTransform = ShipTransformImpl.create(
                             first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second
                         )
