@@ -1,9 +1,17 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
+import com.simibubi.create.Create
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.Train
+import com.simibubi.create.foundation.utility.Iterate
+import com.simibubi.create.foundation.utility.Pair
+import com.simibubi.create.foundation.utility.VecHelper
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.resources.ResourceKey
+import net.minecraft.util.Mth
+import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import org.valkyrienskies.create_interactive.mixin.TrainAccessor
 
@@ -91,9 +99,72 @@ internal object MixinTrainLogic {
 
     internal fun tickOnEndOfTrack(train: Train) {
         // TODO: Only derail if the next block isn't a buffer stop
+        // TODO: Get the bogey pos of the forwardmost car, get the direction the train was going, check if the buffer stopper is there. If it is then don't invoke this.
         (train as TrainAccessor).migratingPoints.clear()
         train.navigation.cancelNavigation()
         train.setGraph(null)
         train.setDerailed(true)
+    }
+
+    internal fun findCollidingTrain(
+        level: Level,
+        start: Vec3,
+        end: Vec3,
+        ignore: Train,
+        dimension: ResourceKey<Level>,
+    ): Pair<Train, Vec3>? {
+        for (train in Create.RAILWAYS.sided(level).trains.values) {
+            if (train === ignore) continue
+            // Don't collide with derailed trains.
+            // TODO: Do this logic with VS2 collision events, eventually...
+            if (train.derailed) continue
+            val diff = end.subtract(start)
+            var lastPoint: Vec3? = null
+            for (otherCarriage in train.carriages) {
+                for (betweenBits in Iterate.trueAndFalse) {
+                    if (betweenBits && lastPoint == null) continue
+                    val otherLeading = otherCarriage.leadingPoint
+                    val otherTrailing = otherCarriage.trailingPoint
+                    if (otherLeading.edge == null || otherTrailing.edge == null) continue
+                    val otherDimension = otherLeading.node1.location.dimension
+                    if (otherDimension != otherTrailing.node1.location.dimension) continue
+                    if (otherDimension != dimension) continue
+                    var start2 = otherLeading.getPosition(train.graph)
+                    var end2 = otherTrailing.getPosition(train.graph)
+                    if (betweenBits) {
+                        end2 = start2
+                        start2 = lastPoint
+                    }
+                    lastPoint = end2
+                    if ((end.y < end2!!.y - 3 || end2.y < end.y - 3)
+                        && (start.y < start2!!.y - 3 || start2.y < start.y - 3)
+                    ) continue
+                    val diff2 = end2.subtract(start2)
+                    val normedDiff = diff.normalize()
+                    val normedDiff2 = diff2.normalize()
+                    var intersect = VecHelper.intersect(start, start2, normedDiff, normedDiff2, Direction.Axis.Y)
+                    if (intersect == null) {
+                        val intersectSphere = VecHelper.intersectSphere(start2, normedDiff2, start, .125)
+                            ?: continue
+                        if (!Mth.equal(
+                                normedDiff2.dot(
+                                    intersectSphere.subtract(start2)
+                                        .normalize()
+                                ), 1.0
+                            )
+                        ) continue
+                        intersect = DoubleArray(2)
+                        intersect[0] = intersectSphere.distanceTo(start) - .125
+                        intersect[1] = intersectSphere.distanceTo(start2) - .125
+                    }
+                    if (intersect[0] > diff.length()) continue
+                    if (intersect[1] > diff2.length()) continue
+                    if (intersect[0] < 0) continue
+                    if (intersect[1] < 0) continue
+                    return Pair.of(train, start.add(normedDiff.scale(intersect[0])))
+                }
+            }
+        }
+        return null
     }
 }
