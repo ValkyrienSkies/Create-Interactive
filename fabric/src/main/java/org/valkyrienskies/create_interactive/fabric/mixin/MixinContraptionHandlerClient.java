@@ -3,8 +3,6 @@ package org.valkyrienskies.create_interactive.fabric.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.simibubi.create.content.contraptions.ContraptionHandlerClient;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,10 +31,6 @@ public class MixinContraptionHandlerClient {
      */
     @Inject(method = "handleSpecialInteractions", at = @At("HEAD"), cancellable = true)
     private static void preHandleSpecialInteractions(final CallbackInfoReturnable<Boolean> cir) {
-        final HitResult hitResult = Minecraft.getInstance().hitResult;
-        if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
-            // Don't handle train interactions if the hit result was a block, we'll handle these later
-            cir.setReturnValue(false);
-        }
+        MixinContraptionHandlerClientLogic.INSTANCE.preHandleSpecialInteractions$create_interactive(cir);
     }
 }
