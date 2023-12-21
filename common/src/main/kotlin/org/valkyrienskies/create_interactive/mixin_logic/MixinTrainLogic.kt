@@ -3,6 +3,7 @@ package org.valkyrienskies.create_interactive.mixin_logic
 import com.simibubi.create.Create
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.Train
+import com.simibubi.create.content.trains.graph.TrackNodeLocation
 import com.simibubi.create.foundation.utility.Iterate
 import com.simibubi.create.foundation.utility.Pair
 import com.simibubi.create.foundation.utility.VecHelper
@@ -12,6 +13,10 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.util.Mth
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
+import org.joml.Vector3d
+import org.joml.Vector3dc
+import org.joml.Vector3i
+import org.joml.Vector3ic
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.mixin.TrainAccessor
@@ -98,27 +103,44 @@ internal object MixinTrainLogic {
         }
     }
 
+    private fun TrackNodeLocation.getLocationVec3i() = Vector3i(x, y, z)
+
     private fun Train.collidingWithBufferStop(): Boolean {
         val leadingCar = if (targetSpeed > 0.0) carriages.first() else carriages.last()
-        val carriageEntity = leadingCar.anyAvailableEntity()
-        // TODO: Get level better
-        val level = carriageEntity.level
+
         val leading = leadingCar.leadingPoint
         val trailing = leadingCar.trailingPoint
 
         if (leading.edge == null || trailing.edge == null) return false
-        val otherDimension = leading.node1.location.dimension
-        if (otherDimension != trailing.node1.location.dimension) return false
 
-        val start = leading.getPosition(graph)
-        val end = trailing.getPosition(graph)
+        val bufferPoint = if (targetSpeed > 0.0) leading else trailing
 
-        val position = if (targetSpeed > 0.0) start else end
+        val position = bufferPoint.getPosition(graph)
 
-        val startBlockPos = BlockPos(position)
-        val bufferStopPos = startBlockPos.offset(0, -1, 0)
-        val blockState = level.getBlockState(bufferStopPos)
-        return blockState.block == GameContent.BUFFER_STOP_BLOCK.get()
+        var bufferStopPos = BlockPos(position).offset(0, -1, 0)
+
+        val node1Location: Vector3ic = bufferPoint.node1.location.getLocationVec3i()
+        val node2Location: Vector3ic = bufferPoint.node2.location.getLocationVec3i()
+
+        val normal: Vector3dc = Vector3d(node1Location.sub(node2Location, Vector3i())).normalize().apply { if (targetSpeed <= 0.0) mul(-1.0) }
+
+        // I'm not entirely sure why this works, but create seems to apply an offset in some directions, and this logic
+        // handles it
+        if (normal.x() > 0.0 || normal.z() > 0.0) {
+            bufferStopPos = bufferStopPos.offset(-normal.x(), -normal.y(), -normal.z())
+        }
+
+        val dimension = bufferPoint.node1.location.dimension
+
+        // Get the level that position is in
+        var level: Level? = null
+        leadingCar.forEachPresentEntity {
+            if (it.level.dimension() == dimension) {
+                level = it.level
+            }
+        }
+
+        return level?.getBlockState(bufferStopPos)?.block == GameContent.BUFFER_STOP_BLOCK.get()
     }
 
     internal fun tickOnEndOfTrack(train: Train) {
