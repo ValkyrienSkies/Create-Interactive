@@ -56,7 +56,8 @@ object CreateInteractiveEventsClient {
             val clientShip = shipObjectWorld.allShips.getById(shipId)
 
             if (clientShip == null) {
-                if (contraptionEntityCopy is CarriageContraptionEntity) {
+                // Only apply this logic to carriages that have been derailed
+                if (contraptionEntityCopy is CarriageContraptionEntity && contraptionEntityCopy.carriage.train.derailed) {
                     // If the client ship isn't loaded then send this contraption to Brazil.
                     // This fixes the bug of trains popping in and out of existence when they deviate too far from their
                     // original tracks.
