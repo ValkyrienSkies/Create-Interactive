@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[40,)"
-issueTrackerURL = "https://github.com/StewStrong/Create-Interactive/issues"
+issueTrackerURL = "https://github.com/StewStrong/Create-Interactive-Issues/issues"
 license = "All Rights Reserved"
 
 [[mods]]
