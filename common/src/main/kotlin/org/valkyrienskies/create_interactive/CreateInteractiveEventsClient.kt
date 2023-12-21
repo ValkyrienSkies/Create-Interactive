@@ -56,15 +56,17 @@ object CreateInteractiveEventsClient {
             val clientShip = shipObjectWorld.allShips.getById(shipId)
 
             if (clientShip == null) {
-                // If the client ship isn't loaded then send this contraption to Brazil.
-                // This fixes the bug of trains popping in and out of existence when they deviate too far from their
-                // original tracks.
-                val brazil = 1e6
-                contraptionEntityCopy.setPos(contraptionEntityCopy.x, brazil, contraptionEntityCopy.z)
-                contraptionEntityCopy.boundingBox = AABB(
-                    contraptionEntityCopy.x, brazil, contraptionEntityCopy.z,
-                    contraptionEntityCopy.x, brazil, contraptionEntityCopy.z
-                )
+                if (contraptionEntityCopy is CarriageContraptionEntity) {
+                    // If the client ship isn't loaded then send this contraption to Brazil.
+                    // This fixes the bug of trains popping in and out of existence when they deviate too far from their
+                    // original tracks.
+                    val brazil = 1e6
+                    contraptionEntityCopy.setPos(contraptionEntityCopy.x, brazil, contraptionEntityCopy.z)
+                    contraptionEntityCopy.boundingBox = AABB(
+                        contraptionEntityCopy.x, brazil, contraptionEntityCopy.z,
+                        contraptionEntityCopy.x, brazil, contraptionEntityCopy.z
+                    )
+                }
                 continue
             }
 
