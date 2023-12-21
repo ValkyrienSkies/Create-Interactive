@@ -19,6 +19,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.material.MaterialColor
+import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlock
+import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlockEntity
+import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopRenderer
 import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlock
 import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlockEntity
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlock
@@ -50,10 +53,47 @@ object GameContent {
     val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
         PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
 
-    val MECHANICAL_PROPAGATOR_BEARING_BLOCK: BlockEntry<MechanicalPropagatorBearingBlock> = CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
-        "propagator_bearing"
+    val MECHANICAL_PROPAGATOR_BEARING_BLOCK: BlockEntry<MechanicalPropagatorBearingBlock> =
+        CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
+            "propagator_bearing"
+        ) { properties: BlockBehaviour.Properties? ->
+            MechanicalPropagatorBearingBlock(
+                properties!!
+            )
+        }
+            .transform(TagGen.axeOrPickaxe())
+            .properties { p: BlockBehaviour.Properties ->
+                p.color(
+                    MaterialColor.PODZOL
+                )
+            }
+            .transform(BuilderTransformers.bearing("mechanical", "gearbox"))
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .register()
+
+    val MECHANICAL_PROPAGATOR_BEARING_BE = CreateInteractiveMod.REGISTRATE
+        .blockEntity("propagator_bearing",
+            BlockEntityBuilder.BlockEntityFactory<MechanicalPropagatorBearingBlockEntity> { type, pos, state ->
+                MechanicalPropagatorBearingBlockEntity(
+                    type,
+                    pos,
+                    state
+                )
+            })
+        .validBlocks({ MECHANICAL_PROPAGATOR_BEARING_BLOCK.get() })
+        .renderer {
+            NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in MechanicalPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->
+                MechanicalPropagatorBearingRenderer(
+                    context
+                )
+            }
+        }
+        .register()
+
+    val BUFFER_STOP_BLOCK: BlockEntry<BufferStopBlock> = CreateInteractiveMod.REGISTRATE.block<BufferStopBlock>(
+        "buffer_stop"
     ) { properties: BlockBehaviour.Properties? ->
-        MechanicalPropagatorBearingBlock(
+        BufferStopBlock(
             properties!!
         )
     }
@@ -63,19 +103,24 @@ object GameContent {
                 MaterialColor.PODZOL
             )
         }
-        .transform(BuilderTransformers.bearing("mechanical", "gearbox"))
         .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+        // TODO: Enable this once this is working
+        // .simpleItem()
         .register()
 
-    val MECHANICAL_PROPAGATOR_BEARING_BE = CreateInteractiveMod.REGISTRATE
-        .blockEntity("propagator_bearing",
-            BlockEntityBuilder.BlockEntityFactory<MechanicalPropagatorBearingBlockEntity> { type, pos, state -> MechanicalPropagatorBearingBlockEntity(type, pos, state) })
-        .validBlocks({ MECHANICAL_PROPAGATOR_BEARING_BLOCK.get() })
-        .renderer{
-            NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in MechanicalPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->
-                MechanicalPropagatorBearingRenderer(
-                    context
+    val BUFFER_STOP_BE = CreateInteractiveMod.REGISTRATE
+        .blockEntity("buffer_stop",
+            BlockEntityBuilder.BlockEntityFactory<BufferStopBlockEntity> { type, pos, state ->
+                BufferStopBlockEntity(
+                    type,
+                    pos,
+                    state
                 )
+            })
+        .validBlocks({ BUFFER_STOP_BLOCK.get() })
+        .renderer {
+            NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in BufferStopBlockEntity>> { context: BlockEntityRendererProvider.Context ->
+                BufferStopRenderer(context)
             }
         }
         .register()
