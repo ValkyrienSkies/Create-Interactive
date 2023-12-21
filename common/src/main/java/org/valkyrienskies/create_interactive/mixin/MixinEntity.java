@@ -16,4 +16,12 @@ public class MixinEntity {
     private void postDiscard(final CallbackInfo ci) {
         MixinEntityLogic.INSTANCE.postDiscard$create_interactive(Entity.class.cast(this));
     }
+
+    /**
+     * Don't kill contraption entities that are out of the world if they have a ship shadow
+     */
+    @Inject(method = "outOfWorld", at = @At("HEAD"), cancellable = true)
+    private void preOutOfWorld(CallbackInfo ci) {
+        MixinEntityLogic.INSTANCE.preOutOfWorld$create_interactive(Entity.class.cast(this), ci);
+    }
 }
