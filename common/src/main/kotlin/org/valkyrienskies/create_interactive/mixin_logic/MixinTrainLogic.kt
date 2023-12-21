@@ -13,6 +13,7 @@ import net.minecraft.util.Mth
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.mixin.TrainAccessor
 
 internal object MixinTrainLogic {
@@ -97,9 +98,34 @@ internal object MixinTrainLogic {
         }
     }
 
+    private fun Train.collidingWithBufferStop(): Boolean {
+        val leadingCar = if (targetSpeed > 0.0) carriages.first() else carriages.last()
+        val carriageEntity = leadingCar.anyAvailableEntity()
+        // TODO: Get level better
+        val level = carriageEntity.level
+        val leading = leadingCar.leadingPoint
+        val trailing = leadingCar.trailingPoint
+
+        if (leading.edge == null || trailing.edge == null) return false
+        val otherDimension = leading.node1.location.dimension
+        if (otherDimension != trailing.node1.location.dimension) return false
+
+        val start = leading.getPosition(graph)
+        val end = trailing.getPosition(graph)
+
+        val position = if (targetSpeed > 0.0) start else end
+
+        val startBlockPos = BlockPos(position)
+        val bufferStopPos = startBlockPos.offset(0, -1, 0)
+        val blockState = level.getBlockState(bufferStopPos)
+        return blockState.block == GameContent.BUFFER_STOP_BLOCK.get()
+    }
+
     internal fun tickOnEndOfTrack(train: Train) {
-        // TODO: Only derail if the next block isn't a buffer stop
-        // TODO: Get the bogey pos of the forwardmost car, get the direction the train was going, check if the buffer stopper is there. If it is then don't invoke this.
+        // Only derail if the next block isn't a buffer stop
+        if (train.collidingWithBufferStop()) {
+            return
+        }
         (train as TrainAccessor).migratingPoints.clear()
         train.navigation.cancelNavigation()
         train.setGraph(null)
