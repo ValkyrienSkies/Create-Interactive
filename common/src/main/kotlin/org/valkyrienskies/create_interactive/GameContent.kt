@@ -104,8 +104,7 @@ object GameContent {
             )
         }
         .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
-        // TODO: Enable this once this is working
-        // .simpleItem()
+        .simpleItem()
         .register()
 
     val BUFFER_STOP_BE = CreateInteractiveMod.REGISTRATE
