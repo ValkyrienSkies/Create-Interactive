@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "create_interactive:block/disjointed_propagator_bearing",
+      "x": 180
+    },
+    "facing=up": {
+      "model": "create_interactive:block/disjointed_propagator_bearing"
+    },
+    "facing=north": {
+      "model": "create_interactive:block/disjointed_propagator_bearing",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "create_interactive:block/disjointed_propagator_bearing",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "create_interactive:block/disjointed_propagator_bearing",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east": {
+      "model": "create_interactive:block/disjointed_propagator_bearing",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

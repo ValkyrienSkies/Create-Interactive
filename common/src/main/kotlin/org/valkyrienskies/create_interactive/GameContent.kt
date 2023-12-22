@@ -23,11 +23,9 @@ import net.minecraft.world.level.material.MaterialColor
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlock
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlockEntity
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopRenderer
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.*
 import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlock
 import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlockEntity
-import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlock
-import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlockEntity
-import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingRenderer
 import org.valkyrienskies.create_interactive.registry.DeferredRegister
 import org.valkyrienskies.create_interactive.registry.RegistrySupplier
 
@@ -72,6 +70,24 @@ object GameContent {
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .register()
 
+    val DISJOINTED_PROPAGATOR_BEARING_BLOCK: BlockEntry<DisjointedPropagatorBearingBlock> =
+        CreateInteractiveMod.REGISTRATE.block<DisjointedPropagatorBearingBlock>(
+            "disjointed_propagator_bearing"
+        ) { properties: BlockBehaviour.Properties? ->
+            DisjointedPropagatorBearingBlock(
+                properties!!
+            )
+        }
+            .transform(TagGen.axeOrPickaxe())
+            .properties { p: BlockBehaviour.Properties ->
+                p.color(
+                    MaterialColor.PODZOL
+                )
+            }
+            .transform(BuilderTransformers.bearing("mechanical", "gearbox"))
+            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+            .register()
+
     val MECHANICAL_PROPAGATOR_BEARING_BE = CreateInteractiveMod.REGISTRATE
         .blockEntity("propagator_bearing",
             BlockEntityBuilder.BlockEntityFactory<MechanicalPropagatorBearingBlockEntity> { type, pos, state ->
@@ -85,6 +101,25 @@ object GameContent {
         .renderer {
             NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in MechanicalPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->
                 MechanicalPropagatorBearingRenderer(
+                    context
+                )
+            }
+        }
+        .register()
+
+    val DISJOINTED_PROPAGATOR_BEARING_BE = CreateInteractiveMod.REGISTRATE
+        .blockEntity("disjointed_propagator_bearing",
+            BlockEntityBuilder.BlockEntityFactory<DisjointedPropagatorBearingBlockEntity> { type, pos, state ->
+                DisjointedPropagatorBearingBlockEntity(
+                    type,
+                    pos,
+                    state
+                )
+            })
+        .validBlocks({ DISJOINTED_PROPAGATOR_BEARING_BLOCK.get() })
+        .renderer {
+            NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in DisjointedPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->
+                DisjointedPropagatorBearingRenderer(
                     context
                 )
             }
