@@ -3,7 +3,8 @@
   "package": "org.valkyrienskies.create_interactive.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MixinMountedStorageManager"
+    "MixinMountedStorageManager",
+    "MixinTrain"
   ],
   "client": [
     "MixinContraptionHandlerClient"
