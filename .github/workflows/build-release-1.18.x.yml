@@ -1,0 +1,45 @@
+name: Build
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  validate-gradle:
+    name: "Validate Gradle wrapper"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true # Clone with vs-core submodule
+      - uses: gradle/wrapper-validation-action@v1
+
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build jar
+        run: ./gradlew build -PCustomReleaseVersion="${{ github.ref }}"
+
+      # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
+      # the publishing section of your build.gradle
+      - name: Publish to GitHub Packages and VS Maven
+        run: ./gradlew publish -PCustomReleaseVersion="${{ github.ref }}"
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
