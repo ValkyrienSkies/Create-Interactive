@@ -6,7 +6,7 @@ license = "All Rights Reserved"
 [[mods]]
 modId = "create_interactive"
 version = "${version}"
-displayName = "Create Interactive"
+displayName = "Create: Interactive"
 authors = ["Tri0de"]
 description = '''
 Create made interactive!

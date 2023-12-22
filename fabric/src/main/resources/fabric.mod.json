@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "create_interactive",
   "version": "${version}",
-  "name": "Create Interactive",
+  "name": "Create: Interactive",
   "description": "Create made interactive!",
   "authors": [
     "Tri0de"
