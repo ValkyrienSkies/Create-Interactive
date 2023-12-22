@@ -102,6 +102,7 @@ object GameContent {
             p.color(
                 MaterialColor.PODZOL
             )
+            p.noOcclusion()
         }
         .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
         .simpleItem()
