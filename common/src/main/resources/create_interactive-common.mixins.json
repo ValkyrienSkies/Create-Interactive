@@ -29,6 +29,7 @@
   "mixins": [
     "AbstractContraptionEntityAccessor",
     "CarriageBogeyAccessor",
+    "CarriageSyncDataAccessor",
     "ContraptionAccessor",
     "ControlledContraptionEntityAccessor",
     "Matrix3dAccessor",

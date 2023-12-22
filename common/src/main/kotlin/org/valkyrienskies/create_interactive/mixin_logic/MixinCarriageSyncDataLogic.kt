@@ -7,11 +7,12 @@ import com.simibubi.create.content.trains.graph.TrackEdge
 import com.simibubi.create.content.trains.graph.TrackGraph
 import com.simibubi.create.content.trains.graph.TrackNode
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
+import org.valkyrienskies.create_interactive.mixin.CarriageSyncDataAccessor
 
 internal object MixinCarriageSyncDataLogic {
     internal fun preUpdateFallbackLocations(carriageSyncData: CarriageSyncData, dce: Carriage.DimensionalCarriageEntity, ci: CallbackInfo) {
         if (dce.rotationAnchors.any { it == null }) {
-            carriageSyncData.fallbackLocations = null
+            (carriageSyncData as CarriageSyncDataAccessor).setFallbackLocations(null)
             carriageSyncData.isDirty = true
             ci.cancel()
         }
