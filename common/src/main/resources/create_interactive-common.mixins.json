@@ -11,6 +11,7 @@
     "client.MixinFlwContraption",
     "client.MixinInstanceManager",
     "client.MixinMinecraft",
+    "client.MixinOrientedContraptionEntityClient",
     "client.MixinSBBContraptionManager",
     "client.actor.MixinActorInstance",
     "client.actor.MixinDeployerActorInstance",
