@@ -2,4 +2,4 @@
 
 # Create Interactive
 
-Basically **Create** with **Interactive** contraptions!
+Basically **Create** with **interactive** contraptions!
