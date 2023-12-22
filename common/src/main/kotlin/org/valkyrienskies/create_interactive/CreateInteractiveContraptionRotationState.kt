@@ -19,23 +19,23 @@ internal class CreateInteractiveContraptionRotationState(private val rotation: Q
     // Make an internal function so proguard can obfuscate this
     private fun asMatrixInternal(): Matrix3d {
         if (cached == null) {
-            val jomlMatrix = org.joml.Matrix3d().rotate(rotation)
-            val cachedLocal = Matrix3d()
-            val accessor = cachedLocal as Matrix3dAccessor
+            cached = Matrix3d().apply {
+                val jomlMatrix = org.joml.Matrix3d().rotate(rotation)
 
-            accessor.setM00(jomlMatrix.m00)
-            accessor.setM01(jomlMatrix.m01)
-            accessor.setM02(jomlMatrix.m02)
+                this as Matrix3dAccessor
 
-            accessor.setM10(jomlMatrix.m10)
-            accessor.setM11(jomlMatrix.m11)
-            accessor.setM12(jomlMatrix.m12)
+                setM00(jomlMatrix.m00)
+                setM01(jomlMatrix.m01)
+                setM02(jomlMatrix.m02)
 
-            accessor.setM20(jomlMatrix.m20)
-            accessor.setM21(jomlMatrix.m21)
-            accessor.setM22(jomlMatrix.m22)
+                setM10(jomlMatrix.m10)
+                setM11(jomlMatrix.m11)
+                setM12(jomlMatrix.m12)
 
-            cached = cachedLocal
+                setM20(jomlMatrix.m20)
+                setM21(jomlMatrix.m21)
+                setM22(jomlMatrix.m22)
+            }
         }
         return cached!!
     }
