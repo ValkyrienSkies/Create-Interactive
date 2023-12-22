@@ -37,6 +37,7 @@
     "MixinCarriage",
     "MixinCarriageBogey",
     "MixinCarriageContraptionEntity",
+    "MixinCarriageSyncData",
     "MixinCBCContraptionRotationState",
     "MixinContraption",
     "MixinContraptionCollider",

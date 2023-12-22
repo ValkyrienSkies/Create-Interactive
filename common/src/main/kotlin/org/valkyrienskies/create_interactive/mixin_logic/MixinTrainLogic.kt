@@ -20,6 +20,7 @@ import org.joml.Vector3ic
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.mixin.TrainAccessor
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 
 internal object MixinTrainLogic {
     internal fun preCanDisassemble(train: Train, cir: CallbackInfoReturnable<Boolean?>) {
@@ -133,19 +134,15 @@ internal object MixinTrainLogic {
         val dimension = bufferPoint.node1.location.dimension
 
         // Get the level that position is in
-        var level: Level? = null
-        leadingCar.forEachPresentEntity {
-            if (it.level.dimension() == dimension) {
-                level = it.level
-            }
-        }
+        val level = ValkyrienSkiesMod.currentServer?.allLevels?.first { it.dimension() == dimension }
 
         return level?.getBlockState(bufferStopPos)?.block == GameContent.BUFFER_STOP_BLOCK.get()
     }
 
     internal fun tickOnEndOfTrack(train: Train) {
-        // Only derail if the next block isn't a buffer stop
-        if (train.collidingWithBufferStop()) {
+        // Only derail if the train is moving, and the train isn't colliding with a buffer stop
+        // (Why check if train.targetSpeed != 0.0? There's a bug where you can derail when colliding with a buffer stop if you mash W and D while driving into it)
+        if (train.targetSpeed != 0.0 && train.collidingWithBufferStop()) {
             return
         }
         (train as TrainAccessor).migratingPoints.clear()

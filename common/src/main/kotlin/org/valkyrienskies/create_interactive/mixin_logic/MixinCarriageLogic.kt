@@ -25,9 +25,7 @@ internal object MixinCarriageLogic {
         if (newShadowShipId == null) {
             return false
         }
-        if (oldShadowShipId == null) {
-            setShipShadow(newShadowShipId)
-        } else check(oldShadowShipId == newShadowShipId) { "ShadowShipId mismatch!" }
+        setShipShadow(newShadowShipId)
         if (shipDimension == null) {
             setShipDimension(entity.level.dimension())
             return true
