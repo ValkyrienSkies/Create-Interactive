@@ -20,7 +20,7 @@ internal object MixinCarriageSyncDataLogic {
 
     internal fun redirectGetConnectionsFromInGetDistanceTo(
         instance: TrackGraph,
-        node: TrackNode,
+        node: TrackNode?,
         operation: Operation<Map<TrackNode?, TrackEdge?>>,
     ): Map<TrackNode?, TrackEdge?> {
         return operation.call(instance, node) ?: emptyMap()
