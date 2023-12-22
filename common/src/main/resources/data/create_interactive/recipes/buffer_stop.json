@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "EEE",
+    "ETE"
+  ],
+  "key": {
+    "E": {
+      "item": "create:iron_sheet"
+    },
+    "T": {
+      "item": "create:track"
+    }
+  },
+  "result": {
+    "item": "create_interactive:buffer_stop"
+  }
+}
