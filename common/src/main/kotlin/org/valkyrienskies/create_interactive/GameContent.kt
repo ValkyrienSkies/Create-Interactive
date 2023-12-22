@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.AllTags
 import com.simibubi.create.foundation.data.BuilderTransformers
+import com.simibubi.create.foundation.data.ModelGen
 import com.simibubi.create.foundation.data.TagGen
 import com.tterrag.registrate.builders.BlockEntityBuilder
 import com.tterrag.registrate.util.entry.BlockEntry
@@ -105,7 +106,8 @@ object GameContent {
             p.noOcclusion()
         }
         .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
-        .simpleItem()
+        .item()
+        .transform(ModelGen.customItemModel())
         .register()
 
     val BUFFER_STOP_BE = CreateInteractiveMod.REGISTRATE
