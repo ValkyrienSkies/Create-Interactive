@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.StateDefinition
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
-class BufferStopBlock(properties: Properties): HorizontalDirectionalBlock(properties), IBE<BufferStopBlockEntity> {
+class BufferStopBlock(properties: Properties) : HorizontalDirectionalBlock(properties), IBE<BufferStopBlockEntity> {
     @NoOptimize
     override fun getBlockEntityClass(): Class<BufferStopBlockEntity> = BufferStopBlockEntity::class.java
 
@@ -24,7 +24,10 @@ class BufferStopBlock(properties: Properties): HorizontalDirectionalBlock(proper
 
     @NoOptimize
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState {
-        val direction = context.horizontalDirection
+        var direction = context.horizontalDirection
+        if (context.player?.isCrouching == true) {
+            direction = direction.opposite
+        }
         return defaultBlockState().setValue(FACING, direction) as BlockState
     }
 }

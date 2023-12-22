@@ -1,19 +1,19 @@
 {
   "variants": {
     "facing=north": {
-      "model": "create_interactive:block/buffer_stop"
-    },
-    "facing=south": {
       "model": "create_interactive:block/buffer_stop",
       "y": 180
     },
+    "facing=south": {
+      "model": "create_interactive:block/buffer_stop"
+    },
     "facing=west": {
       "model": "create_interactive:block/buffer_stop",
-      "y": 270
+      "y": 90
     },
     "facing=east": {
       "model": "create_interactive:block/buffer_stop",
-      "y": 90
+      "y": 270
     }
   }
 }
