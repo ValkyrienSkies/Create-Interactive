@@ -1,5 +1,7 @@
 package org.valkyrienskies.create_interactive
 
+import com.jozufozu.flywheel.api.MaterialManager
+import com.jozufozu.flywheel.backend.instancing.blockentity.BlockEntityInstance
 import com.simibubi.create.AllTags
 import com.simibubi.create.foundation.data.BuilderTransformers
 import com.simibubi.create.foundation.data.ModelGen
@@ -23,11 +25,15 @@ import net.minecraft.world.level.material.MaterialColor
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlock
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlockEntity
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopRenderer
-import org.valkyrienskies.create_interactive.content.mechanical_propagator.*
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechPropBearingInstance
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlock
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlockEntity
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingRenderer
 import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlock
 import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlockEntity
 import org.valkyrienskies.create_interactive.registry.DeferredRegister
 import org.valkyrienskies.create_interactive.registry.RegistrySupplier
+import java.util.function.BiFunction
 
 object GameContent {
     private val ITEMS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registry.ITEM_REGISTRY)
@@ -100,7 +106,15 @@ object GameContent {
                     state
                 )
             })
-        .validBlocks({ MECHANICAL_PROPAGATOR_BEARING_BLOCK.get() })
+        .instance {
+            BiFunction<MaterialManager?, MechanicalPropagatorBearingBlockEntity?, BlockEntityInstance<in MechanicalPropagatorBearingBlockEntity?>> { materialManager: MaterialManager?, blockEntity: MechanicalPropagatorBearingBlockEntity? ->
+                MechPropBearingInstance(
+                    materialManager,
+                    blockEntity
+                )
+            }
+        }
+        .validBlocks(MECHANICAL_PROPAGATOR_BEARING_BLOCK)
         .renderer {
             NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in MechanicalPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->
                 MechanicalPropagatorBearingRenderer(

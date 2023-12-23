@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive.content.mechanical_propagator
 
+import com.jozufozu.flywheel.backend.Backend
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.contraptions.bearing.BearingRenderer
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
@@ -19,6 +20,8 @@ class MechanicalPropagatorBearingRenderer(context: BlockEntityRendererProvider.C
         be: MechanicalBearingBlockEntity, partialTicks: Float, ms: PoseStack?, buffer: MultiBufferSource,
         light: Int, overlay: Int
     ) {
+        if (Backend.canUseInstancing(be.level)) return
+
         val state = getRenderedBlockState(be)
         val type = getRenderType(be, state)
         if (type != null) renderRotatingBuffer(be, getRotatedModel(be, state), ms, buffer.getBuffer(type), light)
