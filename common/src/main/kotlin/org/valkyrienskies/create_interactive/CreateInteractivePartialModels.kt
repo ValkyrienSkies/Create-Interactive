@@ -4,8 +4,10 @@ import com.jozufozu.flywheel.core.PartialModel
 import net.minecraft.resources.ResourceLocation
 
 object CreateInteractivePartialModels {
-    val BEARING_TOP_PROPAGATOR = block("propagator_bearing_top")
-    val BEARING_COG = block("disjointed_propagator_bearing_cog")
+    lateinit var BEARING_TOP_PROPAGATOR: PartialModel
+        private set
+    lateinit var BEARING_COG: PartialModel
+        private set
 
     private fun block(path: String): PartialModel {
         return PartialModel(ResourceLocation(CreateInteractiveMod.MOD_ID, "block/$path"))
@@ -13,5 +15,7 @@ object CreateInteractivePartialModels {
 
     fun init() {
         println("Init")
+        BEARING_TOP_PROPAGATOR = block("propagator_bearing_top")
+        BEARING_COG = block("disjointed_propagator_bearing_cog")
     }
 }

@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.content.mechanical_propagator
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.contraptions.bearing.BearingRenderer
+import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
 import com.simibubi.create.foundation.render.CachedBufferer
 import com.simibubi.create.foundation.utility.AngleHelper
 import net.minecraft.client.renderer.MultiBufferSource
@@ -12,10 +13,10 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.create_interactive.CreateInteractivePartialModels
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
-class MechanicalPropagatorBearingRenderer(context: BlockEntityRendererProvider.Context): BearingRenderer<MechanicalPropagatorBearingBlockEntity>(context) {
+class MechanicalPropagatorBearingRenderer(context: BlockEntityRendererProvider.Context): BearingRenderer<MechanicalBearingBlockEntity>(context) {
     @NoOptimize
     override fun renderSafe(
-        be: MechanicalPropagatorBearingBlockEntity, partialTicks: Float, ms: PoseStack?, buffer: MultiBufferSource,
+        be: MechanicalBearingBlockEntity, partialTicks: Float, ms: PoseStack?, buffer: MultiBufferSource,
         light: Int, overlay: Int
     ) {
         val state = getRenderedBlockState(be)
