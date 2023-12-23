@@ -16,11 +16,11 @@ import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
 class DisjointedPropagatorBearingBlock(properties: Properties): MechanicalBearingBlock(properties), ICogWheel {
-    @NoOptimize
-    override fun getBlockEntityClass(): Class<MechanicalBearingBlockEntity> = DisjointedPropagatorBearingBlockEntity::class.java as Class<MechanicalBearingBlockEntity>
-
-    @NoOptimize
-    override fun getBlockEntityType(): BlockEntityType<out DisjointedPropagatorBearingBlockEntity> = GameContent.DISJOINTED_PROPAGATOR_BEARING_BE.get()
+//    @NoOptimize
+//    override fun getBlockEntityClass(): Class<MechanicalBearingBlockEntity> = DisjointedPropagatorBearingBlockEntity::class.java as Class<MechanicalBearingBlockEntity>
+//
+//    @NoOptimize
+//    override fun getBlockEntityType(): BlockEntityType<out DisjointedPropagatorBearingBlockEntity> = GameContent.DISJOINTED_PROPAGATOR_BEARING_BE.get()
 
     /**
      * Don't clip the sides of blocks
