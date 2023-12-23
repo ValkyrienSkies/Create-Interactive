@@ -6,12 +6,9 @@ import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock
 import com.simibubi.create.content.kinetics.base.IRotate
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity
 import com.simibubi.create.content.kinetics.transmission.sequencer.SequencerInstructions
-import com.simibubi.create.foundation.blockEntity.SmartBlockEntity
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.utility.ServerSpeedProvider
 import com.simibubi.create.infrastructure.config.AllConfigs
-import io.github.fabricators_of_create.porting_lib.util.EnvExecutor
-import net.fabricmc.api.EnvType
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.Mth
@@ -183,9 +180,7 @@ class DisjointedPropagatorBearingBlockEntity(
         kineticSmartAccess.setPreventSpeedUpdate(0)
 
         if (level!!.isClientSide) {
-            EnvExecutor.runWhenOn(
-                EnvType.CLIENT
-            ) { Runnable { tickAudio() } }
+            tickAudio()
         } else {
             val kinetAccess = (this as KineticBlockEntity) as KineticBlockEntityAccessor
             if (kinetAccess.validationCountdown-- <= 0) {
