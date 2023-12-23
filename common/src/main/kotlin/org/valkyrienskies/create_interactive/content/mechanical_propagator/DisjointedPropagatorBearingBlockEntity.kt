@@ -21,19 +21,23 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
+import org.valkyrienskies.create_interactive.mixin.GeneratingKineticBlockEntityAccessor
 import org.valkyrienskies.create_interactive.mixin.KineticBlockEntityAccessor
+import org.valkyrienskies.create_interactive.mixin.MechanicalBearingBlockEntityAccessor
 import org.valkyrienskies.create_interactive.mixin.SmartBlockEntityAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toBlockPos
+import kotlin.math.abs
+import kotlin.math.sign
 
 class DisjointedPropagatorBearingBlockEntity(
     type: BlockEntityType<out DisjointedPropagatorBearingBlockEntity>, pos: BlockPos, state: BlockState
 ): MechanicalBearingBlockEntity(type, pos, state) {
 
-    var disjointAngle: Float = 0.0f
-    var disjointSpeed: Float = 0.0f
+    private var disjointAngle: Float = 0.0f
+    private var disjointSpeed: Float = 0.0f
 
     private var prevDisjointAngle: Float = 0.0f
     private var prevDisjointSpeed: Float = 0.0f
@@ -70,26 +74,27 @@ class DisjointedPropagatorBearingBlockEntity(
         return speed
     }
 
-    private fun onDisjointSpeedChanged(prevSpeed: Float) {
-        assembleNextTick = true
-        sequencedAngleLimit = -1.0
-
-        if (movedContraption != null && Math.signum(prevSpeed) != Math.signum(getSpeed()) && prevSpeed != 0f) {
-            if (!movedContraption.isStalled) {
-                angle = Math.round(angle).toFloat()
-                applyRotation()
-            }
-            movedContraption.contraption
-                .stop(level)
-        }
-
-        if (!isWindmill && sequenceContext != null
-            && sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE
-        ) sequencedAngleLimit = sequenceContext.getEffectiveValue(
-            theoreticalSpeed.toDouble()
-        )
-        setChanged()
-    }
+    // Commented out because Proguard is SUS!!!
+//    private fun onDisjointSpeedChanged(prevSpeed: Float) {
+        // assembleNextTick = true
+//        sequencedAngleLimit = -1.0
+//
+//        if (movedContraption != null && sign(prevSpeed) != sign(getSpeed()) && prevSpeed != 0f) {
+//            if (!movedContraption.isStalled) {
+//                angle = Math.round(angle).toFloat()
+//                applyRotation()
+//            }
+//            movedContraption.contraption
+//                .stop(level)
+//        }
+//
+//        if (!isWindmill && sequenceContext != null
+//            && sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE
+//        ) sequencedAngleLimit = sequenceContext.getEffectiveValue(
+//            theoreticalSpeed.toDouble()
+//        )
+//        setChanged()
+//    }
 
     @NoOptimize
     override fun write(compound: CompoundTag, clientPacket: Boolean) {
@@ -156,14 +161,17 @@ class DisjointedPropagatorBearingBlockEntity(
 
     @NoOptimize
     override fun tick() {
-        val smartAccess = (this as SmartBlockEntity) as SmartBlockEntityAccessor
+        val smartAccess = this as SmartBlockEntityAccessor
+        val kineticSmartAccess = this as KineticBlockEntityAccessor
+        val mechAccess = this as MechanicalBearingBlockEntityAccessor
+
         if (!smartAccess.initialized && hasLevel()) {
             initialize()
             smartAccess.initialized = true
         }
 
-        if (lazyTickCounter-- <= 0) {
-            lazyTickCounter = lazyTickRate
+        if (smartAccess.lazyTickCounter-- <= 0) {
+            smartAccess.lazyTickCounter = smartAccess.lazyTickRate
             lazyTick()
         }
 
@@ -172,7 +180,7 @@ class DisjointedPropagatorBearingBlockEntity(
         super.tick()
         effects.tick()
 
-        preventSpeedUpdate = 0
+        kineticSmartAccess.setPreventSpeedUpdate(0)
 
         if (level!!.isClientSide) {
             EnvExecutor.runWhenOn(
@@ -187,19 +195,19 @@ class DisjointedPropagatorBearingBlockEntity(
 
             if (flickerScore > 0) kinetAccess.flickerTally = flickerScore - 1
 
-            if (networkDirty) {
+            if (kineticSmartAccess.networkDirty) {
                 if (hasNetwork()) getOrCreateNetwork().updateNetwork()
-                networkDirty = false
+                kineticSmartAccess.networkDirty = false
             }
 
             forEachBehaviour { obj: BlockEntityBehaviour -> obj.tick() }
         }
 
-        if (reActivateSource) {
+        val generatingAccess = this as GeneratingKineticBlockEntityAccessor
+        if (generatingAccess.reActivateSource) {
             updateGeneratedRotation()
-            reActivateSource = false
+            generatingAccess.reActivateSource = false
         }
-
         //--
 
 
@@ -233,12 +241,48 @@ class DisjointedPropagatorBearingBlockEntity(
                 val block = state.block
                 if (block is IRotate && block.hasShaftTowards(level, pos, state, this.blockState.getValue(BlockStateProperties.FACING))) {
                     this.disjointSpeed = blockEntity.speed
-                    this.onDisjointSpeedChanged(prevDisjointSpeed)
+
+                    // region Used to be onDisjointSpeedChanged
+                    mechAccess.assembleNextTick = true
+                    mechAccess.sequencedAngleLimit = -1.0
+
+                    if (movedContraption != null && sign(prevDisjointSpeed) != sign(getSpeed()) && prevDisjointSpeed != 0f) {
+                        if (!movedContraption.isStalled) {
+                            mechAccess.angle = Math.round(mechAccess.angle).toFloat()
+                            applyRotation()
+                        }
+                        movedContraption.contraption.stop(level)
+                    }
+
+                    if (!isWindmill && kineticSmartAccess.sequenceContext != null && kineticSmartAccess.sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE)
+                        mechAccess.sequencedAngleLimit = kineticSmartAccess.sequenceContext.getEffectiveValue(theoreticalSpeed.toDouble())
+                    setChanged()
+
+                    // endregion
+                    // this.onDisjointSpeedChanged(prevDisjointSpeed)
                 }
             }
         } else {
             this.disjointSpeed = 0.0f
-            this.onDisjointSpeedChanged(prevDisjointSpeed)
+
+            // region Used to be onDisjointSpeedChanged
+            mechAccess.assembleNextTick = true
+            mechAccess.sequencedAngleLimit = -1.0
+
+            if (movedContraption != null && sign(prevDisjointSpeed) != sign(getSpeed()) && prevDisjointSpeed != 0f) {
+                if (!movedContraption.isStalled) {
+                    mechAccess.angle = Math.round(mechAccess.angle).toFloat()
+                    applyRotation()
+                }
+                movedContraption.contraption.stop(level)
+            }
+
+            if (!isWindmill && kineticSmartAccess.sequenceContext != null && kineticSmartAccess.sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE)
+                mechAccess.sequencedAngleLimit = kineticSmartAccess.sequenceContext.getEffectiveValue(theoreticalSpeed.toDouble())
+            setChanged()
+
+            // endregion
+            // this.onDisjointSpeedChanged(prevDisjointSpeed)
         }
 
 //        if (movedContraption != null) {
@@ -247,20 +291,18 @@ class DisjointedPropagatorBearingBlockEntity(
 //            this.disjointAngle = 0.0f
 //        }
 
+        if (level!!.isClientSide) mechAccess.clientAngleDiff /= 2f
 
-        if (level!!.isClientSide) clientAngleDiff /= 2f
-
-        if (!level!!.isClientSide && assembleNextTick) {
-            assembleNextTick = false
+        if (!level!!.isClientSide && mechAccess.assembleNextTick) {
+            mechAccess.assembleNextTick = false
             if (running) {
                 val canDisassemble =
-                    movementMode.get() == IControlContraption.RotationMode.ROTATE_PLACE || isNearInitialAngle && movementMode.get() == IControlContraption.RotationMode.ROTATE_PLACE_RETURNED
+                    mechAccess.movementMode.get() == IControlContraption.RotationMode.ROTATE_PLACE || isNearInitialAngle && mechAccess.movementMode.get() == IControlContraption.RotationMode.ROTATE_PLACE_RETURNED
                 if (disjointSpeed == 0f && (canDisassemble || movedContraption == null || movedContraption.contraption
                         .blocks
                         .isEmpty())
                 ) {
-                    if (movedContraption != null) movedContraption.contraption
-                        .stop(level)
+                    if (movedContraption != null) movedContraption.contraption.stop(level)
                     disassemble()
                     return
                 }
@@ -274,9 +316,9 @@ class DisjointedPropagatorBearingBlockEntity(
 
         if (!(movedContraption != null && movedContraption.isStalled)) {
             var angularSpeed = getDisjointAngularSpeed()
-            if (sequencedAngleLimit >= 0) {
-                angularSpeed = Mth.clamp(angularSpeed.toDouble(), -sequencedAngleLimit, sequencedAngleLimit).toFloat()
-                sequencedAngleLimit = Math.max(0.0, sequencedAngleLimit - Math.abs(angularSpeed))
+            if (mechAccess.sequencedAngleLimit >= 0) {
+                angularSpeed = Mth.clamp(angularSpeed.toDouble(), -mechAccess.sequencedAngleLimit, mechAccess.sequencedAngleLimit).toFloat()
+                mechAccess.sequencedAngleLimit = 0.0.coerceAtLeast(mechAccess.sequencedAngleLimit - abs(angularSpeed))
             }
             val newAngle = disjointAngle + angularSpeed
             disjointAngle = (newAngle % 360)

@@ -4,8 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
+import org.valkyrienskies.create_interactive.services.NoOptimize
 
 class BufferStopRenderer(val context: BlockEntityRendererProvider.Context): SafeBlockEntityRenderer<BufferStopBlockEntity>() {
+    @NoOptimize
     override fun renderSafe(
         be: BufferStopBlockEntity, partialTicks: Float, ms: PoseStack?, buffer: MultiBufferSource,
         light: Int, overlay: Int

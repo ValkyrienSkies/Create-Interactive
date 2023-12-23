@@ -12,4 +12,13 @@ public interface SmartBlockEntityAccessor {
 
     @Accessor("initialized")
     void setInitialized(boolean initialized);
+
+    @Accessor("lazyTickCounter")
+    int getLazyTickCounter();
+
+    @Accessor("lazyTickCounter")
+    void setLazyTickCounter(int lazyTickCounter);
+
+    @Accessor("lazyTickRate")
+    int getLazyTickRate();
 }

@@ -10,8 +10,10 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.create_interactive.CreateInteractivePartialModels
+import org.valkyrienskies.create_interactive.services.NoOptimize
 
 class DisjointedPropagatorBearingRenderer(context: BlockEntityRendererProvider.Context): BearingRenderer<DisjointedPropagatorBearingBlockEntity>(context) {
+    @NoOptimize
     override fun renderSafe(
         be: DisjointedPropagatorBearingBlockEntity, partialTicks: Float, ms: PoseStack?, buffer: MultiBufferSource,
         light: Int, overlay: Int
