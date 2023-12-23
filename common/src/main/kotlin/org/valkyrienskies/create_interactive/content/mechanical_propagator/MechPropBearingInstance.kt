@@ -13,6 +13,7 @@ import com.simibubi.create.foundation.utility.AnimationTickHolder
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.valkyrienskies.create_interactive.CreateInteractivePartialModels
+import org.valkyrienskies.create_interactive.services.NoOptimize
 
 class MechPropBearingInstance<B>(materialManager: MaterialManager?, blockEntity: B) :
     BackHalfShaftInstance<B>(materialManager, blockEntity),
@@ -30,6 +31,7 @@ class MechPropBearingInstance<B>(materialManager: MaterialManager?, blockEntity:
         topInstance.setPosition(instancePosition).setRotation(blockOrientation)
     }
 
+    @NoOptimize
     override fun beginFrame() {
         val interpolatedAngle = blockEntity!!.getInterpolatedAngle(AnimationTickHolder.getPartialTicks() - 1)
         val rot = rotationAxis.rotationDegrees(interpolatedAngle)
@@ -37,18 +39,20 @@ class MechPropBearingInstance<B>(materialManager: MaterialManager?, blockEntity:
         topInstance.setRotation(rot)
     }
 
+    @NoOptimize
     override fun updateLight() {
         super.updateLight()
         relight(pos, topInstance)
     }
 
+    @NoOptimize
     override fun remove() {
         super.remove()
         topInstance.delete()
     }
 
     companion object {
-        fun getBlockStateOrientation(facing: Direction): Quaternion {
+        private fun getBlockStateOrientation(facing: Direction): Quaternion {
             val orientation: Quaternion = if (facing.axis.isHorizontal) {
                 Vector3f.YP.rotationDegrees(AngleHelper.horizontalAngle(facing.opposite))
             } else {
