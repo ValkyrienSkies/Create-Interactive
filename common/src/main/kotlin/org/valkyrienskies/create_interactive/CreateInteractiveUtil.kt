@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
+import net.minecraft.world.phys.Vec3
 import org.joml.Quaterniond
 import org.joml.Quaterniondc
 import org.joml.Vector3d
@@ -181,8 +182,12 @@ object CreateInteractiveUtil {
         // Anchor at ship center of mass
         val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(entity.level)
         val newPos: Vector3dc = shipTransform.shipToWorld.transformPosition(Vector3d(shipCenter).add(0.5, 0.5, 0.5))
+
         // Add (.5, 0, .5) to compensate for the anchorVec offset
         entity.setPos(newPos.x(), newPos.y() - 0.5, newPos.z())
+
+        // Move the dimensional entity as well to fix the sus
+        entity.carriage.getDimensional(entity.level).positionAnchor = Vec3(newPos.x(), newPos.y() - 0.5, newPos.z())
 
         // Update the bounding box too to handle ship rotation
         val box = entity.contraption.bounds
