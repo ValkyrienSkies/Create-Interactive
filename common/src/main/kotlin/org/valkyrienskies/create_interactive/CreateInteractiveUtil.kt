@@ -32,6 +32,7 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.create_interactive.mixin.DimensionalCarriageEntityAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
@@ -187,7 +188,7 @@ object CreateInteractiveUtil {
         entity.setPos(newPos.x(), newPos.y() - 0.5, newPos.z())
 
         // Move the dimensional entity as well to fix the sus
-        entity.carriage.getDimensional(entity.level).positionAnchor = Vec3(newPos.x(), newPos.y() - 0.5, newPos.z())
+        (entity.carriage.getDimensional(entity.level) as DimensionalCarriageEntityAccessor).setPositionAnchor(Vec3(newPos.x(), newPos.y() - 0.5, newPos.z()))
 
         // Update the bounding box too to handle ship rotation
         val box = entity.contraption.bounds

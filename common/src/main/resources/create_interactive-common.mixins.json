@@ -33,6 +33,7 @@
     "CarriageSyncDataAccessor",
     "ContraptionAccessor",
     "ControlledContraptionEntityAccessor",
+    "DimensionalCarriageEntityAccessor",
     "GeneratingKineticBlockEntityAccessor",
     "KineticBlockEntityAccessor",
     "Matrix3dAccessor",
