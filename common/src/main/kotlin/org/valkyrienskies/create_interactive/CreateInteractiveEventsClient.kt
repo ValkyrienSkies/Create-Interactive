@@ -120,6 +120,10 @@ object CreateInteractiveEventsClient {
                         }
 
                         val parentShip = contraptionEntity.level.getShipManagingPos(contraptionEntity.position()) as ShipObjectClient?
+                        if (parentShip == clientShip) {
+                            // Happens when you place a train on itself
+                            return null
+                        }
                         if (parentShip != null && !updatedShips.contains(parentShip.id)) {
                             parentShip.updateRenderShipTransform(partialTick)
                             updatedShips.add(parentShip.id)
