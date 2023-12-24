@@ -4,6 +4,7 @@ import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.ContraptionHandler
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity
+import com.simibubi.create.content.contraptions.OrientedContraptionEntity
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.elevator.ElevatorColumn
 import com.simibubi.create.content.contraptions.elevator.ElevatorContraption
@@ -18,6 +19,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
@@ -30,6 +32,7 @@ import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient.addShipToContraptionRef
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionEntityForShip
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.linkShipToContraption
@@ -37,8 +40,10 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.teleportShipT
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.unlinkShipToContraption
 import org.valkyrienskies.create_interactive.mixin.ControlledContraptionEntityAccessor
 import org.valkyrienskies.create_interactive.mixin.MovementContextAccessor
+import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.CarriageDuck
 import org.valkyrienskies.create_interactive.mixinducks.TrainDuck
+import org.valkyrienskies.mod.common.entity.ShipMountedToData
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.settings
@@ -359,6 +364,27 @@ internal object MixinAbstractContraptionEntityLogic {
                 }
             }
         }
+    }
+
+    internal fun provideShipMountedToData(
+        contraptionEntity: AbstractContraptionEntity,
+        passenger: Entity,
+    ): ShipMountedToData? {
+        // Don't do this for Create's sub-contraptions
+        if (passenger is OrientedContraptionEntity) {
+            return null
+        }
+
+        val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
+        val ship = contraptionEntity.level.shipObjectWorld.loadedShips.getById(shadowShipId) ?: return null
+
+        val seatPos = contraptionEntity.contraption.getSeatOf(passenger.uuid) ?: return null
+        val passengerPosInLocal = Vector3d(ship.getChunkClaimCenterPos(passenger.level)).add(seatPos.x + 0.5, seatPos.y + passenger.myRidingOffset, seatPos.z + 0.5)
+
+        return ShipMountedToData(
+            shipMountedTo = ship,
+            mountPosInShip = passengerPosInLocal,
+        )
     }
 
     internal data class ExtraData(
