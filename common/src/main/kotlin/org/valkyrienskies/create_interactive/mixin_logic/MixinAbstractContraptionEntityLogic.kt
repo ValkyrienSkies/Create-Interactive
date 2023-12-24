@@ -26,6 +26,7 @@ import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
@@ -366,6 +367,11 @@ internal object MixinAbstractContraptionEntityLogic {
         }
     }
 
+    private fun AbstractContraptionEntity.getPassengerPosInShip(ship: Ship, passenger: Entity): Vector3dc? {
+        val seatPos = contraption.getSeatOf(passenger.uuid) ?: return null
+        return Vector3d(ship.getChunkClaimCenterPos(passenger.level)).add(seatPos.x + 0.5, seatPos.y + passenger.myRidingOffset, seatPos.z + 0.5)
+    }
+
     internal fun provideShipMountedToData(
         contraptionEntity: AbstractContraptionEntity,
         passenger: Entity,
@@ -378,13 +384,28 @@ internal object MixinAbstractContraptionEntityLogic {
         val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
         val ship = contraptionEntity.level.shipObjectWorld.loadedShips.getById(shadowShipId) ?: return null
 
-        val seatPos = contraptionEntity.contraption.getSeatOf(passenger.uuid) ?: return null
-        val passengerPosInLocal = Vector3d(ship.getChunkClaimCenterPos(passenger.level)).add(seatPos.x + 0.5, seatPos.y + passenger.myRidingOffset, seatPos.z + 0.5)
+        val passengerPosInLocal = contraptionEntity.getPassengerPosInShip(ship, passenger) ?: return null
 
         return ShipMountedToData(
             shipMountedTo = ship,
             mountPosInShip = passengerPosInLocal,
         )
+    }
+
+    internal fun prePositionRider(contraptionEntity: AbstractContraptionEntity, passenger: Entity, callback: Entity.MoveFunction, ci: CallbackInfo) {
+        if (passenger is AbstractContraptionEntity) {
+            return
+        }
+
+        val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
+        val ship = contraptionEntity.level.shipObjectWorld.loadedShips.getById(shadowShipId) ?: return
+        val passengerPosInLocal = contraptionEntity.getPassengerPosInShip(ship, passenger) ?: return
+
+        callback.accept(
+            passenger, passengerPosInLocal.x(), passengerPosInLocal.y(), passengerPosInLocal.z()
+        )
+
+        ci.cancel()
     }
 
     internal data class ExtraData(

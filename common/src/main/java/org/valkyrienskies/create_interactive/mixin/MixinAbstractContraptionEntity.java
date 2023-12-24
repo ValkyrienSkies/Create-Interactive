@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.create_interactive.mixin_logic.MixinAbstractContraptionEntityLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
+import org.valkyrienskies.create_interactive.services.NoOptimize;
 import org.valkyrienskies.mod.common.entity.ShipMountedToData;
 import org.valkyrienskies.mod.common.entity.ShipMountedToDataProvider;
 
@@ -132,6 +133,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         }
     }
 
+    @NoOptimize
     @Override
     @Nullable
     public ShipMountedToData provideShipMountedToData(
@@ -141,5 +143,10 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         return MixinAbstractContraptionEntityLogic.INSTANCE.provideShipMountedToData$create_interactive(
             AbstractContraptionEntity.class.cast(this), passenger
         );
+    }
+
+    @Inject(method = "positionRider", at = @At("HEAD"), cancellable = true)
+    private void prePositionRider(final Entity passenger, final MoveFunction callback, final CallbackInfo ci) {
+        MixinAbstractContraptionEntityLogic.INSTANCE.prePositionRider$create_interactive(AbstractContraptionEntity.class.cast(this), passenger, callback, ci);
     }
 }
