@@ -48,6 +48,7 @@
     "MixinContraption",
     "MixinContraptionCollider",
     "MixinContraptionRotationState",
+    "MixinControlsBlock",
     "MixinEntity",
     "MixinFunnelMovementBehaviour",
     "MixinLevelChunk",
