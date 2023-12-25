@@ -62,6 +62,7 @@
     "TrainAccessor",
     "bearing.MixinMechanicalBearingBlockEntity",
     "bearing.StabilizedBearingMovementBehaviourAccessor",
+    "compat.cbc.MixinAbstractCannonDrillBlockEntity",
     "contraptins.ControlledContraptionEntityAccessor",
     "deployer.DeployerBlockEntityAccessor",
     "deployer.MixinDeployerInstance",
