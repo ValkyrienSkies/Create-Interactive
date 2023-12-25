@@ -72,8 +72,8 @@ dependencies {
     modImplementation("me.shedaniel.cloth:cloth-config:${cloth_config_version}")
 
     // Remove the next line if you don't want to depend on the API
-    modApi("org.valkyrienskies:valkyrienskies-118-common:${rootProject.vs2_version}")
-    modApi("org.valkyrienskies:valkyrienskies-118-fabric:${rootProject.vs2_version}")
+    modApi("org.valkyrienskies:valkyrienskies-119-common:${rootProject.vs2_version}")
+    modApi("org.valkyrienskies:valkyrienskies-119-fabric:${rootProject.vs2_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
@@ -84,7 +84,7 @@ dependencies {
     }
     modImplementation("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
     modImplementation("com.tterrag.registrate_fabric:Registrate:${registrate_version}")
-    modImplementation("io.github.fabricators_of_create:Porting-Lib:${port_lib_version}+${minecraft_version}")
+    modImplementation("io.github.fabricators_of_create.Porting-Lib:Porting-Lib:$port_lib_version+$minecraft_version")
     modImplementation("me.alphamode:ForgeTags:${forge_tags_version}")
     modImplementation("net.minecraftforge:forgeconfigapiport-fabric:${forge_config_api_port_version}")
     modImplementation("com.jamieswhiteshirt:reach-entity-attributes:${reach_entity_attributes_version}")
@@ -92,12 +92,14 @@ dependencies {
     modImplementation("io.github.tropheusj:milk-lib:${milk_lib_version}")
 
     // Indium
+    // TODO: Change this
     modImplementation("curse.maven:indium-459496:3911811")
 
     // CBC
-    modImplementation("com.rbasamoyai:createbigcannons-fabric-${minecraft_version}:${createbigcannons_version}")
+    // modImplementation("com.rbasamoyai:createbigcannons-fabric-${minecraft_version}:${createbigcannons_version}")
 
     // Steam and rails
+    // TODO: Change this
     modImplementation("curse.maven:create-steam-n-rails-688231:4726376")
 }
 

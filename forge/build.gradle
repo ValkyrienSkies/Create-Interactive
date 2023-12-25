@@ -61,8 +61,8 @@ dependencies {
     // VS2 already shades this, so we can don't have to
     compileOnly(annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1")))
 
-    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    modApi("org.valkyrienskies:valkyrienskies-118-forge:$vs2_version") { transitive = false }
+    forge "net.minecraftforge:forge:${forge_version}"
+    modApi("org.valkyrienskies:valkyrienskies-119-forge:$vs2_version") { transitive = false }
 
     implementation("org.valkyrienskies.core:api:$vs_core_version")
     implementation("org.valkyrienskies.core:api-game:$vs_core_version")
