@@ -63,8 +63,8 @@ repositories {
 dependencies {
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:$mixin_extras_version")))
 
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+    modApi "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
     modImplementation("net.fabricmc:fabric-language-kotlin:1.10.10+kotlin.1.9.10")
 
     // Mod menu
@@ -72,8 +72,8 @@ dependencies {
     modImplementation("me.shedaniel.cloth:cloth-config:${cloth_config_version}")
 
     // Remove the next line if you don't want to depend on the API
-    modApi("org.valkyrienskies:valkyrienskies-119-common:${rootProject.vs2_version}")
-    modApi("org.valkyrienskies:valkyrienskies-119-fabric:${rootProject.vs2_version}")
+    modApi("org.valkyrienskies:valkyrienskies-119-common:$vs2_version")
+    modApi("org.valkyrienskies:valkyrienskies-119-fabric:$vs2_version")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
@@ -92,15 +92,13 @@ dependencies {
     modImplementation("io.github.tropheusj:milk-lib:${milk_lib_version}")
 
     // Indium
-    // TODO: Change this
-    // modImplementation("curse.maven:indium-459496:3911811")
+    modImplementation("curse.maven:indium-459496:3957480")
 
     // CBC
     // modImplementation("com.rbasamoyai:createbigcannons-fabric-${minecraft_version}:${createbigcannons_version}")
 
     // Steam and rails
-    // TODO: Change this
-    // modImplementation("curse.maven:create-steam-n-rails-688231:4836195")
+    modImplementation("curse.maven:create-steam-n-rails-688231:4836195")
 }
 
 processResources {
