@@ -55,6 +55,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     }
 
     @Override
+    @NotNull
     public List<Pair<BlockPos, BlockPos>> ci$getPropagators() {
         return ci$propagators;
     }

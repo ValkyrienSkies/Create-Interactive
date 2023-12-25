@@ -11,7 +11,7 @@ import java.util.List;
 public interface AbstractContraptionEntityDuck {
     void ci$setShadowShipId(final Long shadowShipId);
 
-    @Nullable
+    @NotNull
     List<Pair<BlockPos, BlockPos>> ci$getPropagators();
 
     @Nullable
