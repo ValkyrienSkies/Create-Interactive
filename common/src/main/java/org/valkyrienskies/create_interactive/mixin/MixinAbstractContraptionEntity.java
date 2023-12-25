@@ -12,6 +12,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,12 +23,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.create_interactive.mixin_logic.MixinAbstractContraptionEntityLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
+import org.valkyrienskies.create_interactive.services.NoOptimize;
+import org.valkyrienskies.mod.common.entity.ShipMountedToData;
+import org.valkyrienskies.mod.common.entity.ShipMountedToDataProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(AbstractContraptionEntity.class)
-public abstract class MixinAbstractContraptionEntity extends Entity implements AbstractContraptionEntityDuck {
+public abstract class MixinAbstractContraptionEntity extends Entity implements AbstractContraptionEntityDuck, ShipMountedToDataProvider {
     @Unique
     private Long ci$shadowShipId = null;
 
@@ -50,6 +55,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     }
 
     @Override
+    @NotNull
     public List<Pair<BlockPos, BlockPos>> ci$getPropagators() {
         return ci$propagators;
     }
@@ -120,11 +126,29 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     }
 
     @Override
+    @NotNull
     public AbstractContraptionEntity.ContraptionRotationState ci$getPrevTickRotationState() {
         if (ci$prevTickRotationState != null) {
             return ci$prevTickRotationState;
         } else {
             return getRotationState();
         }
+    }
+
+    @NoOptimize
+    @Override
+    @Nullable
+    public ShipMountedToData provideShipMountedToData(
+        @NotNull final Entity passenger,
+        @Nullable final Float partialTicks
+    ) {
+        return MixinAbstractContraptionEntityLogic.INSTANCE.provideShipMountedToData$create_interactive(
+            AbstractContraptionEntity.class.cast(this), passenger
+        );
+    }
+
+    @Inject(method = "getPassengerPosition", at = @At("HEAD"), cancellable = true)
+    private void preGetPassengerPosition(final Entity passenger, final float partialTicks, final CallbackInfoReturnable<Vec3> cir) {
+        MixinAbstractContraptionEntityLogic.INSTANCE.preGetPassengerPosition$create_interactive(AbstractContraptionEntity.class.cast(this), passenger, partialTicks, cir);
     }
 }

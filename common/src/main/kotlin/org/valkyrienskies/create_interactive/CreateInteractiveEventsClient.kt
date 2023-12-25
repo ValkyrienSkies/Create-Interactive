@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
 import net.minecraft.client.Minecraft
-import net.minecraft.world.phys.AABB
 import org.joml.Vector3d
 import org.joml.Vector3ic
 import org.valkyrienskies.core.api.ships.ClientShipTransformProvider
@@ -53,23 +52,7 @@ object CreateInteractiveEventsClient {
             }
 
             // Skip the ship if its null, but don't delete the map entry in case the ship packet was delayed
-            val clientShip = shipObjectWorld.allShips.getById(shipId)
-
-            if (clientShip == null) {
-                // Only apply this logic to carriages that have been derailed
-                if (contraptionEntityCopy is CarriageContraptionEntity && contraptionEntityCopy.carriage.train.derailed) {
-                    // If the client ship isn't loaded then send this contraption to Brazil.
-                    // This fixes the bug of trains popping in and out of existence when they deviate too far from their
-                    // original tracks.
-                    val brazil = 1e6
-                    contraptionEntityCopy.setPos(contraptionEntityCopy.x, brazil, contraptionEntityCopy.z)
-                    contraptionEntityCopy.boundingBox = AABB(
-                        contraptionEntityCopy.x, brazil, contraptionEntityCopy.z,
-                        contraptionEntityCopy.x, brazil, contraptionEntityCopy.z
-                    )
-                }
-                continue
-            }
+            val clientShip = shipObjectWorld.allShips.getById(shipId) ?: continue
 
             val shipCenter: Vector3ic = clientShip.getChunkClaimCenterPos(mc.level!!)
 
@@ -120,6 +103,10 @@ object CreateInteractiveEventsClient {
                         }
 
                         val parentShip = contraptionEntity.level.getShipManagingPos(contraptionEntity.position()) as ShipObjectClient?
+                        if (parentShip == clientShip) {
+                            // Happens when you place a train on itself
+                            return null
+                        }
                         if (parentShip != null && !updatedShips.contains(parentShip.id)) {
                             parentShip.updateRenderShipTransform(partialTick)
                             updatedShips.add(parentShip.id)

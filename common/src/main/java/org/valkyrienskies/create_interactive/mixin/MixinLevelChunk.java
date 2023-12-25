@@ -32,8 +32,12 @@ public abstract class MixinLevelChunk extends ChunkAccess {
     }
 
     @Inject(method = "setBlockState", at = @At("RETURN"))
-    public void postSetBlockState(final BlockPos pos, final BlockState state, final boolean moved,
-                                  final CallbackInfoReturnable<BlockState> cir) {
+    private void postSetBlockState(
+        final BlockPos pos,
+        final BlockState state,
+        final boolean moved,
+        final CallbackInfoReturnable<BlockState> cir
+    ) {
         MixinLevelChunkLogic.INSTANCE.postSetBlockState$create_interactive(level, pos, state, blockEntities);
     }
 }

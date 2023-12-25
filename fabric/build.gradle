@@ -186,7 +186,7 @@ publishing {
         mavenCommon(MavenPublication) {
             groupId = "org.valkyrienskies.create-interactive"
             version = project.version
-            artifactId = rootProject.archives_base_name + "-" + project.name
+            artifactId = rootProject.artifacts_name + "-" + project.name
             from components.java
         }
     }
