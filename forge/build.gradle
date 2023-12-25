@@ -150,6 +150,20 @@ artifacts {
     }
 }
 
+task copyDeps(type: Copy) {
+    from configurations.compileClasspath
+    into 'libs'
+}
+
+def obfuscatedRemapJarFile = layout.buildDirectory.file("libs/forge-obfuscated.jar")
+
+// TODO: This doesn't work
+//       Example that does work `java -jar Skidfuscator.Community.2.0.8.jar obfuscate forge-proguarded-minified.jar -o skidded.jar -li=C:\Users\alexa\IdeaProjects\Create-Interactive-3\forge\libs`
+//task obfuscatedRemapJar(type: Exec) {
+//    dependsOn remapJar
+//    commandLine 'java -jar C:\\Users\\alexa\\IdeaProjects\\Create-Interactive-3\\skidfuscator\\Skidfuscator.Community.2.0.8.jar obfuscate C:\\Users\\alexa\\IdeaProjects\\Create-Interactive-3\\forge\\build\\create_interactive-1.0.0-beta.1+46ac461620.jar -li=C:\\Users\\alexa\\IdeaProjects\\Create-Interactive-3\\forge\\libs -o=skidded.jar'
+//}
+
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
