@@ -7,8 +7,7 @@
     "MixinCombinedInvWrapper",
     "MixinCombinedTankWrapper",
     "MixinMountedStorageManager",
-    "MixinMovementContext",
-    "MixinTrain"
+    "MixinMovementContext"
   ],
   "client": [
     "MixinContraptionHandlerClient"

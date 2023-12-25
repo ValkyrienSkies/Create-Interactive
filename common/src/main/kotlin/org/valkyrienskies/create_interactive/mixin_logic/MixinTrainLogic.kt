@@ -22,7 +22,7 @@ import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.mixin.TrainAccessor
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 
-object MixinTrainLogic {
+internal object MixinTrainLogic {
     internal fun preCanDisassemble(train: Train, cir: CallbackInfoReturnable<Boolean?>) {
         for (carriage in train.carriages) {
             val entity = carriage.anyAvailableEntity() ?: return
@@ -151,7 +151,7 @@ object MixinTrainLogic {
         train.setDerailed(true)
     }
 
-    fun findCollidingTrain(
+    internal fun findCollidingTrain(
         level: Level,
         start: Vec3,
         end: Vec3,

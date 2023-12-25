@@ -29,15 +29,14 @@ internal object MixinMinecraftLogic {
     internal fun wrapUseItemOn(
         gameMode: MultiPlayerGameMode,
         player: LocalPlayer,
-        level: ClientLevel,
         interactionHand: InteractionHand,
         blockHitResult: BlockHitResult,
         operation: Operation<InteractionResult>,
     ): InteractionResult {
-        val result = operation.call(gameMode, player, level, interactionHand, blockHitResult)
+        val result = operation.call(gameMode, player, interactionHand, blockHitResult)
         if (!result.consumesAction()) {
             // Consider a train relocation
-            val contraptionsInLevel = ContraptionHandler.loadedContraptions.get(level).values
+            val contraptionsInLevel = ContraptionHandler.loadedContraptions.get(player.level).values
             for (contraptionEntityRef: WeakReference<AbstractContraptionEntity> in contraptionsInLevel) {
                 val rayInputs = ContraptionHandlerClient.getRayInputs(player)
                 val origin = rayInputs.first

@@ -55,7 +55,7 @@ public abstract class MixinMinecraft implements IShipObjectWorldClientProvider {
         final Operation<InteractionResult> operation
     ) {
         return MixinMinecraftLogic.INSTANCE.wrapUseItemOn$create_interactive(
-            gameMode, player, level, interactionHand, blockHitResult, operation
+            gameMode, player, interactionHand, blockHitResult, operation
         );
     }
 }
