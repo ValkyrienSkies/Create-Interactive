@@ -44,13 +44,12 @@ public abstract class MixinMinecraft implements IShipObjectWorldClientProvider {
         method = "startUseItem",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;useItemOn(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/client/multiplayer/ClientLevel;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/BlockHitResult;)Lnet/minecraft/world/InteractionResult;"
+            target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;useItemOn(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/BlockHitResult;)Lnet/minecraft/world/InteractionResult;"
         )
     )
     private InteractionResult wrapUseItemOn(
         final MultiPlayerGameMode gameMode,
         final LocalPlayer player,
-        final ClientLevel level,
         final InteractionHand interactionHand,
         final BlockHitResult blockHitResult,
         final Operation<InteractionResult> operation

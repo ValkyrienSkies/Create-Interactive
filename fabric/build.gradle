@@ -93,14 +93,14 @@ dependencies {
 
     // Indium
     // TODO: Change this
-    modImplementation("curse.maven:indium-459496:3911811")
+    // modImplementation("curse.maven:indium-459496:3911811")
 
     // CBC
     // modImplementation("com.rbasamoyai:createbigcannons-fabric-${minecraft_version}:${createbigcannons_version}")
 
     // Steam and rails
     // TODO: Change this
-    modImplementation("curse.maven:create-steam-n-rails-688231:4726376")
+    // modImplementation("curse.maven:create-steam-n-rails-688231:4836195")
 }
 
 processResources {

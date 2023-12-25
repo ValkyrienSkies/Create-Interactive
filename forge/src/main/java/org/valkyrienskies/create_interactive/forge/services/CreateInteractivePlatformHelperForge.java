@@ -2,7 +2,6 @@ package org.valkyrienskies.create_interactive.forge.services;
 
 import kotlin.jvm.functions.Function0;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -13,8 +12,8 @@ public class CreateInteractivePlatformHelperForge implements CreateInteractivePl
     @NotNull
     @Override
     public CreativeModeTab createCreativeTab(
-            @NotNull final ResourceLocation id,
-            @NotNull final Function0<ItemStack> stack
+        @NotNull final ResourceLocation id,
+        @NotNull final Function0<ItemStack> stack
     ) {
         return new CreativeModeTab(id.toString()) {
             @Override
@@ -24,7 +23,7 @@ public class CreateInteractivePlatformHelperForge implements CreateInteractivePl
 
             @Override
             public Component getDisplayName() {
-                return new TranslatableComponent(
+                return Component.translatable(
                     "itemGroup." + String.format("%s.%s", id.getNamespace(), id.getPath()));
             }
         };

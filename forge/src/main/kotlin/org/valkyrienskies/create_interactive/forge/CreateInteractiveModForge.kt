@@ -2,7 +2,6 @@ package org.valkyrienskies.create_interactive.forge
 
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers
-import net.minecraftforge.client.event.ModelRegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.DistExecutor
 import net.minecraftforge.fml.common.Mod
@@ -21,11 +20,6 @@ class CreateInteractiveModForge {
         // Submit our event bus to let architectury register our content on the right time
         MOD_BUS.addListener { event: FMLClientSetupEvent? ->
             clientSetup(
-                event
-            )
-        }
-        MOD_BUS.addListener { event: ModelRegistryEvent? ->
-            onModelRegistry(
                 event
             )
         }
@@ -62,8 +56,6 @@ class CreateInteractiveModForge {
     }
 
     private fun entityRenderers(event: RegisterRenderers) {}
-
-    private fun onModelRegistry(event: ModelRegistryEvent?) {}
 
     companion object {
         fun getModBus(): IEventBus = MOD_BUS
