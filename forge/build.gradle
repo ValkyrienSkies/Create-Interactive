@@ -59,7 +59,8 @@ configurations {
 
 dependencies {
     // VS2 already shades this, so we can don't have to
-    compileOnly(annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1")))
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixin_extras_version"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:$mixin_extras_version"))
 
     forge "net.minecraftforge:forge:${forge_version}"
     modApi("org.valkyrienskies:valkyrienskies-119-forge:$vs2_version") { transitive = false }
