@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Carriage.DimensionalCarriageEntity.class)
 public interface DimensionalCarriageEntityAccessor {
-    @Accessor
+    @Accessor("positionAnchor")
     void setPositionAnchor(final Vec3 positionAnchor);
 }
