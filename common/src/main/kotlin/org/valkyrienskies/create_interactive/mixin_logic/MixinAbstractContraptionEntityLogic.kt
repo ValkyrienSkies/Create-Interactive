@@ -26,7 +26,7 @@ import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
@@ -392,20 +392,16 @@ internal object MixinAbstractContraptionEntityLogic {
         )
     }
 
-    internal fun prePositionRider(contraptionEntity: AbstractContraptionEntity, passenger: Entity, callback: Entity.MoveFunction, ci: CallbackInfo) {
+    internal fun preGetPassengerPosition(contraptionEntity: AbstractContraptionEntity, passenger: Entity, partialTicks: Float, cir: CallbackInfoReturnable<Vec3>) {
         if (passenger is AbstractContraptionEntity) {
             return
         }
 
-        val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
+        val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
         val ship = contraptionEntity.level.shipObjectWorld.loadedShips.getById(shadowShipId) ?: return
         val passengerPosInLocal = contraptionEntity.getPassengerPosInShip(ship, passenger) ?: return
 
-        callback.accept(
-            passenger, passengerPosInLocal.x(), passengerPosInLocal.y(), passengerPosInLocal.z()
-        )
-
-        ci.cancel()
+        cir.returnValue = passengerPosInLocal.toMinecraft()
     }
 
     internal data class ExtraData(

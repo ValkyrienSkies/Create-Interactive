@@ -125,6 +125,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     }
 
     @Override
+    @NotNull
     public AbstractContraptionEntity.ContraptionRotationState ci$getPrevTickRotationState() {
         if (ci$prevTickRotationState != null) {
             return ci$prevTickRotationState;
@@ -145,8 +146,8 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
         );
     }
 
-    @Inject(method = "positionRider", at = @At("HEAD"), cancellable = true)
-    private void prePositionRider(final Entity passenger, final MoveFunction callback, final CallbackInfo ci) {
-        MixinAbstractContraptionEntityLogic.INSTANCE.prePositionRider$create_interactive(AbstractContraptionEntity.class.cast(this), passenger, callback, ci);
+    @Inject(method = "getPassengerPosition", at = @At("HEAD"), cancellable = true)
+    private void preGetPassengerPosition(final Entity passenger, final float partialTicks, final CallbackInfoReturnable<Vec3> cir) {
+        MixinAbstractContraptionEntityLogic.INSTANCE.preGetPassengerPosition$create_interactive(AbstractContraptionEntity.class.cast(this), passenger, partialTicks, cir);
     }
 }
