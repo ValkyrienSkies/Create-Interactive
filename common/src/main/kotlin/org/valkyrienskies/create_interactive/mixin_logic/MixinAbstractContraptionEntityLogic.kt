@@ -369,7 +369,7 @@ internal object MixinAbstractContraptionEntityLogic {
 
     private fun AbstractContraptionEntity.getPassengerPosInShip(ship: Ship, passenger: Entity): Vector3dc? {
         val seatPos = contraption.getSeatOf(passenger.uuid) ?: return null
-        return Vector3d(ship.getChunkClaimCenterPos(passenger.level)).add(seatPos.x + 0.5, seatPos.y + passenger.myRidingOffset, seatPos.z + 0.5)
+        return Vector3d(ship.getChunkClaimCenterPos(passenger.level)).add(seatPos.x + 0.5, seatPos.y + passenger.myRidingOffset + .35 - 0.0875, seatPos.z + 0.5)
     }
 
     internal fun provideShipMountedToData(
