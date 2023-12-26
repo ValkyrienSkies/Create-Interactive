@@ -56,6 +56,7 @@
     "MixinLevelChunk",
     "MixinMinecraftServer",
     "MixinOrientedContraptionEntity",
+    "MixinOutliner",
     "MixinTrain",
     "MixinTranslatingContraption",
     "MovementContextAccessor",
