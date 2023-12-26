@@ -52,6 +52,7 @@
     "MixinControlsBlock",
     "MixinEntity",
     "MixinFunnelMovementBehaviour",
+    "MixinITrackBlock",
     "MixinLevelChunk",
     "MixinMinecraftServer",
     "MixinOrientedContraptionEntity",
