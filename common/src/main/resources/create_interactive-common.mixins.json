@@ -59,6 +59,7 @@
     "MixinMinecraftServer",
     "MixinOrientedContraptionEntity",
     "MixinStationBlockEntity",
+    "MixinCarriageContraption",
     "MixinTrain",
     "MixinTranslatingContraption",
     "MovementContextAccessor",
