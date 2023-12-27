@@ -72,6 +72,7 @@
     "compat.cbc.MixinAbstractCannonDrillBlockEntity",
     "contraptins.ControlledContraptionEntityAccessor",
     "deployer.DeployerBlockEntityAccessor",
+    "deployer.MixinDeployerBlockEntity",
     "deployer.MixinDeployerInstance",
     "deployer.MixinDeployerMovementBehaviour",
     "gantry.MixinGantryCarriageBlockEntity",

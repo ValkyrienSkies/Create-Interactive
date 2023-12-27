@@ -6,13 +6,14 @@ import com.simibubi.create.foundation.utility.VecHelper
 import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getActorAtPos
+import org.valkyrienskies.create_interactive.mixinducks.DeployerDuck
 
 internal object MixinDeployerRendererLogic {
     internal fun preGetHandOffset(be: DeployerBlockEntity): Double? {
         val actorAtPos = getActorAtPos(
             be.level!!, be.blockPos
         )
-        if (actorAtPos != null) {
+        if (actorAtPos != null && (be as DeployerDuck).`ci$getActorMode`().equals(DeployerActorMode.ACTOR_ON)) {
             val context = actorAtPos.right
             val factor: Double =
                 if (context!!.contraption.stalled || context.position == null || context.data.contains("StationaryTimer")) {

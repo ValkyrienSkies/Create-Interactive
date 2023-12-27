@@ -3,10 +3,12 @@ package org.valkyrienskies.create_interactive.mixin.deployer;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
 import com.simibubi.create.content.kinetics.deployer.DeployerMovementBehaviour;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.create_interactive.mixin_logic.deployer.MixinDeployerMovementBehaviourLogic;
 
@@ -19,6 +21,11 @@ public class MixinDeployerMovementBehaviour {
     @Inject(method = "getPlayer", at = @At("HEAD"), cancellable = true, remap = false)
     private void preGetPlayer(final MovementContext context, final CallbackInfoReturnable<DeployerFakePlayer> cir) {
         MixinDeployerMovementBehaviourLogic.INSTANCE.preGetPlayer$create_interactive(context, cir);
+    }
+
+    @Inject(method = "visitNewPosition", at = @At("HEAD"), cancellable = true, remap = false)
+    private void preVisitNewPosition(MovementContext context, BlockPos pos, CallbackInfo ci) {
+        MixinDeployerMovementBehaviourLogic.INSTANCE.preVisitNewPosition$create_interactive(context, ci);
     }
 
     /**

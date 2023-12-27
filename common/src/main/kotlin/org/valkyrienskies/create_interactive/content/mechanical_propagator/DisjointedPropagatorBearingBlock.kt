@@ -27,10 +27,10 @@ class DisjointedPropagatorBearingBlock(properties: Properties): MechanicalBearin
      */
     @NoOptimize
     override fun getVisualShape(
-        state: BlockState?,
-        level: BlockGetter?,
-        pos: BlockPos?,
-        context: CollisionContext?
+        state: BlockState,
+        level: BlockGetter,
+        pos: BlockPos,
+        context: CollisionContext
     ): VoxelShape {
         return Shapes.empty()
     }
