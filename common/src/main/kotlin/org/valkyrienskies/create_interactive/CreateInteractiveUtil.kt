@@ -1,6 +1,5 @@
 package org.valkyrienskies.create_interactive
 
-import com.simibubi.create.AllEntityTypes
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.BlockMovementChecks
 import com.simibubi.create.content.contraptions.Contraption
@@ -145,16 +144,12 @@ object CreateInteractiveUtil {
     internal fun attemptTrainRelocation(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic, transform: StructureTransform? = null) {
         if (localBlocks.isEmpty()) return
 
-        println("Attempting relocation to $shipCenter")
         val searchAABB = createTrackAABB(level, offsetPos, localBlocks, shipCenter) ?: return
-        println("Attempting relocation PART 2 to $shipCenter")
         val searchAABBmc = searchAABB.toMinecraft()
-        val trainCars = level.getEntities(AllEntityTypes.CARRIAGE_CONTRAPTION.get()) { true }
-        println("searchAABBmc is $searchAABBmc")
-        println("trainCars.size is ${trainCars.size}")
+        val trainCars = level.getEntitiesOfClass(CarriageContraptionEntity::class.java, searchAABBmc)
+
         // Only attempt to relocate the first carriage of trains that aren't derailed. Check the bounding box twice to avoid entities VS adds to this query.
-        // TODO: Don't do this logic with entities, use trains directly instead!
-        trainCars.filter { it.carriageIndex == it.carriage.train.carriages.size - 1 }.forEach { carriageEntity ->
+        trainCars.filter { !it.carriage.train.derailed && it.carriageIndex == it.carriage.train.carriages.size - 1 && it.boundingBox.intersects(searchAABBmc) }.forEach { carriageEntity ->
             val leadingPoint = carriageEntity.carriage.leadingPoint ?: return@forEach
 
             val node1Location: Vector3ic = leadingPoint.node1?.location?.getLocationVec3i() ?: return@forEach
@@ -170,34 +165,33 @@ object CreateInteractiveUtil {
             }
 
             val bogey = carriageEntity.carriage.trailingBogey()
-            var bogeyRelPos = if ((bogey as CarriageBogeyAccessor).getIsLeading()) BlockPos.ZERO else Vector3d(normalLocal).mul(-carriageEntity.carriage.bogeySpacing.toDouble()).let { BlockPos(it.x.roundToInt(), it.y.roundToInt(), it.z.roundToInt()) }
-            // TODO: This sucks, has to be rotation relative to the track!!!
-            val rotated = carriageEntity.rotationState.asMatrix().transform(Vec3(0.0, 0.0, 1.0))
-//            if (normalLocal.dot(rotated.x, rotated.y, rotated.z) > 0.0) {
-//                bogeyRelPos = bogeyRelPos.multiply(-1)
-//            }
-            println("rotated is $rotated")
+            val bogeyRelPos =
+                if ((bogey as CarriageBogeyAccessor).getIsLeading()) BlockPos.ZERO else Vector3d(normalLocal).mul(-carriageEntity.carriage.bogeySpacing.toDouble())
+                    .let { BlockPos(it.x.roundToInt(), it.y.roundToInt(), it.z.roundToInt()) }
 
-            val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().add(bogeyRelPos.x.toDouble(), bogeyRelPos.y.toDouble(), bogeyRelPos.z.toDouble()).sub(0.0, 1.0, 0.0)
-            val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x().roundToInt(), leadingBogeyPosInLocal.y().roundToInt(), leadingBogeyPosInLocal.z().roundToInt()).subtract(offsetPos)
-
-
-
+            val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML()
+                .add(bogeyRelPos.x.toDouble(), bogeyRelPos.y.toDouble(), bogeyRelPos.z.toDouble()).sub(0.0, 1.0, 0.0)
+            val closestBlockPosRelative = BlockPos(
+                leadingBogeyPosInLocal.x().roundToInt(),
+                leadingBogeyPosInLocal.y().roundToInt(),
+                leadingBogeyPosInLocal.z().roundToInt(),
+            ).subtract(offsetPos)
 
             if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
-                println("Checking if track block success!")
                 // Relocate it!
-                // TODO: Set the directions properly
                 val defaultOne = closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
                 // Subtract the normal to prevent the train from moving
                 val withTransformPos = transform?.apply(closestBlockPosRelative)
                 val relocatePos = (withTransformPos ?: defaultOne).offset(-round(normal.x()), -round(normal.y()), -round(normal.z()))
-                val success = TrainRelocator.relocate(carriageEntity.carriage.train, level, relocatePos, null, false, normal, false)
+                TrainRelocator.relocate(carriageEntity.carriage.train, level, relocatePos, null, false, normal, false)
                 carriageEntity.moveTo(carriageEntity.carriage.getDimensional(level).positionAnchor)
-                println("relocation success is $success")
-                println("carriageEntity aabb is ${carriageEntity.boundingBox}")
             } else {
-                println("Checking if track block failed!")
+                // Derail
+                val train = carriageEntity.carriage.train
+                train.speed = 0.0
+                train.navigation.cancelNavigation()
+                train.derailed = true
+                train.status.highStress()
             }
         }
     }
