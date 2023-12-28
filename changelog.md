@@ -8,3 +8,4 @@
 * Fixed CBC bores not working with interactive
 * Fixed collisions sometimes not being disabled for sub-contraptions on ships
 * Fixed rails not being picked up by glue
+* Added the capability to create tiny trains on mini ships
