@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive
 
+import com.simibubi.create.AllEntityTypes
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.BlockMovementChecks
 import com.simibubi.create.content.contraptions.Contraption
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Quaterniond
 import org.joml.Quaterniondc
@@ -105,13 +107,11 @@ object CreateInteractiveUtil {
         return serverShip.id
     }
 
-    internal fun attemptTrainRelocation(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic) {
-        if (localBlocks.isEmpty()) return
-        val random = Random()
-        // Relocate trains
+    private fun createTrackAABB(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic): AABBdc? {
         var minPosNotRelative: Vector3i? = null
         var maxPosNotRelative: Vector3i? = null
         val posAsJOML = Vector3i()
+        val random = Random()
         for ((pos, structureInfo) in localBlocks) {
             if (structureInfo.state.block is ITrackBlock) {
                 // Tick the track block to create its track graph immediately (normally create waits until the next tick, but that's too slow for us)
@@ -134,20 +134,35 @@ object CreateInteractiveUtil {
                 }
             }
         }
+        if (minPosNotRelative == null || maxPosNotRelative == null) return null
+        return AABBd(minPosNotRelative.x().toDouble(), minPosNotRelative.y().toDouble(), minPosNotRelative.z().toDouble(), maxPosNotRelative.x().toDouble() + 1.0, maxPosNotRelative.y().toDouble() + 1.0, maxPosNotRelative.z().toDouble() + 1.0).expand(1.0)
+    }
 
-        if (minPosNotRelative != null && maxPosNotRelative != null) {
-            val searchAABB: AABBdc = AABBd(minPosNotRelative.x().toDouble(), minPosNotRelative.y().toDouble(), minPosNotRelative.z().toDouble(), maxPosNotRelative.x().toDouble() + 1.0, maxPosNotRelative.y().toDouble() + 1.0, maxPosNotRelative.z().toDouble() + 1.0).expand(1.0)
-            val searchAABBmc = searchAABB.toMinecraft()
-            val trainCars = level.getEntitiesOfClass(CarriageContraptionEntity::class.java, searchAABBmc)
-            // Only attempt to relocate the first carriage of trains that aren't derailed. Check the bounding box twice to avoid entities VS adds to this query.
-            trainCars.filter { it.carriageIndex == 0 && !it.carriage.train.derailed && it.boundingBox.intersects(searchAABBmc) }.forEach { carriageEntity ->
-                val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().sub(0.0, 1.0, 0.0)
-                val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x(), leadingBogeyPosInLocal.y(), leadingBogeyPosInLocal.z()).subtract(offsetPos)
-                if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
-                    // Relocate it!
-                    // TODO: Set the directions properly
-                    TrainRelocator.relocate(carriageEntity.carriage.train, level, closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z()), null, false, Vec3(0.0, 0.0, 1.0), false)
-                }
+    internal fun attemptTrainRelocation(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic) {
+        if (localBlocks.isEmpty()) return
+
+        println("Attempting relocation to $shipCenter")
+        val searchAABB = createTrackAABB(level, offsetPos, localBlocks, shipCenter) ?: return
+        println("Attempting relocation PART 2 to $shipCenter")
+        val searchAABBmc = searchAABB.toMinecraft()
+        val trainCars = level.getEntities(AllEntityTypes.CARRIAGE_CONTRAPTION.get()) { true }
+        println("searchAABBmc is $searchAABBmc")
+        println("trainCars.size is ${trainCars.size}")
+        // Only attempt to relocate the first carriage of trains that aren't derailed. Check the bounding box twice to avoid entities VS adds to this query.
+        // TODO: Don't do this logic with entities, use trains directly instead!
+        trainCars.filter { it.carriageIndex == 0 }.forEach { carriageEntity ->
+            val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().sub(0.0, 1.0, 0.0)
+            val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x(), leadingBogeyPosInLocal.y(), leadingBogeyPosInLocal.z()).subtract(offsetPos)
+            if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
+                println("Checking if track block success!")
+                // Relocate it!
+                // TODO: Set the directions properly
+                val success = TrainRelocator.relocate(carriageEntity.carriage.train, level, closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z()), null, false, Vec3(0.0, 0.0, 1.0), false)
+                carriageEntity.moveTo(carriageEntity.carriage.getDimensional(level).positionAnchor)
+                println("relocation success is $success")
+                println("carriageEntity aabb is ${carriageEntity.boundingBox}")
+            } else {
+                println("Checking if track block failed!")
             }
         }
     }
