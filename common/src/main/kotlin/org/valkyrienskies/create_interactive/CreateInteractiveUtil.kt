@@ -55,6 +55,8 @@ import org.valkyrienskies.mod.common.util.toMinecraft
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 import java.util.Random
+import kotlin.math.round
+import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
@@ -153,17 +155,17 @@ object CreateInteractiveUtil {
         // TODO: Don't do this logic with entities, use trains directly instead!
         trainCars.filter { it.carriageIndex == 0 }.forEach { carriageEntity ->
             val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().sub(0.0, 1.0, 0.0)
-            val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x(), leadingBogeyPosInLocal.y(), leadingBogeyPosInLocal.z()).subtract(offsetPos)
+            val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x().roundToInt(), leadingBogeyPosInLocal.y().roundToInt(), leadingBogeyPosInLocal.z().roundToInt()).subtract(offsetPos)
             val leadingPoint = carriageEntity.carriage.leadingPoint ?: return@forEach
 
             val node1Location: Vector3ic = leadingPoint.node1?.location?.getLocationVec3i() ?: return@forEach
             val node2Location: Vector3ic = leadingPoint.node2?.location?.getLocationVec3i() ?: return@forEach
 
             val normal: Vec3 = if (transform == null) {
-                Vector3d(node1Location.sub(node2Location, Vector3i())).normalize().toMinecraft()
+                Vector3d(node1Location.sub(node2Location, Vector3i())).mul(-1.0).normalize().toMinecraft()
             } else {
                 val diff = Vector3d(node1Location.sub(node2Location, Vector3i()))
-                transform.applyWithoutOffsetUncentered(diff.toMinecraft()).normalize()
+                transform.applyWithoutOffsetUncentered(diff.mul(-1.0).toMinecraft()).normalize()
             }
 
             if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
@@ -171,7 +173,10 @@ object CreateInteractiveUtil {
                 // Relocate it!
                 // TODO: Set the directions properly
                 val defaultOne = closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
-                val success = TrainRelocator.relocate(carriageEntity.carriage.train, level, transform?.apply(closestBlockPosRelative) ?: defaultOne, null, false, normal, false)
+                // Subtract the normal to prevent the train from moving
+                val withTransformPos = transform?.apply(closestBlockPosRelative)
+                val relocatePos = (withTransformPos ?: defaultOne).offset(-round(normal.x()), -round(normal.y()), -round(normal.z()))
+                val success = TrainRelocator.relocate(carriageEntity.carriage.train, level, relocatePos, null, false, normal, false)
                 carriageEntity.moveTo(carriageEntity.carriage.getDimensional(level).positionAnchor)
                 println("relocation success is $success")
                 println("carriageEntity aabb is ${carriageEntity.boundingBox}")
