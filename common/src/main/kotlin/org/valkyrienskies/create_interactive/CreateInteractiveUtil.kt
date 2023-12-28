@@ -38,6 +38,7 @@ import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.core.util.expand
+import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixin.DimensionalCarriageEntityAccessor
 import org.valkyrienskies.create_interactive.mixin_logic.MixinTrainLogic.getLocationVec3i
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
@@ -153,13 +154,13 @@ object CreateInteractiveUtil {
         println("trainCars.size is ${trainCars.size}")
         // Only attempt to relocate the first carriage of trains that aren't derailed. Check the bounding box twice to avoid entities VS adds to this query.
         // TODO: Don't do this logic with entities, use trains directly instead!
-        trainCars.filter { it.carriageIndex == 0 }.forEach { carriageEntity ->
-            val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().sub(0.0, 1.0, 0.0)
-            val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x().roundToInt(), leadingBogeyPosInLocal.y().roundToInt(), leadingBogeyPosInLocal.z().roundToInt()).subtract(offsetPos)
+        trainCars.filter { it.carriageIndex == it.carriage.train.carriages.size - 1 }.forEach { carriageEntity ->
             val leadingPoint = carriageEntity.carriage.leadingPoint ?: return@forEach
 
             val node1Location: Vector3ic = leadingPoint.node1?.location?.getLocationVec3i() ?: return@forEach
             val node2Location: Vector3ic = leadingPoint.node2?.location?.getLocationVec3i() ?: return@forEach
+
+            val normalLocal: Vector3dc = Vector3d(node1Location.sub(node2Location, Vector3i())).mul(-1.0).normalize()
 
             val normal: Vec3 = if (transform == null) {
                 Vector3d(node1Location.sub(node2Location, Vector3i())).mul(-1.0).normalize().toMinecraft()
@@ -167,6 +168,21 @@ object CreateInteractiveUtil {
                 val diff = Vector3d(node1Location.sub(node2Location, Vector3i()))
                 transform.applyWithoutOffsetUncentered(diff.mul(-1.0).toMinecraft()).normalize()
             }
+
+            val bogey = carriageEntity.carriage.trailingBogey()
+            var bogeyRelPos = if ((bogey as CarriageBogeyAccessor).getIsLeading()) BlockPos.ZERO else Vector3d(normalLocal).mul(-carriageEntity.carriage.bogeySpacing.toDouble()).let { BlockPos(it.x.roundToInt(), it.y.roundToInt(), it.z.roundToInt()) }
+            // TODO: This sucks, has to be rotation relative to the track!!!
+            val rotated = carriageEntity.rotationState.asMatrix().transform(Vec3(0.0, 0.0, 1.0))
+//            if (normalLocal.dot(rotated.x, rotated.y, rotated.z) > 0.0) {
+//                bogeyRelPos = bogeyRelPos.multiply(-1)
+//            }
+            println("rotated is $rotated")
+
+            val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().add(bogeyRelPos.x.toDouble(), bogeyRelPos.y.toDouble(), bogeyRelPos.z.toDouble()).sub(0.0, 1.0, 0.0)
+            val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x().roundToInt(), leadingBogeyPosInLocal.y().roundToInt(), leadingBogeyPosInLocal.z().roundToInt()).subtract(offsetPos)
+
+
+
 
             if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
                 println("Checking if track block success!")
