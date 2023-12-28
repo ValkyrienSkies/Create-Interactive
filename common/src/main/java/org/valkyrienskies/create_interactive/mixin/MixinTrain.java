@@ -33,4 +33,16 @@ public abstract class MixinTrain implements TrainDuck {
     private void tickOnEndOfTrack(final Level level, final CallbackInfo ci) {
         MixinTrainLogic.INSTANCE.tickOnEndOfTrack$create_interactive(Train.class.cast(this));
     }
+
+    /**
+     * Re-rail derailed trains when they are nearby rails
+     */
+    /**
+    @Inject(
+        method = "tick", at = @At("RETURN")
+    )
+    private void postTick(final Level level, final CallbackInfo ci) {
+        MixinTrainLogic.INSTANCE.postTick$create_interactive(level, Train.class.cast(this));
+    }
+     */
 }
