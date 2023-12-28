@@ -74,6 +74,14 @@ public abstract class MixinContraption implements ContraptionDuck {
         );
     }
 
+    /**
+     * Relocate trains on the ship back to the world
+     */
+    @Inject(method = "addBlocksToWorld", at = @At("RETURN"))
+    private void postAddBlocksToWorld(final Level world, final StructureTransform transform, final CallbackInfo ci) {
+        MixinContraptionLogic.INSTANCE.postAddBlocksToWorld$create_interactive(entity, blocks, world);
+    }
+
     @Override
     public void ci$setBlock(
         final @NotNull BlockPos localPos,

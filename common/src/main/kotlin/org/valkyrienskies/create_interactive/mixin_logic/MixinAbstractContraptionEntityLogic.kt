@@ -248,6 +248,10 @@ internal object MixinAbstractContraptionEntityLogic {
         val contraptionsInLevel = ContraptionHandler.loadedContraptions.get(level).values
         for (contraptionEntityRef: WeakReference<AbstractContraptionEntity> in contraptionsInLevel) {
             val contraptionEntity = contraptionEntityRef.get() ?: continue
+            // Do not disassemble carriage contraptions
+            if (contraptionEntity is CarriageContraptionEntity) {
+                continue
+            }
             if (level.getShipManagingPos(contraptionEntity.anchorVec)?.id == shadowShipId) {
                 val vehicle = contraptionEntity.vehicle
                 if (vehicle is AbstractContraptionEntity) {
