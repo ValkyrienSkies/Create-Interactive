@@ -39,6 +39,7 @@ import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.core.util.expand
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixin.DimensionalCarriageEntityAccessor
+import org.valkyrienskies.create_interactive.mixin.TrainAccessor
 import org.valkyrienskies.create_interactive.mixin_logic.MixinTrainLogic.getLocationVec3i
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
@@ -188,9 +189,10 @@ object CreateInteractiveUtil {
             } else {
                 // Derail
                 val train = carriageEntity.carriage.train
-                train.speed = 0.0
+                (train as TrainAccessor).migratingPoints.clear()
                 train.navigation.cancelNavigation()
-                train.derailed = true
+                train.setGraph(null)
+                train.setDerailed(true)
                 train.status.highStress()
             }
         }
