@@ -4,6 +4,7 @@ import com.simibubi.create.AllEntityTypes
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.BlockMovementChecks
 import com.simibubi.create.content.contraptions.Contraption
+import com.simibubi.create.content.contraptions.StructureTransform
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import com.simibubi.create.content.trains.entity.TrainRelocator
@@ -18,7 +19,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Quaterniond
 import org.joml.Quaterniondc
@@ -39,6 +39,7 @@ import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.core.util.expand
 import org.valkyrienskies.create_interactive.mixin.DimensionalCarriageEntityAccessor
+import org.valkyrienskies.create_interactive.mixin_logic.MixinTrainLogic.getLocationVec3i
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
@@ -138,7 +139,7 @@ object CreateInteractiveUtil {
         return AABBd(minPosNotRelative.x().toDouble(), minPosNotRelative.y().toDouble(), minPosNotRelative.z().toDouble(), maxPosNotRelative.x().toDouble() + 1.0, maxPosNotRelative.y().toDouble() + 1.0, maxPosNotRelative.z().toDouble() + 1.0).expand(1.0)
     }
 
-    internal fun attemptTrainRelocation(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic) {
+    internal fun attemptTrainRelocation(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic, transform: StructureTransform? = null) {
         if (localBlocks.isEmpty()) return
 
         println("Attempting relocation to $shipCenter")
@@ -153,11 +154,24 @@ object CreateInteractiveUtil {
         trainCars.filter { it.carriageIndex == 0 }.forEach { carriageEntity ->
             val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().sub(0.0, 1.0, 0.0)
             val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x(), leadingBogeyPosInLocal.y(), leadingBogeyPosInLocal.z()).subtract(offsetPos)
+            val leadingPoint = carriageEntity.carriage.leadingPoint ?: return@forEach
+
+            val node1Location: Vector3ic = leadingPoint.node1?.location?.getLocationVec3i() ?: return@forEach
+            val node2Location: Vector3ic = leadingPoint.node2?.location?.getLocationVec3i() ?: return@forEach
+
+            val normal: Vec3 = if (transform == null) {
+                Vector3d(node1Location.sub(node2Location, Vector3i())).normalize().toMinecraft()
+            } else {
+                val diff = Vector3d(node1Location.sub(node2Location, Vector3i()))
+                transform.applyWithoutOffsetUncentered(diff.toMinecraft()).normalize()
+            }
+
             if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
                 println("Checking if track block success!")
                 // Relocate it!
                 // TODO: Set the directions properly
-                val success = TrainRelocator.relocate(carriageEntity.carriage.train, level, closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z()), null, false, Vec3(0.0, 0.0, 1.0), false)
+                val defaultOne = closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
+                val success = TrainRelocator.relocate(carriageEntity.carriage.train, level, transform?.apply(closestBlockPosRelative) ?: defaultOne, null, false, normal, false)
                 carriageEntity.moveTo(carriageEntity.carriage.getDimensional(level).positionAnchor)
                 println("relocation success is $success")
                 println("carriageEntity aabb is ${carriageEntity.boundingBox}")

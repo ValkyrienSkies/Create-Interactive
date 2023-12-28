@@ -5,6 +5,7 @@ import com.simibubi.create.AllInteractionBehaviours
 import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
+import com.simibubi.create.content.contraptions.StructureTransform
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
 import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
@@ -24,6 +25,7 @@ import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
 import org.apache.commons.lang3.tuple.MutablePair
+import org.joml.Quaterniond
 import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
@@ -111,13 +113,14 @@ internal object MixinContraptionLogic {
         entity: AbstractContraptionEntity,
         blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>,
         world: Level,
+        transform: StructureTransform,
     ) {
         if (world !is ServerLevel) return
         val shipId = (entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
         val shipFor = world.shipObjectWorld.allShips.getById(shipId) ?: return
         val shipCenter = shipFor.getChunkClaimCenterPos(world)
         attemptTrainRelocation(
-            world, shipCenter.toBlockPos(), blocks, entity.contraption.anchor.toJOML()
+            world, shipCenter.toBlockPos(), blocks, entity.contraption.anchor.toJOML(), transform
         )
     }
 

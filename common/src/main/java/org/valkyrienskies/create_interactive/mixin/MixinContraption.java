@@ -79,7 +79,7 @@ public abstract class MixinContraption implements ContraptionDuck {
      */
     @Inject(method = "addBlocksToWorld", at = @At("RETURN"))
     private void postAddBlocksToWorld(final Level world, final StructureTransform transform, final CallbackInfo ci) {
-        MixinContraptionLogic.INSTANCE.postAddBlocksToWorld$create_interactive(entity, blocks, world);
+        MixinContraptionLogic.INSTANCE.postAddBlocksToWorld$create_interactive(entity, blocks, world, transform);
     }
 
     @Override
