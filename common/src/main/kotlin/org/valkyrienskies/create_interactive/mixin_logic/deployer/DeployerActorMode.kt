@@ -7,8 +7,8 @@ import com.simibubi.create.foundation.utility.Lang
 import org.valkyrienskies.create_interactive.CreateInteractiveIcons
 
 enum class DeployerActorMode(icon: AllIcons) : INamedIconOptions {
-    ACTOR_ON(AllIcons.I_CONFIRM),
-    ACTOR_OFF(AllIcons.I_DISABLE),
+    ACTOR_ON(CreateInteractiveIcons.I_COMEDY),
+    ACTOR_OFF(CreateInteractiveIcons.I_TRAGEDY),
     ;
 
     private var translationKey: String

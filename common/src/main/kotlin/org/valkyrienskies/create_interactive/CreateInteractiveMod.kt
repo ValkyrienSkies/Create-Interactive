@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive
 
+import com.simibubi.create.Create
 import com.simibubi.create.foundation.data.CreateRegistrate
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
@@ -36,5 +37,9 @@ object CreateInteractiveMod {
 
     private fun registerClientEvents() {
         VSEvents.startUpdateRenderTransformsEvent.on { _ -> CreateInteractiveEventsClient.onStartUpdateRenderTransforms() }
+    }
+
+    fun asResource(path: String): ResourceLocation {
+        return ResourceLocation(MOD_ID, path)
     }
 }
