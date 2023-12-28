@@ -99,66 +99,48 @@ object CreateInteractiveUtil {
             // endregion
         }
 
-        if (blocks.isNotEmpty()) {
-            val random = Random()
-            val anchorPos = contraption.anchor
-            // Relocate trains
-            var minPosNotRelative: Vector3i? = null
-            var maxPosNotRelative: Vector3i? = null
-            val posAsJOML = Vector3i()
-            for ((pos, structureInfo) in blocks) {
-                if (structureInfo.state.block is ITrackBlock) {
-                    // Tick the track block to create its track graph immediately (normally create waits until the next tick, but that's too slow for us)
-                    val posInWorld = pos.offset(anchorPos)
-                    val posInShip = pos.offset(shipCenter.toBlockPos())
-                    val stateInWorld = level.getBlockState(posInShip)
-                    if (stateInWorld.block is TrackBlock) {
-                        stateInWorld.block.tick(stateInWorld, level, posInShip, random)
-                    }
-                    posAsJOML.set(posInWorld)
-                    if (minPosNotRelative == null) {
-                        minPosNotRelative = Vector3i(posAsJOML)
-                    } else {
-                        minPosNotRelative.min(posAsJOML)
-                    }
-                    if (maxPosNotRelative == null) {
-                        maxPosNotRelative = Vector3i(posAsJOML)
-                    } else {
-                        maxPosNotRelative.max(posAsJOML)
-                    }
-                }
-            }
-            attemptRelocation(minPosNotRelative, maxPosNotRelative, level, anchorPos, blocks, shipCenter)
-            /*
-            if (minPos != null && maxPos != null) {
-                val searchAABB: AABBdc = AABBd(minPos.x().toDouble(), minPos.y().toDouble(), minPos.z().toDouble(), maxPos.x().toDouble() + 1.0, maxPos.y().toDouble() + 1.0, maxPos.z().toDouble() + 1.0)
-                val trainCars = level.getEntitiesOfClass(CarriageContraptionEntity::class.java, searchAABB.toMinecraft())
-                // Only attempt to relocate the first carriage
-                trainCars.filter { it.carriageIndex == 0 }.forEach { carriageEntity ->
-                    val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().sub(0.0, 1.0, 0.0)
-                    val closestBlockPos = BlockPos(leadingBogeyPosInLocal.x(), leadingBogeyPosInLocal.y(), leadingBogeyPosInLocal.z())
-                    if (blocks[closestBlockPos]?.state?.block is ITrackBlock) {
-                        // Relocate it!
-                        // TODO: Set the directions properly
-                        TrainRelocator.relocate(carriageEntity.carriage.train, level, closestBlockPos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z()), null, false, Vec3(1.0, 0.0, 0.0), false)
-                    }
-                }
-            }
-
-             */
-        }
+        attemptTrainRelocation(level, contraption.anchor, blocks, shipCenter)
 
         serverShip.isStatic = true
         return serverShip.id
     }
 
-    private fun attemptRelocation(minPosNotRelative: Vector3i?, maxPosNotRelative: Vector3i?, level: Level, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic) {
+    internal fun attemptTrainRelocation(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic) {
+        if (localBlocks.isEmpty()) return
+        val random = Random()
+        // Relocate trains
+        var minPosNotRelative: Vector3i? = null
+        var maxPosNotRelative: Vector3i? = null
+        val posAsJOML = Vector3i()
+        for ((pos, structureInfo) in localBlocks) {
+            if (structureInfo.state.block is ITrackBlock) {
+                // Tick the track block to create its track graph immediately (normally create waits until the next tick, but that's too slow for us)
+                val posInWorld = pos.offset(offsetPos)
+                val posInShip = pos.offset(shipCenter.toBlockPos())
+                val stateInWorld = level.getBlockState(posInShip)
+                if (stateInWorld.block is TrackBlock) {
+                    stateInWorld.block.tick(stateInWorld, level, posInShip, random)
+                }
+                posAsJOML.set(posInWorld)
+                if (minPosNotRelative == null) {
+                    minPosNotRelative = Vector3i(posAsJOML)
+                } else {
+                    minPosNotRelative.min(posAsJOML)
+                }
+                if (maxPosNotRelative == null) {
+                    maxPosNotRelative = Vector3i(posAsJOML)
+                } else {
+                    maxPosNotRelative.max(posAsJOML)
+                }
+            }
+        }
+
         if (minPosNotRelative != null && maxPosNotRelative != null) {
             val searchAABB: AABBdc = AABBd(minPosNotRelative.x().toDouble(), minPosNotRelative.y().toDouble(), minPosNotRelative.z().toDouble(), maxPosNotRelative.x().toDouble() + 1.0, maxPosNotRelative.y().toDouble() + 1.0, maxPosNotRelative.z().toDouble() + 1.0).expand(1.0)
-            val trainCars = level.getEntitiesOfClass(CarriageContraptionEntity::class.java, searchAABB.toMinecraft())
-            // Only attempt to relocate the first carriage
-            // TODO: Filter to only include trains that actually collide with searchAABB
-            trainCars.filter { it.carriageIndex == 0 }.forEach { carriageEntity ->
+            val searchAABBmc = searchAABB.toMinecraft()
+            val trainCars = level.getEntitiesOfClass(CarriageContraptionEntity::class.java, searchAABBmc)
+            // Only attempt to relocate the first carriage of trains that aren't derailed. Check the bounding box twice to avoid entities VS adds to this query.
+            trainCars.filter { it.carriageIndex == 0 && !it.carriage.train.derailed && it.boundingBox.intersects(searchAABBmc) }.forEach { carriageEntity ->
                 val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML().sub(0.0, 1.0, 0.0)
                 val closestBlockPosRelative = BlockPos(leadingBogeyPosInLocal.x(), leadingBogeyPosInLocal.y(), leadingBogeyPosInLocal.z()).subtract(offsetPos)
                 if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
