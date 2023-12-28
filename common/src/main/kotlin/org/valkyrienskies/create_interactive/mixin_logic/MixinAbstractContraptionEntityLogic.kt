@@ -34,7 +34,6 @@ import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient.addSh
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionEntityForShip
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.linkShipToContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.teleportShipToPosRot
@@ -85,8 +84,6 @@ internal object MixinAbstractContraptionEntityLogic {
             // Derailed trains can move freely
             if (thisEntity is CarriageContraptionEntity && CreateInteractiveUtil.isTrainDerailed(thisEntity)) {
                 serverShip.isStatic = false
-                disableCollisions(thisEntity, prevShipId, newShadowShipId, disabled = false)
-                // TODO: Move the contraption to follow the train
                 return newShadowShipId
             }
             val contraptionPosRot = getContraptionPosRot(thisEntity)
@@ -101,8 +98,6 @@ internal object MixinAbstractContraptionEntityLogic {
         } else if (prevShipId != null) {
             unlinkShipToContraption(prevShipId, thisEntity)
         }
-
-        disableCollisions(thisEntity, prevShipId, newShadowShipId)
 
         return newShadowShipId
     }
@@ -126,7 +121,6 @@ internal object MixinAbstractContraptionEntityLogic {
         } else {
             setShadowShipId(thisEntity, oldShadowShipId, createShipForContraption((thisEntity.level as ServerLevel?)!!, thisEntity.contraption, BlockPos(thisEntity.position())))
         }
-        disableCollisions(thisEntity, null, shipId)
         return shipId
     }
 
@@ -254,6 +248,10 @@ internal object MixinAbstractContraptionEntityLogic {
         val contraptionsInLevel = ContraptionHandler.loadedContraptions.get(level).values
         for (contraptionEntityRef: WeakReference<AbstractContraptionEntity> in contraptionsInLevel) {
             val contraptionEntity = contraptionEntityRef.get() ?: continue
+            // Do not disassemble carriage contraptions
+            if (contraptionEntity is CarriageContraptionEntity) {
+                continue
+            }
             if (level.getShipManagingPos(contraptionEntity.anchorVec)?.id == shadowShipId) {
                 val vehicle = contraptionEntity.vehicle
                 if (vehicle is AbstractContraptionEntity) {
@@ -327,44 +325,6 @@ internal object MixinAbstractContraptionEntityLogic {
         return (BlockPos(previousPosition) != gridPosition
             || (contextAccessor.relativeMotion.length() > 0 || contextAccessor.contraption is CarriageContraption)
             && contextAccessor.firstMovement)
-    }
-
-    fun disableCollisions(thisEntity: AbstractContraptionEntity, prevShipId: ShipId?, newShadowShipId: ShipId?, disabled: Boolean = true) {
-        // Disable collision between ships and sub-contraptions
-        if (!thisEntity.level.isClientSide) {
-            if (prevShipId != newShadowShipId) {
-                // Disable collision to base ship pls
-                var contraptionEntity: AbstractContraptionEntity? = thisEntity
-                var parentShip: Ship? = thisEntity.level.getShipManagingPos(thisEntity.contraption.anchor)
-                while (parentShip != null && contraptionEntity != null) {
-                    contraptionEntity = getContraptionEntityForShip(parentShip.id, false)
-                    if (contraptionEntity == null) break
-                    parentShip = thisEntity.level.getShipManagingPos(contraptionEntity.contraption.anchor)
-                }
-                if (parentShip != null) {
-                    // Disable collisions
-                    if (newShadowShipId != null) {
-                        if (disabled) {
-                            ((thisEntity.level as ServerLevel).shipObjectWorld).disableCollisionBetweenBodies(
-                                newShadowShipId,
-                                parentShip.id,
-                            )
-                        } else {
-                            ((thisEntity.level as ServerLevel).shipObjectWorld).enableCollisionBetweenBodies(
-                                newShadowShipId,
-                                parentShip.id,
-                            )
-                        }
-                    }
-                    if (prevShipId != null) {
-                        ((thisEntity.level as ServerLevel).shipObjectWorld).enableCollisionBetweenBodies(
-                            prevShipId,
-                            parentShip.id,
-                        )
-                    }
-                }
-            }
-        }
     }
 
     private fun AbstractContraptionEntity.getPassengerPosInShip(ship: Ship, passenger: Entity): Vector3dc? {

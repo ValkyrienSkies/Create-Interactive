@@ -5,6 +5,7 @@ import com.simibubi.create.AllInteractionBehaviours
 import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
+import com.simibubi.create.content.contraptions.StructureTransform
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
 import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
@@ -24,9 +25,11 @@ import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
 import org.apache.commons.lang3.tuple.MutablePair
+import org.joml.Quaterniond
 import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
@@ -34,6 +37,8 @@ import org.valkyrienskies.create_interactive.mixin.ContraptionAccessor
 import org.valkyrienskies.create_interactive.mixin.StructureBlockInfoAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.shipObjectWorld
+import org.valkyrienskies.mod.common.util.toBlockPos
+import org.valkyrienskies.mod.common.util.toJOML
 
 internal object MixinContraptionLogic {
     internal fun preOnEntityCreated(
@@ -99,6 +104,24 @@ internal object MixinContraptionLogic {
                 blocks[localPos] = blockInfo
             }
         }
+    }
+
+    /**
+     * Relocate trains on the ship back to the world
+     */
+    internal fun postAddBlocksToWorld(
+        entity: AbstractContraptionEntity,
+        blocks: MutableMap<BlockPos, StructureTemplate.StructureBlockInfo>,
+        world: Level,
+        transform: StructureTransform,
+    ) {
+        if (world !is ServerLevel) return
+        val shipId = (entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
+        val shipFor = world.shipObjectWorld.allShips.getById(shipId) ?: return
+        val shipCenter = shipFor.getChunkClaimCenterPos(world)
+        attemptTrainRelocation(
+            world, shipCenter.toBlockPos(), blocks, entity.contraption.anchor.toJOML(), transform
+        )
     }
 
     private fun <K, V> MutableMap<K, V>.removeValues(value: V): List<K> {

@@ -3,8 +3,12 @@ package org.valkyrienskies.create_interactive
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.BlockMovementChecks
 import com.simibubi.create.content.contraptions.Contraption
+import com.simibubi.create.content.contraptions.StructureTransform
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
+import com.simibubi.create.content.trains.entity.TrainRelocator
+import com.simibubi.create.content.trains.track.ITrackBlock
+import com.simibubi.create.content.trains.track.TrackBlock
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -32,7 +36,11 @@ import org.valkyrienskies.core.api.ships.properties.ShipTransform
 import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.core.util.expand
+import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixin.DimensionalCarriageEntityAccessor
+import org.valkyrienskies.create_interactive.mixin.TrainAccessor
+import org.valkyrienskies.create_interactive.mixin_logic.MixinTrainLogic.getLocationVec3i
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
@@ -40,12 +48,16 @@ import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntit
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
+import org.valkyrienskies.mod.common.util.set
 import org.valkyrienskies.mod.common.util.settings
 import org.valkyrienskies.mod.common.util.toBlockPos
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toMinecraft
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
+import java.util.Random
+import kotlin.math.round
+import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
@@ -93,8 +105,97 @@ object CreateInteractiveUtil {
             // endregion
         }
 
+        attemptTrainRelocation(level, contraption.anchor, blocks, shipCenter)
+
         serverShip.isStatic = true
         return serverShip.id
+    }
+
+    private fun createTrackAABB(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic): AABBdc? {
+        var minPosNotRelative: Vector3i? = null
+        var maxPosNotRelative: Vector3i? = null
+        val posAsJOML = Vector3i()
+        val random = Random()
+        for ((pos, structureInfo) in localBlocks) {
+            if (structureInfo.state.block is ITrackBlock) {
+                // Tick the track block to create its track graph immediately (normally create waits until the next tick, but that's too slow for us)
+                val posInWorld = pos.offset(offsetPos)
+                val posInShip = pos.offset(shipCenter.toBlockPos())
+                val stateInWorld = level.getBlockState(posInShip)
+                if (stateInWorld.block is TrackBlock) {
+                    stateInWorld.block.tick(stateInWorld, level, posInShip, random)
+                }
+                posAsJOML.set(posInWorld)
+                if (minPosNotRelative == null) {
+                    minPosNotRelative = Vector3i(posAsJOML)
+                } else {
+                    minPosNotRelative.min(posAsJOML)
+                }
+                if (maxPosNotRelative == null) {
+                    maxPosNotRelative = Vector3i(posAsJOML)
+                } else {
+                    maxPosNotRelative.max(posAsJOML)
+                }
+            }
+        }
+        if (minPosNotRelative == null || maxPosNotRelative == null) return null
+        return AABBd(minPosNotRelative.x().toDouble(), minPosNotRelative.y().toDouble(), minPosNotRelative.z().toDouble(), maxPosNotRelative.x().toDouble() + 1.0, maxPosNotRelative.y().toDouble() + 1.0, maxPosNotRelative.z().toDouble() + 1.0).expand(1.0)
+    }
+
+    internal fun attemptTrainRelocation(level: ServerLevel, offsetPos: BlockPos, localBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>, shipCenter: Vector3ic, transform: StructureTransform? = null) {
+        if (localBlocks.isEmpty()) return
+
+        val searchAABB = createTrackAABB(level, offsetPos, localBlocks, shipCenter) ?: return
+        val searchAABBmc = searchAABB.toMinecraft()
+        val trainCars = level.getEntitiesOfClass(CarriageContraptionEntity::class.java, searchAABBmc)
+
+        // Only attempt to relocate the first carriage of trains that aren't derailed. Check the bounding box twice to avoid entities VS adds to this query.
+        trainCars.filter { !it.carriage.train.derailed && it.carriageIndex == it.carriage.train.carriages.size - 1 && it.boundingBox.intersects(searchAABBmc) }.forEach { carriageEntity ->
+            val leadingPoint = carriageEntity.carriage.leadingPoint ?: return@forEach
+
+            val node1Location: Vector3ic = leadingPoint.node1?.location?.getLocationVec3i() ?: return@forEach
+            val node2Location: Vector3ic = leadingPoint.node2?.location?.getLocationVec3i() ?: return@forEach
+
+            val normalLocal: Vector3dc = Vector3d(node1Location.sub(node2Location, Vector3i())).mul(-1.0).normalize()
+
+            val normal: Vec3 = if (transform == null) {
+                Vector3d(node1Location.sub(node2Location, Vector3i())).mul(-1.0).normalize().toMinecraft()
+            } else {
+                val diff = Vector3d(node1Location.sub(node2Location, Vector3i()))
+                transform.applyWithoutOffsetUncentered(diff.mul(-1.0).toMinecraft()).normalize()
+            }
+
+            val bogey = carriageEntity.carriage.trailingBogey()
+            val bogeyRelPos =
+                if ((bogey as CarriageBogeyAccessor).getIsLeading()) BlockPos.ZERO else Vector3d(normalLocal).mul(-carriageEntity.carriage.bogeySpacing.toDouble())
+                    .let { BlockPos(it.x.roundToInt(), it.y.roundToInt(), it.z.roundToInt()) }
+
+            val leadingBogeyPosInLocal: Vector3dc = carriageEntity.anchorVec.toJOML()
+                .add(bogeyRelPos.x.toDouble(), bogeyRelPos.y.toDouble(), bogeyRelPos.z.toDouble()).sub(0.0, 1.0, 0.0)
+            val closestBlockPosRelative = BlockPos(
+                leadingBogeyPosInLocal.x().roundToInt(),
+                leadingBogeyPosInLocal.y().roundToInt(),
+                leadingBogeyPosInLocal.z().roundToInt(),
+            ).subtract(offsetPos)
+
+            if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
+                // Relocate it!
+                val defaultOne = closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
+                // Subtract the normal to prevent the train from moving
+                val withTransformPos = transform?.apply(closestBlockPosRelative)
+                val relocatePos = (withTransformPos ?: defaultOne).offset(-round(normal.x()), -round(normal.y()), -round(normal.z()))
+                TrainRelocator.relocate(carriageEntity.carriage.train, level, relocatePos, null, false, normal, false)
+                carriageEntity.moveTo(carriageEntity.carriage.getDimensional(level).positionAnchor)
+            } else {
+                // Derail
+                val train = carriageEntity.carriage.train
+                (train as TrainAccessor).migratingPoints.clear()
+                train.navigation.cancelNavigation()
+                train.setGraph(null)
+                train.setDerailed(true)
+                train.status.highStress()
+            }
+        }
     }
 
     fun doesContraptionHaveShipLoaded(contraption: Contraption): Boolean {
@@ -117,7 +218,7 @@ object CreateInteractiveUtil {
         )
         contraptionRot.transform(offset)
         val newPos: Vector3dc = contraptionPos.add(offset, Vector3d())
-        val newScale = 1.0
+        val newScale = contraptionPosRot.scale
         val posInShip: Vector3dc = cmInShip.add(0.5, 0.5, 0.5, Vector3d())
         return ShipTransformImpl(
             newPos,
@@ -199,7 +300,7 @@ object CreateInteractiveUtil {
         }
     }
 
-    data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc)
+    data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc, val scale: Double)
 
     fun getContraptionPosRot(entity: AbstractContraptionEntity): ContraptionPosRot {
         val rotationStateOriginal = AbstractContraptionEntity::class.java.cast(entity).rotationState
@@ -211,10 +312,10 @@ object CreateInteractiveUtil {
         if (parentShip != null) {
             val newNewPos = parentShip.transform.shipToWorld.transformPosition(contraptionPos, Vector3d())
             val newNewRot = parentShip.transform.shipToWorldRotation.mul(newRot, Quaterniond())
-            return ContraptionPosRot(newNewPos, newNewRot)
+            return ContraptionPosRot(newNewPos, newNewRot, parentShip.transform.shipToWorldScaling.x())
         }
 
-        return ContraptionPosRot(contraptionPos, newRot)
+        return ContraptionPosRot(contraptionPos, newRot, 1.0)
     }
 
     fun getContraptionPosRotForRender(entity: AbstractContraptionEntity, partialTick: Double): ContraptionPosRot {
@@ -232,10 +333,10 @@ object CreateInteractiveUtil {
         if (parentShip != null) {
             val newNewPos = parentShip.renderTransform.shipToWorld.transformPosition(contraptionPos, Vector3d())
             val newNewRot = parentShip.renderTransform.shipToWorldRotation.mul(newRot, Quaterniond()).normalize()
-            return ContraptionPosRot(newNewPos, newNewRot)
+            return ContraptionPosRot(newNewPos, newNewRot, parentShip.renderTransform.shipToWorldScaling.x())
         }
 
-        return ContraptionPosRot(contraptionPos, newRot)
+        return ContraptionPosRot(contraptionPos, newRot, 1.0)
     }
 
     fun getContraptionPosRot(entity: AbstractContraptionEntity, parentTransform: ShipTransform?): ContraptionPosRot {
@@ -248,15 +349,15 @@ object CreateInteractiveUtil {
                 Vector3d()
             )
             val newNewRot = parentTransform.shipToWorldRotation.mul(newRot, Quaterniond()).normalize()
-            return ContraptionPosRot(newNewPos, newNewRot)
+            return ContraptionPosRot(newNewPos, newNewRot, parentTransform.shipToWorldScaling.x())
         }
 
-        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
+        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot, 1.0)
     }
 
     fun getShipForMovementContext(context: MovementContext): Ship? = getShipForContraption(context.contraption)
 
-    private fun getShipForContraption(contraption: Contraption): Ship? {
+    internal fun getShipForContraption(contraption: Contraption): Ship? {
         val contraptionEntity = contraption.entity ?: return null
         val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
         return contraptionEntity.level.shipObjectWorld.allShips.getById(shadowShipId)
