@@ -7,4 +7,4 @@
 * Fixed train station overlays not rendering on ships
 * Fixed CBC bores not working with interactive
 * Fixed collisions sometimes not being disabled for sub-contraptions on ships
-* 
+* Fixed rails not being picked up by glue

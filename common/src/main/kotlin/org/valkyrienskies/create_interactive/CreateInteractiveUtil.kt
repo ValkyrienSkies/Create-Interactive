@@ -117,7 +117,7 @@ object CreateInteractiveUtil {
         )
         contraptionRot.transform(offset)
         val newPos: Vector3dc = contraptionPos.add(offset, Vector3d())
-        val newScale = 1.0
+        val newScale = contraptionPosRot.scale
         val posInShip: Vector3dc = cmInShip.add(0.5, 0.5, 0.5, Vector3d())
         return ShipTransformImpl(
             newPos,
@@ -199,7 +199,7 @@ object CreateInteractiveUtil {
         }
     }
 
-    data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc)
+    data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc, val scale: Double)
 
     fun getContraptionPosRot(entity: AbstractContraptionEntity): ContraptionPosRot {
         val rotationStateOriginal = AbstractContraptionEntity::class.java.cast(entity).rotationState
@@ -211,10 +211,10 @@ object CreateInteractiveUtil {
         if (parentShip != null) {
             val newNewPos = parentShip.transform.shipToWorld.transformPosition(contraptionPos, Vector3d())
             val newNewRot = parentShip.transform.shipToWorldRotation.mul(newRot, Quaterniond())
-            return ContraptionPosRot(newNewPos, newNewRot)
+            return ContraptionPosRot(newNewPos, newNewRot, parentShip.transform.shipToWorldScaling.x())
         }
 
-        return ContraptionPosRot(contraptionPos, newRot)
+        return ContraptionPosRot(contraptionPos, newRot, 1.0)
     }
 
     fun getContraptionPosRotForRender(entity: AbstractContraptionEntity, partialTick: Double): ContraptionPosRot {
@@ -232,10 +232,10 @@ object CreateInteractiveUtil {
         if (parentShip != null) {
             val newNewPos = parentShip.renderTransform.shipToWorld.transformPosition(contraptionPos, Vector3d())
             val newNewRot = parentShip.renderTransform.shipToWorldRotation.mul(newRot, Quaterniond()).normalize()
-            return ContraptionPosRot(newNewPos, newNewRot)
+            return ContraptionPosRot(newNewPos, newNewRot, parentShip.renderTransform.shipToWorldScaling.x())
         }
 
-        return ContraptionPosRot(contraptionPos, newRot)
+        return ContraptionPosRot(contraptionPos, newRot, 1.0)
     }
 
     fun getContraptionPosRot(entity: AbstractContraptionEntity, parentTransform: ShipTransform?): ContraptionPosRot {
@@ -248,10 +248,10 @@ object CreateInteractiveUtil {
                 Vector3d()
             )
             val newNewRot = parentTransform.shipToWorldRotation.mul(newRot, Quaterniond()).normalize()
-            return ContraptionPosRot(newNewPos, newNewRot)
+            return ContraptionPosRot(newNewPos, newNewRot, parentTransform.shipToWorldScaling.x())
         }
 
-        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot)
+        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot, 1.0)
     }
 
     fun getShipForMovementContext(context: MovementContext): Ship? = getShipForContraption(context.contraption)

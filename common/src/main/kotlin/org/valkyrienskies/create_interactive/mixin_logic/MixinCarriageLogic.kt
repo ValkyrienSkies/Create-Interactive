@@ -58,7 +58,7 @@ internal object MixinCarriageLogic {
             val pos: Vector3dc = value.positionAnchor.toJOML()
             // Not sure what to do for rot tbh, but this will work for now
             val rot: Quaterniondc = Quaterniond()
-            val posRot = ContraptionPosRot(pos, rot)
+            val posRot = ContraptionPosRot(pos, rot, 1.0)
             val destLevel = level.server.getLevel(key)
             teleportShipToPosRot(posRot, serverShip, destLevel!!)
         }
