@@ -34,12 +34,12 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build jar
-        run: ./gradlew build -PCustomReleaseVersion="${{ github.ref }}"
+        run: ./gradlew build -PCustomReleaseVersion="${{ github.ref_name }}"
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
       - name: Publish to GitHub Packages and VS Maven
-        run: ./gradlew publish -PCustomReleaseVersion="${{ github.ref }}"
+        run: ./gradlew publish -PCustomReleaseVersion="${{ github.ref_name }}"
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
