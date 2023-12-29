@@ -2,7 +2,7 @@ name: Build Release
 on:
   push:
     tags:
-      - '*'
+      - '**'
 jobs:
   validate-gradle:
     name: "Validate Gradle wrapper"
