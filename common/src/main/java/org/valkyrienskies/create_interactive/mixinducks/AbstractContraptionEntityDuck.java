@@ -19,4 +19,8 @@ public interface AbstractContraptionEntityDuck {
 
     @NotNull
     AbstractContraptionEntity.ContraptionRotationState ci$getPrevTickRotationState();
+
+    boolean ci$hasTickedThisTick();
+
+    void ci$resetHasTickedThisTick();
 }

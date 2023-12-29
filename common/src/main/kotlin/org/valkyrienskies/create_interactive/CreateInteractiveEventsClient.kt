@@ -21,9 +21,11 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaim
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRotForRender
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.isTrainDerailed
+import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntityDuck
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
 import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.isBlockInShipyard
 import java.lang.ref.WeakReference
 
 object CreateInteractiveEventsClient {
@@ -51,6 +53,13 @@ object CreateInteractiveEventsClient {
                 continue
             }
 
+            val duck = contraptionEntityCopy as AbstractContraptionEntityDuck
+            if (!duck.`ci$hasTickedThisTick`()) {
+                // This can happen when trains get relocated by turn-tables, tick the entity to move it back to the correct location
+                contraptionEntityCopy.tick()
+            }
+            duck.`ci$resetHasTickedThisTick`()
+
             // Skip the ship if its null, but don't delete the map entry in case the ship packet was delayed
             val clientShip = shipObjectWorld.allShips.getById(shipId) ?: continue
 
@@ -77,6 +86,13 @@ object CreateInteractiveEventsClient {
 
                         val (first, second, scale) = getContraptionPosRot(contraptionEntity)
 
+                        if (contraptionEntityCopy.level.isBlockInShipyard(first.x(), first.y(), first.z())) {
+                            if (contraptionEntityCopy.level.getShipManagingPos(first) == null) {
+                                // Ignore it to fix train turntables being strange when going to be world
+                                return null
+                            }
+                        }
+
                         // The contraption center block is at the same position as the ship center, so create the
                         // transform to apply that
                         // TODO: Use CreateInteractiveUtil.posRotToShipTransform()
@@ -102,7 +118,12 @@ object CreateInteractiveEventsClient {
                             return null
                         }
 
-                        val parentShip = contraptionEntity.level.getShipManagingPos(contraptionEntity.position()) as ShipObjectClient?
+                        val position = contraptionEntity.position()
+                        val parentShip = contraptionEntity.level.getShipManagingPos(position) as ShipObjectClient?
+                        if (contraptionEntityCopy.level.isBlockInShipyard(position) && parentShip == null) {
+                            // Ignore it to fix train turntables being strange when going to be world
+                            return null
+                        }
                         if (parentShip == clientShip) {
                             // Happens when you place a train on itself
                             return null

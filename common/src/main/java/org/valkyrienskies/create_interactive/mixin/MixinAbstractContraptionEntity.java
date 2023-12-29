@@ -36,6 +36,9 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     private Long ci$shadowShipId = null;
 
     @Unique
+    private boolean ci$hasTickedThisTick = false;
+
+    @Unique
     private AbstractContraptionEntity.ContraptionRotationState ci$prevTickRotationState = null;
 
     @Unique
@@ -87,6 +90,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void preTick(final CallbackInfo ci) {
+        ci$hasTickedThisTick = true;
         ci$prevTickRotationState = getRotationState();
     }
 
@@ -150,5 +154,15 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Inject(method = "getPassengerPosition", at = @At("HEAD"), cancellable = true)
     private void preGetPassengerPosition(final Entity passenger, final float partialTicks, final CallbackInfoReturnable<Vec3> cir) {
         MixinAbstractContraptionEntityLogic.INSTANCE.preGetPassengerPosition$create_interactive(AbstractContraptionEntity.class.cast(this), passenger, partialTicks, cir);
+    }
+
+    @Override
+    public boolean ci$hasTickedThisTick() {
+        return ci$hasTickedThisTick;
+    }
+
+    @Override
+    public void ci$resetHasTickedThisTick() {
+        ci$hasTickedThisTick = false;
     }
 }
