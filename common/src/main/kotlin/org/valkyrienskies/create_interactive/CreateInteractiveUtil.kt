@@ -178,15 +178,19 @@ object CreateInteractiveUtil {
                 leadingBogeyPosInLocal.z().roundToInt(),
             ).subtract(offsetPos)
 
+            var success = false
             if (localBlocks[closestBlockPosRelative]?.state?.block is ITrackBlock) {
                 // Relocate it!
                 val defaultOne = closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
                 // Subtract the normal to prevent the train from moving
                 val withTransformPos = transform?.apply(closestBlockPosRelative)
                 val relocatePos = (withTransformPos ?: defaultOne).offset(-round(normal.x()), -round(normal.y()), -round(normal.z()))
-                TrainRelocator.relocate(carriageEntity.carriage.train, level, relocatePos, null, false, normal, false)
-                carriageEntity.moveTo(carriageEntity.carriage.getDimensional(level).positionAnchor)
-            } else {
+                success = TrainRelocator.relocate(carriageEntity.carriage.train, level, relocatePos, null, false, normal, false)
+                if (success) {
+                    carriageEntity.moveTo(carriageEntity.carriage.getDimensional(level).positionAnchor)
+                }
+            }
+            if (!success) {
                 // Derail
                 val train = carriageEntity.carriage.train
                 (train as TrainAccessor).migratingPoints.clear()
