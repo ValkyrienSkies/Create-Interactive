@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "org.valkyrienskies.create_interactive.forge.mixin.ValkyrienForgeMixinConfigPlugin",
   "mixins": [
+    "MixinCarriageEntityHandler",
     "MixinCombinedInvWrapper",
     "MixinCombinedTankWrapper",
     "MixinMountedStorageManager",
