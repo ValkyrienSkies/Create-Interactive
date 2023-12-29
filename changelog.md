@@ -10,3 +10,5 @@
 * Fixed rails not being picked up by glue
 * Added the capability to create tiny trains on mini ships
 * Got train turn-tables working
+* Fixed rail placement on rotated ships and contraptions
+* Added a way to disable the deployer actor, useful for preventing them from triggering on contraption movement
