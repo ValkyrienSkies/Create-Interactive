@@ -14,6 +14,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.util.RandomSource
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -55,7 +56,6 @@ import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toMinecraft
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
-import java.util.Random
 import kotlin.math.round
 import kotlin.math.roundToInt
 
@@ -115,15 +115,16 @@ object CreateInteractiveUtil {
         var minPosNotRelative: Vector3i? = null
         var maxPosNotRelative: Vector3i? = null
         val posAsJOML = Vector3i()
-        val random = Random()
+        val random = RandomSource.create()
         for ((pos, structureInfo) in localBlocks) {
             if (structureInfo.state.block is ITrackBlock) {
                 // Tick the track block to create its track graph immediately (normally create waits until the next tick, but that's too slow for us)
                 val posInWorld = pos.offset(offsetPos)
                 val posInShip = pos.offset(shipCenter.toBlockPos())
                 val stateInWorld = level.getBlockState(posInShip)
-                if (stateInWorld.block is TrackBlock) {
-                    stateInWorld.block.tick(stateInWorld, level, posInShip, random)
+                val block = stateInWorld.block
+                if (block is TrackBlock) {
+                    block.tick(stateInWorld, level, posInShip, random)
                 }
                 posAsJOML.set(posInWorld)
                 if (minPosNotRelative == null) {

@@ -57,7 +57,7 @@ dependencies {
     modCompileOnly("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
     modCompileOnly("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
     modCompileOnly("io.github.fabricators_of_create.Porting-Lib:Porting-Lib:$port_lib_version+$minecraft_version")
-    // modCompileOnly("com.rbasamoyai:createbigcannons-fabric-${minecraft_version}:${createbigcannons_version}")
+    modCompileOnly("maven.modrinth:create-big-cannons:${createbigcannons_version}")
 }
 
 def proguardJarFile = layout.buildDirectory.file("libs/common-proguarded-minified.jar")
