@@ -7,6 +7,9 @@ import org.valkyrienskies.mod.common.PlayerUtil.transformPlayerTemporarily
 import org.valkyrienskies.mod.common.PlayerUtil.untransformPlayer
 
 internal object MixinTrackPlacementClientLogic {
+    /**
+     * Fix placing tracks on rotated ships not working properly
+     */
     internal fun redirectClientTickInvokeGetPlacementState(
         instance: TrackBlockItem,
         pContext: UseOnContext

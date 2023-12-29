@@ -65,6 +65,7 @@
     "MixinMinecraftServer",
     "MixinOrientedContraptionEntity",
     "MixinStationBlockEntity",
+    "MixinTrackBlockItem",
     "MixinTrackPlacement",
     "MixinTrain",
     "MixinTranslatingContraption",
