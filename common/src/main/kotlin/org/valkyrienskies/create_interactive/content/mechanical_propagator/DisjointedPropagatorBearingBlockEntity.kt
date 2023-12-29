@@ -1,11 +1,18 @@
 package org.valkyrienskies.create_interactive.content.mechanical_propagator
 
+import com.simibubi.create.AllSoundEvents
+import com.simibubi.create.content.contraptions.AssemblyException
+import com.simibubi.create.content.contraptions.ControlledContraptionEntity
 import com.simibubi.create.content.contraptions.IControlContraption
+import com.simibubi.create.content.contraptions.bearing.BearingBlock
+import com.simibubi.create.content.contraptions.bearing.BearingContraption
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock
 import com.simibubi.create.content.kinetics.base.IRotate
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity
 import com.simibubi.create.content.kinetics.transmission.sequencer.SequencerInstructions
+import com.simibubi.create.foundation.advancement.AllAdvancements
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.utility.ServerSpeedProvider
 import com.simibubi.create.infrastructure.config.AllConfigs
@@ -174,7 +181,6 @@ class DisjointedPropagatorBearingBlockEntity(
 
         if (!level!!.isClientSide && needsSpeedUpdate()) attachKinetics()
 
-        super.tick()
         effects.tick()
 
         kineticSmartAccess.setPreventSpeedUpdate(0)
@@ -320,5 +326,62 @@ class DisjointedPropagatorBearingBlockEntity(
         }
 
         this.applyRotation()
+    }
+
+    @NoOptimize
+    override fun assemble() {
+        if (level!!.getBlockState(worldPosition)
+                .block !is BearingBlock
+        ) return
+
+        val direction = blockState.getValue(BearingBlock.FACING)
+        val contraption = BearingContraption(
+            isWindmill, direction
+        )
+        try {
+            if (!contraption.assemble(level, worldPosition)) return
+            lastException = null
+        } catch (e: AssemblyException) {
+            lastException = e
+            sendData()
+            return
+        }
+
+        if (isWindmill) award(AllAdvancements.WINDMILL)
+        if (contraption.sailBlocks >= 16 * 8) award(AllAdvancements.WINDMILL_MAXED)
+
+        contraption.removeBlocksFromWorld(level, BlockPos.ZERO)
+        movedContraption = ControlledContraptionEntity.create(level, this, contraption)
+        val anchor = worldPosition.relative(direction)
+        movedContraption.setPos(anchor.x.toDouble(), anchor.y.toDouble(), anchor.z.toDouble())
+        movedContraption.rotationAxis = direction.axis
+        level!!.addFreshEntity(movedContraption)
+
+        AllSoundEvents.CONTRAPTION_ASSEMBLE.playOnServer(level, worldPosition)
+
+        if (contraption.containsBlockBreakers()) award(AllAdvancements.CONTRAPTION_ACTORS)
+
+        running = true
+        disjointAngle = 0f
+        sendData()
+        updateGeneratedRotation()
+    }
+
+    @NoOptimize
+    override fun disassemble() {
+        if (!running && movedContraption == null) return
+        disjointAngle = 0f
+        sequencedAngleLimit = -1.0
+        if (isWindmill) applyRotation()
+        if (movedContraption != null) {
+            movedContraption.disassemble()
+            AllSoundEvents.CONTRAPTION_DISASSEMBLE.playOnServer(level, worldPosition)
+        }
+
+        movedContraption = null
+        running = false
+        updateGeneratedRotation()
+        assembleNextTick = false
+        sendData()
     }
 }

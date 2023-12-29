@@ -27,13 +27,13 @@ internal object MixinCarriageContraptionEntityRendererLogic {
         val contraptionEntity = bogey.carriage.anyAvailableEntity()
         if (CreateInteractiveUtil.isTrainDerailed(contraptionEntity)) {
             val rotationTransform = clientShip.renderTransform.shipToWorldRotation
-            translateBogeyWithShip(ms, bogey, partialTicks, rotationTransform)
+            translateBogeyWithShip(ms, bogey, partialTicks, rotationTransform, clientShip.renderTransform.shipToWorldScaling.x())
             ci.cancel()
         }
     }
 
     private fun translateBogeyWithShip(
-        ms: PoseStack, bogey: CarriageBogey, partialTicks: Float, rotation: Quaterniondc
+        ms: PoseStack, bogey: CarriageBogey, partialTicks: Float, rotation: Quaterniondc, scale: Double
     ) {
         bogey as CarriageBogeyAccessor
 
@@ -45,13 +45,14 @@ internal object MixinCarriageContraptionEntityRendererLogic {
             carEntity.initialOrientation.counterClockWise, carEntity.carriage.bogeySpacing
         )
 
-        val offset: Vector3dc = bogeyPos.toJOMLD().rotate(rotation)
+        val offset: Vector3dc = bogeyPos.toJOMLD().rotate(rotation).mul(scale)
 
         TransformStack.cast(ms)
             // Add the bogey offset
             .translate(offset.x(), offset.y(), offset.z())
             // Add ship rotation
             .translate(0.0, 0.5, 0.0)
+            .scale(scale.toFloat())
             .multiply(rotation.toMinecraft())
             .translate(0.0, -0.5, 0.0)
             // Regular create past here

@@ -52,4 +52,16 @@ public abstract class MixinTrain implements TrainDuck {
     ) {
         return MixinTrainLogic.INSTANCE.findCollidingTrain$create_interactive(level, start, end, ignore, dimension);
     }
+
+    /**
+     * Re-rail derailed trains when they are nearby rails
+     */
+    /**
+    @Inject(
+        method = "tick", at = @At("RETURN")
+    )
+    private void postTick(final Level level, final CallbackInfo ci) {
+        MixinTrainLogic.INSTANCE.postTick$create_interactive(level, Train.class.cast(this));
+    }
+     */
 }

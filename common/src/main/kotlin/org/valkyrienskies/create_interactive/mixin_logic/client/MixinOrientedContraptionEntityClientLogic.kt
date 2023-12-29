@@ -24,6 +24,7 @@ internal object MixinOrientedContraptionEntityClientLogic {
             .rotateX(Math.toDegrees(angles.x()))
             .rotateY(Math.toDegrees(angles.y()))
             .rotateZ(Math.toDegrees(angles.z()))
+            .scale(ship.renderTransform.shipToWorldScaling.x().toFloat())
             // .rotateY(180.0)
             .unCentre()
 

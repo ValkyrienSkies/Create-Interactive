@@ -28,15 +28,14 @@ class MechanicalPropagatorBearingRenderer<T>(context: BlockEntityRendererProvide
     ) {
         if (Backend.canUseInstancing(be!!.level)) return
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay)
-        val facing = be.blockState
-            .getValue(BlockStateProperties.FACING)
+
+        val facing = be.blockState.getValue(BlockStateProperties.FACING)
         val top = CreateInteractivePartialModels.BEARING_TOP_PROPAGATOR
         val superBuffer = CachedBufferer.partial(top, be.blockState)
         val interpolatedAngle = be.getInterpolatedAngle(partialTicks - 1)
+
         kineticRotationTransform(superBuffer, be, facing.axis, (interpolatedAngle / 180 * Math.PI).toFloat(), light)
-        if (facing.axis
-                .isHorizontal
-        ) superBuffer.rotateCentered(
+        if (facing.axis.isHorizontal) superBuffer.rotateCentered(
             Direction.UP,
             AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble())
         )

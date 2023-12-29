@@ -75,13 +75,13 @@ object CreateInteractiveEventsClient {
                             return null
                         }
 
-                        val (first, second) = getContraptionPosRot(contraptionEntity)
+                        val (first, second, scale) = getContraptionPosRot(contraptionEntity)
 
                         // The contraption center block is at the same position as the ship center, so create the
                         // transform to apply that
                         // TODO: Use CreateInteractiveUtil.posRotToShipTransform()
                         return ShipTransformImpl.create(
-                            first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second
+                            first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second, Vector3d(scale)
                         )
                     }
                     return null
@@ -111,10 +111,10 @@ object CreateInteractiveEventsClient {
                             parentShip.updateRenderShipTransform(partialTick)
                             updatedShips.add(parentShip.id)
                         }
-                        val (first, second) = getContraptionPosRotForRender(contraptionEntity, partialTick)
+                        val (first, second, scale) = getContraptionPosRotForRender(contraptionEntity, partialTick)
                         // TODO: Use CreateInteractiveUtil.posRotToShipTransform()
                         val renderTransform = ShipTransformImpl.create(
-                            first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second
+                            first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second, Vector3d(scale)
                         )
                         cachedRenderTransforms[shipId] = renderTransform
                         return renderTransform

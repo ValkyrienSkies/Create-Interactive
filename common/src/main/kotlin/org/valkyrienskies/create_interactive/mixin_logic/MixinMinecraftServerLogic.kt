@@ -19,10 +19,26 @@ import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.mixinducks.mod_compat.create.MixinAbstractContraptionEntityDuck
 import java.util.ArrayDeque
 import java.util.Queue
+import java.util.WeakHashMap
 
 internal object MixinMinecraftServerLogic {
     fun postTick(allLevels: Iterable<ServerLevel>) = allLevels.forEach { postTickLevel(it) }
 
+    private data class DoubleShipId(val id0: ShipId, val id1: ShipId){
+        companion object {
+            fun createIt(id0: ShipId, id1: ShipId): DoubleShipId {
+                return if (id0 < id1) {
+                    DoubleShipId(id0, id1)
+                } else {
+                    DoubleShipId(id1, id0)
+                }
+            }
+        }
+    }
+
+    private val disabledCollisionsInLevels: WeakHashMap<ServerLevel, Set<DoubleShipId>> = WeakHashMap()
+
+    // TODO: This must be run before the game frame is created
     private fun postTickLevel(serverLevel: ServerLevel) {
         // Make a dag of contraptions
         val shipToNode: MutableMap<ServerShip, DagNode> = HashMap()
@@ -57,9 +73,13 @@ internal object MixinMinecraftServerLogic {
             val parentNode: DagNode = shipToNode[parentShip] ?: return@forEach
             if (parentNode.children == null) parentNode.children = ArrayList()
             parentNode.children!!.add(dagNode)
+            dagNode.parent = parentNode
         }
 
         val parentTransformMap: MutableMap<ServerShip, ShipTransform> = HashMap()
+
+        val prevDisabledSet: Set<DoubleShipId> = disabledCollisionsInLevels[serverLevel] ?: emptySet()
+        val newDisabledSet: MutableSet<DoubleShipId> = HashSet()
 
         // Compute positions, start at root ships, then compute child positions
         rootNodes.forEach { rootNode ->
@@ -74,19 +94,21 @@ internal object MixinMinecraftServerLogic {
 
                 val thisEntity = curNode.contraptionEntity
                 val serverShip = curNode.serverShip
+
+                // Disable collision between contraptions and parents
+                val parentShipId = parentNode?.serverShip?.id
+                if (parentShipId != null) {
+                    var currentParent = parentNode
+                    while (currentParent != null) {
+                        val disabledPair = DoubleShipId.createIt(currentParent.serverShip.id, serverShip.id)
+                        newDisabledSet.add(disabledPair)
+                        currentParent = currentParent.parent
+                    }
+                }
+
                 // Derailed trains can move freely
                 if (thisEntity is CarriageContraptionEntity && CreateInteractiveUtil.isTrainDerailed(thisEntity)) {
                     serverShip.isStatic = false
-                    val parentShipId = parentNode?.serverShip?.id
-                    if (parentShipId != null) {
-                        // TODO: Move the contraption to follow the train
-                        MixinAbstractContraptionEntityLogic.disableCollisions(
-                            thisEntity,
-                            null,
-                            parentShipId,
-                            disabled = false
-                        )
-                    }
                     parentTransformMap[curNode.serverShip] = serverShip.transform
                     moveContraptionToTransform(thisEntity, serverShip)
                     return@exploreDag
@@ -103,6 +125,25 @@ internal object MixinMinecraftServerLogic {
                 parentTransformMap[curNode.serverShip] = newTransform
             }
         }
+
+        val toDisable = newDisabledSet - prevDisabledSet
+        val toEnable = prevDisabledSet - newDisabledSet
+
+        toDisable.forEach {
+            // println("Disabling collision pair $it")
+            serverLevel.shipObjectWorld.disableCollisionBetweenBodies(
+                it.id0, it.id1
+            )
+        }
+
+        toEnable.forEach {
+            // println("Enabling collision pair $it")
+            serverLevel.shipObjectWorld.enableCollisionBetweenBodies(
+                it.id0, it.id1
+            )
+        }
+
+        disabledCollisionsInLevels[serverLevel] = newDisabledSet
 
         fun setStalled(entity: AbstractContraptionEntity, stalled: Boolean) {
             val entityAccessor = entity as AbstractContraptionEntityAccessor
@@ -153,5 +194,6 @@ internal object MixinMinecraftServerLogic {
         val contraptionEntity: AbstractContraptionEntity?,
         val serverShip: ServerShip,
         var children: MutableList<DagNode>? = null,
+        var parent: DagNode? = null,
     )
 }

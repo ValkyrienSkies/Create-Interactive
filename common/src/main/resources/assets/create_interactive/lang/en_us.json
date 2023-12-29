@@ -2,5 +2,7 @@
   "block.create_interactive.propagator_bearing": "Propagator Bearing",
   "block.create_interactive.disjointed_propagator_bearing": "Disjointed Propagator Bearing",
   "block.create_interactive.buffer_stop": "Train Buffer Stop",
+  "create.deployer.actor_mode.actor_on": "Actor Enabled",
+  "create.deployer.actor_mode.actor_off": "Actor Disabled",
   "itemGroup.create_interactive.create_interactive": "Create Interactive"
 }

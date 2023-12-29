@@ -30,7 +30,7 @@ class DisjointedPropagatorBearingRenderer(context: BlockEntityRendererProvider.C
         val interpolatedAngle: Float = be.getDisjointInterpolatedAngle(partialTicks - 1)
         val cogAngle: Float = be.getInterpolatedAngle(partialTicks - 1)
         kineticRotationTransform(superBuffer, be, facing.axis, (interpolatedAngle / 180 * Math.PI).toFloat(), light)
-        kineticRotationTransform(cogBuffer, be, facing.axis, (cogAngle / 180 * Math.PI).toFloat(), light)
+        standardKineticRotationTransform(cogBuffer, be, light)
         if (facing.axis.isHorizontal) superBuffer.rotateCentered(
             Direction.UP,
             AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble())

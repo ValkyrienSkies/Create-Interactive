@@ -104,7 +104,7 @@ internal object MixinTrainLogic {
         }
     }
 
-    private fun TrackNodeLocation.getLocationVec3i() = Vector3i(x, y, z)
+    internal fun TrackNodeLocation.getLocationVec3i() = Vector3i(x, y, z)
 
     private fun Train.collidingWithBufferStop(): Boolean {
         val isTrainMovingForward = targetSpeed >= 0.0
@@ -212,4 +212,63 @@ internal object MixinTrainLogic {
         }
         return null
     }
+
+    /**
+     * Re-rail derailed trains when they are nearby rails
+     */
+    /*
+    internal fun postTick(level: Level, train: Train) {
+        // TODO: This is disabled until we fix it
+        if (true) {
+            return
+        }
+        if (!train.derailed) {
+            return
+        }
+        val firstCarriage = train.carriages.firstOrNull() ?: return
+        val carriageDimensionalEntity = firstCarriage.getDimensional(level) ?: return
+        val carriageEntity = carriageDimensionalEntity.entity.get() ?: return
+
+        val carriageShip = CreateInteractiveUtil.getShipForContraption(carriageEntity.contraption) ?: return
+        val leadingBogeyPosInWorld: Vector3dc = carriageShip.transform.shipToWorld.transformPosition(Vector3d(carriageShip.getChunkClaimCenterPos(level)).sub(0.0, 1.0, 0.0).add(0.5, 0.5, 0.5))
+
+        val searchRadius = 1.0
+        val searchBoxInWorld: AABBdc = AABBd(Vector3d(leadingBogeyPosInWorld).sub(searchRadius, searchRadius, searchRadius), Vector3d(leadingBogeyPosInWorld).add(searchRadius, searchRadius, searchRadius))
+
+        val shipsCollidingAndNull = level.getShipsIntersecting(searchBoxInWorld) + null
+
+        // Find closest rail
+        var closestDistSq = Double.POSITIVE_INFINITY
+        var closestTrackPos: BlockPos? = null
+        shipsCollidingAndNull.forEach { ship: Ship? ->
+            val leadingBogeyPosRelative = if (ship != null) ship.transform.worldToShip.transformPosition(leadingBogeyPosInWorld, Vector3d()) else leadingBogeyPosInWorld
+            val searchBox: AABBdc = AABBd(Vector3d(leadingBogeyPosRelative).sub(searchRadius, searchRadius, searchRadius), Vector3d(leadingBogeyPosRelative).add(searchRadius, searchRadius, searchRadius))
+
+            for (x in floor(searchBox.minX()).toInt() .. ceil(searchBox.maxX()).toInt()) {
+                for (y in floor(searchBox.minY()).toInt() .. ceil(searchBox.maxY()).toInt()) {
+                    for (z in floor(searchBox.minZ()).toInt() .. ceil(searchBox.maxZ()).toInt()) {
+                        val blockPos = BlockPos(x, y, z)
+                        val blockState = level.getBlockState(blockPos)
+                        if (blockState.block !is ITrackBlock) continue
+                        val trackPosInWorld: Vector3dc = if (ship != null) ship.transform.shipToWorld.transformPosition(Vector3d(blockPos.x + 0.5, blockPos.y + 0.5, blockPos.z + 0.5)) else Vector3d(blockPos.x + 0.5, blockPos.y + 0.5, blockPos.z + 0.5)
+                        val distSq = leadingBogeyPosInWorld.distanceSquared(trackPosInWorld)
+                        if (distSq < closestDistSq) {
+                            closestDistSq = distSq
+                            closestTrackPos = blockPos
+                        }
+                    }
+                }
+            }
+        }
+
+        if (closestTrackPos == null) {
+            return
+        }
+
+        // val bezier = BezierTrackPointLocation(closestTrackEntity.blockPos, 0)
+        TrainRelocator.relocate(train, level, closestTrackPos, null, false, Vec3(1.0, 0.0, 0.0), false)
+        // val shipsColliding = level.getShipsIntersecting(searchBox)
+        // val firstBogeyPos =
+    }
+     */
 }
