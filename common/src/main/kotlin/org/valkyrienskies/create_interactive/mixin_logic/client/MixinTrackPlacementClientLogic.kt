@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation
 import com.simibubi.create.content.trains.track.TrackBlockItem
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.block.state.BlockState
@@ -12,16 +13,17 @@ internal object MixinTrackPlacementClientLogic {
      */
     internal fun redirectClientTickInvokeGetPlacementState(
         instance: TrackBlockItem,
-        pContext: UseOnContext
+        pContext: UseOnContext,
+        operation: Operation<BlockState>,
     ): BlockState? {
         val player = pContext.player
         val clickedPos = pContext.clickedPos
         if (player == null || clickedPos == null) {
-            return instance.getPlacementState(pContext)
+            return operation.call(instance, pContext)
         }
         transformPlayerTemporarily(player, pContext.level, clickedPos)
         try {
-            return instance.getPlacementState(pContext)
+            return operation.call(instance, pContext)
         } finally {
             untransformPlayer(player)
         }
