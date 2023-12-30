@@ -1,12 +1,8 @@
 package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.trains.entity.Train;
-import com.simibubi.create.foundation.utility.Pair;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -36,21 +32,6 @@ public abstract class MixinTrain implements TrainDuck {
     )
     private void tickOnEndOfTrack(final Level level, final CallbackInfo ci) {
         MixinTrainLogic.INSTANCE.tickOnEndOfTrack$create_interactive(Train.class.cast(this));
-    }
-
-    /**
-     * @author Triode
-     * @reason Don't collide trains with derailed trains
-     */
-    @Overwrite(remap = false)
-    public static Pair<Train, Vec3> findCollidingTrain(
-        final Level level,
-        final Vec3 start,
-        final Vec3 end,
-        final Train ignore,
-        final ResourceKey<Level> dimension
-    ) {
-        return MixinTrainLogic.INSTANCE.findCollidingTrain$create_interactive(level, start, end, ignore, dimension);
     }
 
     /**
