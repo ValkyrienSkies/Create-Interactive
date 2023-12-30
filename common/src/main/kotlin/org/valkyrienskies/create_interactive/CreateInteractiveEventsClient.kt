@@ -23,6 +23,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptio
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.isTrainDerailed
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntityDuck
+import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.isBlockInShipyard
@@ -72,6 +73,7 @@ object CreateInteractiveEventsClient {
             }
 
             clientShip.transformProvider = object : ClientShipTransformProvider {
+                @NoOptimize
                 override fun provideNextTransform(
                     prevShipTransform: ShipTransform,
                     shipTransform: ShipTransform,
@@ -103,6 +105,7 @@ object CreateInteractiveEventsClient {
                     return null
                 }
 
+                @NoOptimize
                 override fun provideNextRenderTransform(
                     prevShipTransform: ShipTransform,
                     shipTransform: ShipTransform,
