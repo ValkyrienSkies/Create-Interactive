@@ -9,8 +9,10 @@ import com.simibubi.create.foundation.utility.VecHelper
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
+import org.valkyrienskies.create_interactive.services.NoOptimize
 
 class DeployerActorValueboxTransform : ValueBoxTransform.Sided() {
+    @NoOptimize
     override fun getLocalOffset(state: BlockState): Vec3 {
         val facing = state.getValue(DeployerBlock.FACING)
         var vec = when (facing) {
@@ -31,12 +33,14 @@ class DeployerActorValueboxTransform : ValueBoxTransform.Sided() {
         return vec
     }
 
-    protected override fun isSideActive(state: BlockState, direction: Direction): Boolean {
+    @NoOptimize
+    override fun isSideActive(state: BlockState, direction: Direction): Boolean {
         val facing = state.getValue(DeployerBlock.FACING)
         if (direction.axis === facing.axis) return false
-        return if ((state.block as DeployerBlock).getRotationAxis(state) === direction.axis) false else true
+        return (state.block as DeployerBlock).getRotationAxis(state) !== direction.axis
     }
 
+    @NoOptimize
     override fun rotate(state: BlockState, ms: PoseStack) {
         val facing: Direction = side
         val xRot = (if (facing == Direction.UP) 90 else if (facing == Direction.DOWN) 270 else 0).toFloat()
@@ -48,7 +52,8 @@ class DeployerActorValueboxTransform : ValueBoxTransform.Sided() {
             .rotateX(xRot.toDouble())
     }
 
-    protected override fun getSouthLocation(): Vec3 {
+    @NoOptimize
+    override fun getSouthLocation(): Vec3 {
         return Vec3.ZERO
     }
 }

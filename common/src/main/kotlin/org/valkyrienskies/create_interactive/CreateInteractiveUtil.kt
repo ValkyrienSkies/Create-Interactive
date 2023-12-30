@@ -45,6 +45,7 @@ import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntit
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationStateDuck
 import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntityDuck
+import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -251,6 +252,7 @@ object CreateInteractiveUtil {
     ): ShipTransform {
         val transform = posRotToShipTransform(posRot, serverShip, entity.level as ServerLevel)
         serverShip.transformProvider = object : ServerShipTransformProvider {
+            @NoOptimize
             override fun provideNextTransformAndVelocity(
                 prevShipTransform: ShipTransform,
                 shipTransform: ShipTransform
@@ -446,6 +448,7 @@ object CreateInteractiveUtil {
         override val newDimension: DimensionId? = null,
         override val newScale: Double? = null,
     ) : ShipTeleportData {
+        @NoOptimize
         override fun createNewShipTransform(oldShipTransform: ShipTransform): ShipTransform = ShipTransformImpl(
             positionInWorld = newPos,
             positionInShip = newPosInShip,
