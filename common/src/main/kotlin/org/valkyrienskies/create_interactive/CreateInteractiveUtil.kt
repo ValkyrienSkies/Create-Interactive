@@ -57,7 +57,6 @@ import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toMinecraft
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
