@@ -22,7 +22,7 @@ internal object MixinCarriageContraptionEntityLogic {
     }
 
     internal fun preTick(carriageEntity: CarriageContraptionEntity): VSConstraintId? {
-        val level = carriageEntity.level
+        val level = carriageEntity.level()
         if (level.isClientSide) {
             return null
         }
@@ -33,7 +33,7 @@ internal object MixinCarriageContraptionEntityLogic {
         if (carriageIndex + 1 < trainCarriages.size) {
             val frontCar = trainCarriages[carriageIndex + 1]
             val frontCarEntity = frontCar.anyAvailableEntity() ?: return null
-            if (frontCarEntity.level === level) {
+            if (frontCarEntity.level() === level) {
                 val frontCarShipId = (frontCarEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
                 if (frontCarShipId != null) {
                     val frontCarShip: Ship? = level.shipObjectWorld.loadedShips.getById(frontCarShipId)

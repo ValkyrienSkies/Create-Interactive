@@ -44,7 +44,7 @@ object MixinCarriageBogeyLogic {
         if (selfUpsideDown != leadingUpsideDown) thisOffset =
             thisOffset.add(0.0, (if (selfUpsideDown) -2 else 2).toDouble(), 0.0)
 
-        val shipPos = clientShip.getChunkClaimCenterPos(carriageEntity.level)
+        val shipPos = clientShip.getChunkClaimCenterPos(carriageEntity.level())
         val bogeyPosLocal = Vector3d(shipPos).add(0.5, 0.0, 0.5).add(thisOffset.x, thisOffset.y, thisOffset.z)
 
         bogey.couplingAnchors.set(leading, clientShip.renderTransform.shipToWorld.transformPosition(bogeyPosLocal, Vector3d()).toMinecraft())

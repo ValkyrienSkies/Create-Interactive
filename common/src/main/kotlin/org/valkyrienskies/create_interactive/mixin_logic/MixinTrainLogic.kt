@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.mixin.TrainAccessor
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
+import kotlin.math.roundToInt
 
 object MixinTrainLogic {
     internal fun preCanDisassemble(train: Train, cir: CallbackInfoReturnable<Boolean?>) {
@@ -41,7 +42,7 @@ object MixinTrainLogic {
             val entity = carriage.anyAvailableEntity() ?: return
             if (entity.contraption.blocks.isEmpty()) {
                 if (carriages.size == 1) {
-                    val pos = BlockPos(entity.position())
+                    val pos = BlockPos.containing(entity.position())
                     train.disassemble(Direction.NORTH, pos)
                 } else if (i == 0) {
                     // Remove first car
@@ -117,7 +118,7 @@ object MixinTrainLogic {
 
         val bufferPoint = if (isTrainMovingForward) leading else trailing
         val position = bufferPoint.getPosition(graph)
-        var bufferStopPos = BlockPos(position).offset(0, -1, 0)
+        var bufferStopPos = BlockPos.containing(position).offset(0, -1, 0)
 
         val node1Location: Vector3ic = bufferPoint.node1.location.getLocationVec3i()
         val node2Location: Vector3ic = bufferPoint.node2.location.getLocationVec3i()
@@ -128,7 +129,7 @@ object MixinTrainLogic {
         // I'm not entirely sure why this works, but create seems to apply an offset in some directions, and this logic
         // handles it
         if (normal.x() > 0.0 || normal.z() > 0.0) {
-            bufferStopPos = bufferStopPos.offset(-normal.x(), -normal.y(), -normal.z())
+            bufferStopPos = bufferStopPos.offset(-normal.x().roundToInt(), -normal.y().roundToInt(), -normal.z().roundToInt())
         }
 
         val dimension = bufferPoint.node1.location.dimension

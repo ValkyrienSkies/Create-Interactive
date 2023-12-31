@@ -6,13 +6,12 @@ import net.minecraft.core.Direction
 import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.material.Material
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.content.propagating_axis.PropagatingAxisBlock
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
 object PropagatorBlock : PropagatingAxisBlock(
-    Properties.of(Material.STONE)
+    Properties.of()
 ), IBE<PropagatorBlockEntity> {
     @NoOptimize
     override fun getBlockEntityClass(): Class<PropagatorBlockEntity> = PropagatorBlockEntity::class.java

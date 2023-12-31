@@ -6,6 +6,7 @@ import com.simibubi.create.content.trains.entity.CarriageBogey
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
 import org.joml.Quaterniondc
+import org.joml.Quaternionf
 import org.joml.Vector3dc
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.core.api.ships.ClientShip
@@ -53,7 +54,7 @@ internal object MixinCarriageContraptionEntityRendererLogic {
             // Add ship rotation
             .translate(0.0, 0.5, 0.0)
             .scale(scale.toFloat())
-            .multiply(rotation.toMinecraft())
+            .multiply(Quaternionf(rotation))
             .translate(0.0, -0.5, 0.0)
             // Regular create past here
             .rotateY(bogey.yaw.getValue(partialTicks).toDouble())
@@ -66,6 +67,6 @@ internal object MixinCarriageContraptionEntityRendererLogic {
     internal fun getClientShipForBogey(bogey: CarriageBogey): ClientShip? {
         val contraptionEntity = bogey.carriage.anyAvailableEntity()
         val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
-        return (contraptionEntity.level as ClientLevel).shipObjectWorld.allShips.getById(shipId)
+        return (contraptionEntity.level() as ClientLevel).shipObjectWorld.allShips.getById(shipId)
     }
 }

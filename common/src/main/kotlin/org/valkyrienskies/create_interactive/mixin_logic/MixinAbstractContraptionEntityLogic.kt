@@ -75,7 +75,7 @@ internal object MixinAbstractContraptionEntityLogic {
         if (newShadowShipId != null) {
             linkShipToContraption(newShadowShipId, thisEntity)
             val serverShip: ServerShip? =
-                (thisEntity.level as ServerLevel).shipObjectWorld.allShips.getById(newShadowShipId)
+                (thisEntity.level() as ServerLevel).shipObjectWorld.allShips.getById(newShadowShipId)
             if (serverShip == null) {
                 // How???!
                 println("Absolute giga-sus!!!")
@@ -89,7 +89,7 @@ internal object MixinAbstractContraptionEntityLogic {
             val contraptionPosRot = getContraptionPosRot(thisEntity)
             teleportShipToPosRot(
                 contraptionPosRot, serverShip,
-                (thisEntity.level as ServerLevel?)!!
+                (thisEntity.level() as ServerLevel?)!!
             )
             // Make the ship static, so it won't be affected by physics
             serverShip.isStatic = true
@@ -103,7 +103,7 @@ internal object MixinAbstractContraptionEntityLogic {
     }
 
     internal fun preReadAdditional(thisEntity: AbstractContraptionEntity, oldShadowShipId: ShipId?, compound: CompoundTag, spawnData: Boolean): ShipId? {
-        if (thisEntity.level.isClientSide) {
+        if (thisEntity.level().isClientSide) {
             return if (spawnData && compound.contains(SHADOW_SHIP_ID_NBT_KEY)) {
                 val shadowShipId = compound.getLong(SHADOW_SHIP_ID_NBT_KEY)
                 addShipToContraptionRef(shadowShipId, thisEntity)
@@ -119,7 +119,7 @@ internal object MixinAbstractContraptionEntityLogic {
         val shipId = if (compound.contains(SHADOW_SHIP_ID_NBT_KEY)) {
             compound.getLong(SHADOW_SHIP_ID_NBT_KEY)
         } else {
-            setShadowShipId(thisEntity, oldShadowShipId, createShipForContraption((thisEntity.level as ServerLevel?)!!, thisEntity.contraption, BlockPos(thisEntity.position())))
+            setShadowShipId(thisEntity, oldShadowShipId, createShipForContraption((thisEntity.level() as ServerLevel?)!!, thisEntity.contraption, BlockPos.containing(thisEntity.position())))
         }
         return shipId
     }
@@ -146,9 +146,9 @@ internal object MixinAbstractContraptionEntityLogic {
         // updateShipShadow(thisEntity)
 
         // Disassemble contraptions with no blocks
-        if (!thisEntity.level.isClientSide && thisEntity.contraption.blocks.isEmpty()) {
+        if (!thisEntity.level().isClientSide && thisEntity.contraption.blocks.isEmpty()) {
             if (thisEntity is CarriageContraptionEntity) {
-                val train = Create.RAILWAYS.sided(thisEntity.level).trains[thisEntity.trainId]
+                val train = Create.RAILWAYS.sided(thisEntity.level()).trains[thisEntity.trainId]
                 (train as TrainDuck?)?.`ci$splitOrDisassemble`()
             } else {
                 println("Trying to disassemble contraption $thisEntity")
@@ -156,9 +156,9 @@ internal object MixinAbstractContraptionEntityLogic {
             }
         }
 
-        if (!thisEntity.level.isClientSide && oldShadowShipId != null) {
+        if (!thisEntity.level().isClientSide && oldShadowShipId != null) {
             val serverShip: ServerShip? =
-                (thisEntity.level as ServerLevel).shipObjectWorld.allShips.getById(oldShadowShipId)
+                (thisEntity.level() as ServerLevel).shipObjectWorld.allShips.getById(oldShadowShipId)
             if (serverShip != null) {
                 val prevControl: DoorControl? = extraData.forcedDoorControls
                 extraData.forcedDoorControls = getCurrentDoorControl(thisEntity)
@@ -176,7 +176,7 @@ internal object MixinAbstractContraptionEntityLogic {
                         toUse = extraData.forcedDoorControls
                     }
                     serverShip.activeChunksSet.forEach { chunkX: Int, chunkZ: Int ->
-                        val levelChunk: LevelChunk = thisEntity.level.getChunk(chunkX, chunkZ)
+                        val levelChunk: LevelChunk = thisEntity.level().getChunk(chunkX, chunkZ)
                         for ((key, value) in levelChunk.blockEntities) {
                             if (value !is SlidingDoorBlockEntity) continue
                             val blockState: BlockState = value.getBlockState()
@@ -184,7 +184,7 @@ internal object MixinAbstractContraptionEntityLogic {
                             if (block !is SlidingDoorBlock) continue
                             if (toUse != DoorControl.NONE) {
                                 // TODO: Check if door direction matches door control
-                                block.setOpen(null, thisEntity.level, blockState, key, shouldOpen)
+                                block.setOpen(null, thisEntity.level(), blockState, key, shouldOpen)
                             }
                         }
                     }
@@ -212,7 +212,7 @@ internal object MixinAbstractContraptionEntityLogic {
     }
 
     private fun getElevatorDoorControl(entity: AbstractContraptionEntity, ec: ElevatorContraption): DoorControlBehaviour? {
-        val level = entity.level
+        val level = entity.level()
         val currentTargetY = ec.getCurrentTargetY(level) ?: return null
         val columnCoords = ec.globalColumn ?: return null
         val elevatorColumn = ElevatorColumn.get(level, columnCoords)
@@ -226,7 +226,7 @@ internal object MixinAbstractContraptionEntityLogic {
         val currentStation = carriage.train.getCurrentStation() ?: return null
         val stationPos = currentStation.getBlockEntityPos()
         val stationDim = currentStation.getBlockEntityDimension()
-        val server = cce.level.server ?: return null
+        val server = cce.level().server ?: return null
         val stationLevel = server.getLevel(stationDim)
         return if (stationLevel == null || !stationLevel.isLoaded(stationPos)) null else BlockEntityBehaviour.get(
             stationLevel,
@@ -288,7 +288,7 @@ internal object MixinAbstractContraptionEntityLogic {
             val curPos: Vector3dc = ship.transform.shipToWorld.transformPosition(actorPosition.toJOML())
             val motion: Vector3d = curPos.sub(prevPos, Vector3d())
 
-            if (!entity.level.isClientSide() && entity is ControlledContraptionEntity) {
+            if (!entity.level().isClientSide() && entity is ControlledContraptionEntity) {
                 // Angle delta, in degrees
                 val angleDelta = (entity as ControlledContraptionEntityAccessor).angleDelta
 
@@ -311,7 +311,7 @@ internal object MixinAbstractContraptionEntityLogic {
 
         val contraptionEntity = contextAccessor.contraption.entity
 
-        if (!entity.level.isClientSide() && contraptionEntity is CarriageContraptionEntity && contraptionEntity.carriage != null) {
+        if (!entity.level().isClientSide() && contraptionEntity is CarriageContraptionEntity && contraptionEntity.carriage != null) {
             val train: Train = contraptionEntity.carriage.train
             val actualSpeed = if (train.speedBeforeStall != null) train.speedBeforeStall else train.speed
             contextAccessor.motion = context.motion.normalize()
@@ -322,14 +322,14 @@ internal object MixinAbstractContraptionEntityLogic {
         relativeMotion = entity.reverseRotation(relativeMotion, 1f)
         contextAccessor.relativeMotion = relativeMotion
 
-        return (BlockPos(previousPosition) != gridPosition
+        return (BlockPos.containing(previousPosition) != gridPosition
             || (contextAccessor.relativeMotion.length() > 0 || contextAccessor.contraption is CarriageContraption)
             && contextAccessor.firstMovement)
     }
 
     private fun AbstractContraptionEntity.getPassengerPosInShip(ship: Ship, passenger: Entity): Vector3dc? {
         val seatPos = contraption.getSeatOf(passenger.uuid) ?: return null
-        return Vector3d(ship.getChunkClaimCenterPos(passenger.level)).add(seatPos.x + 0.5, seatPos.y + passenger.myRidingOffset + .35 - 0.0875, seatPos.z + 0.5)
+        return Vector3d(ship.getChunkClaimCenterPos(passenger.level())).add(seatPos.x + 0.5, seatPos.y + passenger.myRidingOffset + .35 - 0.0875, seatPos.z + 0.5)
     }
 
     internal fun provideShipMountedToData(
@@ -342,7 +342,7 @@ internal object MixinAbstractContraptionEntityLogic {
         }
 
         val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
-        val ship = contraptionEntity.level.shipObjectWorld.loadedShips.getById(shadowShipId) ?: return null
+        val ship = contraptionEntity.level().shipObjectWorld.loadedShips.getById(shadowShipId) ?: return null
 
         val passengerPosInLocal = contraptionEntity.getPassengerPosInShip(ship, passenger) ?: return null
 
@@ -358,7 +358,7 @@ internal object MixinAbstractContraptionEntityLogic {
         }
 
         val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
-        val ship = contraptionEntity.level.shipObjectWorld.loadedShips.getById(shadowShipId) ?: return
+        val ship = contraptionEntity.level().shipObjectWorld.loadedShips.getById(shadowShipId) ?: return
         val passengerPosInLocal = contraptionEntity.getPassengerPosInShip(ship, passenger) ?: return
 
         cir.returnValue = passengerPosInLocal.toMinecraft()

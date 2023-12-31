@@ -3,19 +3,19 @@ package org.valkyrienskies.create_interactive
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import com.mojang.math.Matrix4f
 import com.simibubi.create.foundation.gui.AllIcons
-import com.simibubi.create.foundation.gui.element.DelegatedStencilElement
 import com.simibubi.create.foundation.utility.Color
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.gui.GuiComponent
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.world.phys.Vec3
+import org.joml.Matrix4f
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
+// TODO: Do we need to override `asStencil()`?
 class CreateInteractiveIcons(var x: Int, var y: Int) : AllIcons(x, y) {
     private var iconX = 0
     private var iconY = 0
@@ -41,17 +41,11 @@ class CreateInteractiveIcons(var x: Int, var y: Int) : AllIcons(x, y) {
 
     @Environment(EnvType.CLIENT)
     @NoOptimize
-    override fun render(matrixStack: PoseStack?, x: Int, y: Int) {
+    override fun render(graphics: GuiGraphics, x: Int, y: Int) {
         bind()
-        GuiComponent.blit(matrixStack, x, y, 0, iconX.toFloat(), iconY.toFloat(), 16, 16, 256, 256)
+        graphics.blit(AllIcons.ICON_ATLAS, x, y, 0, iconX.toFloat(), iconY.toFloat(), 16, 16, 256, 256)
     }
 
-    @Environment(EnvType.CLIENT)
-    @NoOptimize
-    override fun render(matrixStack: PoseStack?, x: Int, y: Int, component: GuiComponent) {
-        bind()
-        component.blit(matrixStack, x, y, iconX, iconY, 16, 16)
-    }
     @Environment(EnvType.CLIENT)
     @NoOptimize
     override fun render(ms: PoseStack, buffer: MultiBufferSource, color: Int) {
@@ -90,23 +84,10 @@ class CreateInteractiveIcons(var x: Int, var y: Int) : AllIcons(x, y) {
             .endVertex()
     }
 
-    @Environment(EnvType.CLIENT)
-    @NoOptimize
-    override fun asStencil(): DelegatedStencilElement {
-        return DelegatedStencilElement().withStencilRenderer<DelegatedStencilElement> { ms: PoseStack, w: Int, h: Int, alpha: Float ->
-            this.render(
-                ms,
-                0,
-                0
-            )
-        }.withBounds(16, 16)
-    }
-
     companion object {
-        val INSTANCE = CreateInteractiveIcons(0, -1)
-        val ICON_ATLAS = CreateInteractiveMod.asResource("textures/gui/icons.png")
-        val ICON_ATLAS_SIZE = 256
-
+        private val INSTANCE = CreateInteractiveIcons(0, -1)
+        private val ICON_ATLAS = CreateInteractiveMod.asResource("textures/gui/icons.png")
+        private const val ICON_ATLAS_SIZE = 256
         val I_COMEDY = INSTANCE.newRow()
         val I_TRAGEDY = INSTANCE.next()
     }

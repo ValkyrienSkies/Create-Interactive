@@ -3,8 +3,7 @@ package org.valkyrienskies.create_interactive.content.mechanical_propagator
 import com.jozufozu.flywheel.api.MaterialManager
 import com.jozufozu.flywheel.api.instance.DynamicInstance
 import com.jozufozu.flywheel.core.materials.oriented.OrientedData
-import com.mojang.math.Quaternion
-import com.mojang.math.Vector3f
+import com.mojang.math.Axis
 import com.simibubi.create.content.contraptions.bearing.IBearingBlockEntity
 import com.simibubi.create.content.kinetics.base.BackHalfShaftInstance
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity
@@ -12,6 +11,7 @@ import com.simibubi.create.foundation.utility.AngleHelper
 import com.simibubi.create.foundation.utility.AnimationTickHolder
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import org.joml.Quaternionf
 import org.valkyrienskies.create_interactive.CreateInteractivePartialModels
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
@@ -19,12 +19,12 @@ class MechPropBearingInstance<B>(materialManager: MaterialManager?, blockEntity:
     BackHalfShaftInstance<B>(materialManager, blockEntity),
     DynamicInstance where B : KineticBlockEntity?, B : IBearingBlockEntity? {
     private val topInstance: OrientedData
-    private val rotationAxis: Vector3f
-    private val blockOrientation: Quaternion
+    private val rotationAxis: Axis
+    private val blockOrientation: Quaternionf
 
     init {
         val facing = blockState.getValue(BlockStateProperties.FACING)
-        rotationAxis = Direction.get(Direction.AxisDirection.POSITIVE, axis).step()
+        rotationAxis = Axis.of(Direction.get(Direction.AxisDirection.POSITIVE, axis).step())
         blockOrientation = getBlockStateOrientation(facing)
         val top = CreateInteractivePartialModels.BEARING_TOP_PROPAGATOR
         topInstance = orientedMaterial.getModel(top, blockState).createInstance()
@@ -34,8 +34,10 @@ class MechPropBearingInstance<B>(materialManager: MaterialManager?, blockEntity:
     @NoOptimize
     override fun beginFrame() {
         val interpolatedAngle = blockEntity!!.getInterpolatedAngle(AnimationTickHolder.getPartialTicks() - 1)
-        val rot = rotationAxis.rotationDegrees(interpolatedAngle)
+        val rot: Quaternionf = rotationAxis.rotationDegrees(interpolatedAngle)
+
         rot.mul(blockOrientation)
+
         topInstance.setRotation(rot)
     }
 
@@ -52,13 +54,13 @@ class MechPropBearingInstance<B>(materialManager: MaterialManager?, blockEntity:
     }
 
     companion object {
-        private fun getBlockStateOrientation(facing: Direction): Quaternion {
-            val orientation: Quaternion = if (facing.axis.isHorizontal) {
-                Vector3f.YP.rotationDegrees(AngleHelper.horizontalAngle(facing.opposite))
+        private fun getBlockStateOrientation(facing: Direction): Quaternionf {
+            val orientation: Quaternionf = if (facing.axis.isHorizontal) {
+                Axis.YP.rotationDegrees(AngleHelper.horizontalAngle(facing.opposite))
             } else {
-                Quaternion.ONE.copy()
+                Quaternionf()
             }
-            orientation.mul(Vector3f.XP.rotationDegrees(-90 - AngleHelper.verticalAngle(facing)))
+            orientation.mul(Axis.XP.rotationDegrees(-90 - AngleHelper.verticalAngle(facing)))
             return orientation
         }
     }

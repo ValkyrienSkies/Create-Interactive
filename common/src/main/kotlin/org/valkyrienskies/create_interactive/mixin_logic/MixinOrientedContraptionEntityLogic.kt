@@ -48,7 +48,7 @@ internal object MixinOrientedContraptionEntityLogic {
 
     internal fun getControllingShip(contraptionEntity: OrientedContraptionEntity): Ship? {
         val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
-        val ship = contraptionEntity.level.shipObjectWorld.allShips.getById(shipId) ?: return null
+        val ship = contraptionEntity.level().shipObjectWorld.allShips.getById(shipId) ?: return null
         if (contraptionEntity is CarriageContraptionEntity && CreateInteractiveUtil.isTrainDerailed(contraptionEntity)) {
             return ship
         }

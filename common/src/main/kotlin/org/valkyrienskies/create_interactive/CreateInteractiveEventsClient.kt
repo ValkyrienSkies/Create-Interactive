@@ -88,8 +88,8 @@ object CreateInteractiveEventsClient {
 
                         val (first, second, scale) = getContraptionPosRot(contraptionEntity)
 
-                        if (contraptionEntityCopy.level.isBlockInShipyard(first.x(), first.y(), first.z())) {
-                            if (contraptionEntityCopy.level.getShipManagingPos(first) == null) {
+                        if (contraptionEntityCopy.level().isBlockInShipyard(first.x(), first.y(), first.z())) {
+                            if (contraptionEntityCopy.level().getShipManagingPos(first) == null) {
                                 // Ignore it to fix train turntables being strange when going to be world
                                 return null
                             }
@@ -122,8 +122,8 @@ object CreateInteractiveEventsClient {
                         }
 
                         val position = contraptionEntity.position()
-                        val parentShip = contraptionEntity.level.getShipManagingPos(position) as ShipObjectClient?
-                        if (contraptionEntityCopy.level.isBlockInShipyard(position) && parentShip == null) {
+                        val parentShip = contraptionEntity.level().getShipManagingPos(position) as ShipObjectClient?
+                        if (contraptionEntityCopy.level().isBlockInShipyard(position) && parentShip == null) {
                             // Ignore it to fix train turntables being strange when going to be world
                             return null
                         }

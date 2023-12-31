@@ -45,7 +45,7 @@ internal object MixinContraptionLogic {
         initialBlocks: Map<BlockPos, StructureTemplate.StructureBlockInfo>,
         entity: AbstractContraptionEntity
     ) {
-        val level = entity.level
+        val level = entity.level()
         if (level.isClientSide) {
             return
         }
@@ -60,7 +60,7 @@ internal object MixinContraptionLogic {
             return
         }
 
-        val blockPos = BlockPos(entity.position())
+        val blockPos = BlockPos.containing(entity.position())
         val shipId = createShipForContraption(level as ServerLevel, entity.contraption, blockPos, initialBlocks) ?: return
         (entity as AbstractContraptionEntityDuck).`ci$setShadowShipId`(shipId)
     }
@@ -223,7 +223,7 @@ internal object MixinContraptionLogic {
         // Don't create actors for new bearings
         if (newBehavior != null && newBehavior !is StabilizedBearingMovementBehaviour) {
             val context = MovementContext(
-                contraption.entity.level, structureBlockInfo, contraption
+                contraption.entity.level(), structureBlockInfo, contraption
             )
             val behaviour = AllMovementBehaviours.getBehaviour(structureBlockInfo.state)
             behaviour?.startMoving(context)
@@ -280,7 +280,7 @@ internal object MixinContraptionLogic {
 
     internal fun preWriteBlocksCompound(contraption: Contraption) {
         val contraptionEntity = contraption.entity ?: return
-        val level = contraption.entity.level
+        val level = contraption.entity.level()
         val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return
         val ship = level.shipObjectWorld.allShips.getById(shipId) ?: return
         val centerPos = ship.getChunkClaimCenterPos(level)

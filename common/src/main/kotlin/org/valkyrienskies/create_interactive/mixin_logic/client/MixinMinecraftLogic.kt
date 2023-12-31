@@ -47,10 +47,10 @@ internal object MixinMinecraftLogic {
 
             val aabb = AABB(origin, target).inflate(16.0)
 
-            val contraptionsInLevel = ContraptionHandler.loadedContraptions.get(player.level).values
+            val contraptionsInLevel = ContraptionHandler.loadedContraptions.get(player.level()).values
 
             contraptionsInLevel.mapNotNull { it.get() as? CarriageContraptionEntity? }.forEach { contraptionEntity ->
-                val ship = player.level.getShipManagingPos(contraptionEntity.anchorVec)
+                val ship = player.level().getShipManagingPos(contraptionEntity.anchorVec)
                 if (ship != null) {
                     val transform = if (ship is ClientShip) ship.renderTransform else ship.transform
                     val newAABB = aabb.toJOML().transform(transform.worldToShip).toMinecraft()

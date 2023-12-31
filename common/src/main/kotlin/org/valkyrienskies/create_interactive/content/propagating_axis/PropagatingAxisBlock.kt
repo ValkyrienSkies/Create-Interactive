@@ -80,7 +80,7 @@ abstract class PropagatingAxisBlock(properties: Properties) : RotatedPillarKinet
     ) {
         super.neighborChanged(state, level, pos, block, fromPos, isMoving)
 
-        val direction = Direction.fromNormal(fromPos.x - pos.x, fromPos.y - pos.y, fromPos.z - pos.z)
+        val direction = Direction.fromDelta(fromPos.x - pos.x, fromPos.y - pos.y, fromPos.z - pos.z)
         val connected = PropagatingTools.checkIfConnected(level, state, pos, direction)
         if (connected != state.getValue(GameContent.CONNECTED)) {
             level.setBlockAndUpdate(pos, state.setValue(GameContent.CONNECTED, connected))

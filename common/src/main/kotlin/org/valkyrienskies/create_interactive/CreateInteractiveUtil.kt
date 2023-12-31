@@ -186,7 +186,7 @@ object CreateInteractiveUtil {
                 val defaultOne = closestBlockPosRelative.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
                 // Subtract the normal to prevent the train from moving
                 val withTransformPos = transform?.apply(closestBlockPosRelative)
-                val relocatePos = (withTransformPos ?: defaultOne).offset(-round(normal.x()), -round(normal.y()), -round(normal.z()))
+                val relocatePos = (withTransformPos ?: defaultOne).offset(-normal.x().roundToInt(), -normal.y().roundToInt(), -normal.z().roundToInt())
                 success = TrainRelocator.relocate(carriageEntity.carriage.train, level, relocatePos, null, false, normal, false)
                 if (success) {
                     carriageEntity.moveTo(carriageEntity.carriage.getDimensional(level).positionAnchor)
@@ -207,7 +207,7 @@ object CreateInteractiveUtil {
     fun doesContraptionHaveShipLoaded(contraption: Contraption): Boolean {
         val contraptionEntity: AbstractContraptionEntity = contraption.entity ?: return false
         val shipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return false
-        return contraptionEntity.level.shipObjectWorld.loadedShips.getById(shipId) != null
+        return contraptionEntity.level().shipObjectWorld.loadedShips.getById(shipId) != null
     }
 
     private fun posRotToShipTransform(contraptionPosRot: ContraptionPosRot, serverShip: ServerShip, level: ServerLevel): ShipTransform {
@@ -251,7 +251,7 @@ object CreateInteractiveUtil {
         serverShip: ServerShip,
         posRot: ContraptionPosRot,
     ): ShipTransform {
-        val transform = posRotToShipTransform(posRot, serverShip, entity.level as ServerLevel)
+        val transform = posRotToShipTransform(posRot, serverShip, entity.level() as ServerLevel)
         serverShip.transformProvider = object : ServerShipTransformProvider {
             @NoOptimize
             override fun provideNextTransformAndVelocity(
@@ -270,8 +270,8 @@ object CreateInteractiveUtil {
         }
 
         // If the ship is in the wrong dimension then teleport it
-        if (entity.level.dimensionId != serverShip.chunkClaimDimension) {
-            teleportShipToPosRot(posRot, serverShip, entity.level as ServerLevel)
+        if (entity.level().dimensionId != serverShip.chunkClaimDimension) {
+            teleportShipToPosRot(posRot, serverShip, entity.level() as ServerLevel)
         }
 
         // Make the ship static, so it won't be affected by physics
@@ -289,14 +289,14 @@ object CreateInteractiveUtil {
         (entity as OrientedContraptionEntityDuck).`ci$setForcedRotation`(rotState)
 
         // Anchor at ship center of mass
-        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(entity.level)
+        val shipCenter: Vector3ic = ship.getChunkClaimCenterPos(entity.level())
         val newPos: Vector3dc = shipTransform.shipToWorld.transformPosition(Vector3d(shipCenter).add(0.5, 0.5, 0.5))
 
         // Add (.5, 0, .5) to compensate for the anchorVec offset
         entity.setPos(newPos.x(), newPos.y() - 0.5, newPos.z())
 
         // Move the dimensional entity as well to fix the sus
-        (entity.carriage.getDimensional(entity.level) as DimensionalCarriageEntityAccessor).setPositionAnchor(Vec3(newPos.x(), newPos.y() - 0.5, newPos.z()))
+        (entity.carriage.getDimensional(entity.level()) as DimensionalCarriageEntityAccessor).setPositionAnchor(Vec3(newPos.x(), newPos.y() - 0.5, newPos.z()))
 
         // Update the bounding box too to handle ship rotation
         val box = entity.contraption.bounds
@@ -315,7 +315,7 @@ object CreateInteractiveUtil {
         val contraptionPos: Vector3dc = entity.anchorVec.toJOML().add(0.5, 0.5, 0.5)
 
         // Train on a train!!!
-        val parentShip = entity.level.getShipManagingPos(entity.position())
+        val parentShip = entity.level().getShipManagingPos(entity.position())
         if (parentShip != null) {
             val newNewPos = parentShip.transform.shipToWorld.transformPosition(contraptionPos, Vector3d())
             val newNewRot = parentShip.transform.shipToWorldRotation.mul(newRot, Quaterniond())
@@ -336,7 +336,7 @@ object CreateInteractiveUtil {
         ).add(0.5, 0.5, 0.5)
 
         // Train on a train!!!
-        val parentShip = entity.level.getShipManagingPos(entity.position()) as ClientShip?
+        val parentShip = entity.level().getShipManagingPos(entity.position()) as ClientShip?
         if (parentShip != null) {
             val newNewPos = parentShip.renderTransform.shipToWorld.transformPosition(contraptionPos, Vector3d())
             val newNewRot = parentShip.renderTransform.shipToWorldRotation.mul(newRot, Quaterniond()).normalize()
@@ -367,7 +367,7 @@ object CreateInteractiveUtil {
     internal fun getShipForContraption(contraption: Contraption): Ship? {
         val contraptionEntity = contraption.entity ?: return null
         val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return null
-        return contraptionEntity.level.shipObjectWorld.allShips.getById(shadowShipId)
+        return contraptionEntity.level().shipObjectWorld.allShips.getById(shadowShipId)
     }
 
     fun getActorAtPos(level: Level, pos: BlockPos): CreateActorImmutable? {
@@ -404,7 +404,7 @@ object CreateInteractiveUtil {
     }
 
     fun linkShipToContraption(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
-        if (contraptionEntity.level.isClientSide) {
+        if (contraptionEntity.level().isClientSide) {
             shipIdToContraptionEntityClientInternal[shipId] = WeakReference(contraptionEntity)
         } else {
             shipIdToContraptionEntityServerInternal[shipId] = WeakReference(contraptionEntity)
@@ -412,7 +412,7 @@ object CreateInteractiveUtil {
     }
 
     fun unlinkShipToContraption(shipId: ShipId, contraptionEntity: AbstractContraptionEntity) {
-        if (contraptionEntity.level.isClientSide) {
+        if (contraptionEntity.level().isClientSide) {
             val prevVal = shipIdToContraptionEntityClientInternal[shipId]?.get()
             if (prevVal != null && prevVal == contraptionEntity) {
                 shipIdToContraptionEntityClientInternal.remove(shipId)

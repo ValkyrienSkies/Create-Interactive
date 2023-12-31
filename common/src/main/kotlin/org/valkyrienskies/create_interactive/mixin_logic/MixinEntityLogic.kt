@@ -13,7 +13,7 @@ internal object MixinEntityLogic {
         if (entity !is AbstractContraptionEntity || entity is CarriageContraptionEntity) return
         val duck = entity as AbstractContraptionEntityDuck
         val shipId = duck.`ci$getShadowShipId`() ?: return
-        val level = entity.level as? ServerLevel ?: return
+        val level = entity.level() as? ServerLevel ?: return
         val serverShipWorldCore = level.shipObjectWorld
         val serverShip = serverShipWorldCore.allShips.getById(shipId) ?: return
         serverShipWorldCore.deleteShip(serverShip)

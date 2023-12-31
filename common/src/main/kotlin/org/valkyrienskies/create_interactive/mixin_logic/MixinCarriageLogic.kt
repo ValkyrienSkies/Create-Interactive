@@ -27,10 +27,10 @@ internal object MixinCarriageLogic {
         }
         setShipShadow(newShadowShipId)
         if (shipDimension == null) {
-            setShipDimension(entity.level.dimension())
+            setShipDimension(entity.level().dimension())
             return true
         }
-        return shipDimension == entity.level.dimension()
+        return shipDimension == entity.level().dimension()
     }
 
     internal fun postManageEntities(

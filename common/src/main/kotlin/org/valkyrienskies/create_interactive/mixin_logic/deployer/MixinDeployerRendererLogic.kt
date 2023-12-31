@@ -19,7 +19,7 @@ internal object MixinDeployerRendererLogic {
                 if (context!!.contraption.stalled || context.position == null || context.data.contains("StationaryTimer")) {
                     (Mth.sin(AnimationTickHolder.getRenderTime() * .5f) * .25f + .25f).toDouble()
                 } else {
-                    val center = VecHelper.getCenterOf(BlockPos(context.position))
+                    val center = VecHelper.getCenterOf(BlockPos.containing(context.position))
                     val distance = context.position.distanceTo(center)
                     val nextDistance = context.position.add(context.motion)
                         .distanceTo(center)

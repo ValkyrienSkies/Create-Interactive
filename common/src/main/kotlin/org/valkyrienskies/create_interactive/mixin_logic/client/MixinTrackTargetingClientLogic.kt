@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.Vec3
+import org.joml.Quaternionf
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
@@ -60,7 +61,7 @@ internal object MixinTrackTargetingClientLogic {
             )
         val scale = clientShip.renderTransform.shipToWorldScaling.x().toFloat()
         ms.scale(scale, scale, scale)
-        ms.mulPose(clientShip.renderTransform.shipToWorldRotation.toMinecraft())
+        ms.mulPose(Quaternionf(clientShip.renderTransform.shipToWorldRotation))
         ms.translate(-0.5, -0.5, -0.5)
         TrackTargetingBehaviour.render(
             mc.level, lastHovered, direction, lastHoveredBezierSegment, ms, buffer, light,

@@ -20,7 +20,7 @@ internal object MixinAbstractCannonDrillBlockEntityLogic {
         val newInfo2 = newInfo as StructureTemplate.StructureBlockInfo
         val shipId = (latheEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
         if (shipId != null) {
-            val level: Level = latheEntity.level
+            val level: Level = latheEntity.level()
             val ship = level.shipObjectWorld.allShips.getById(shipId)
             if (ship != null) {
                 val centerPos = ship.getChunkClaimCenterPos(level)
