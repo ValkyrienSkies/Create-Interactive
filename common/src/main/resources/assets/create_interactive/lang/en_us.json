@@ -4,5 +4,5 @@
   "block.create_interactive.buffer_stop": "Train Buffer Stop",
   "create.deployer.actor_mode.actor_on": "Actor Enabled",
   "create.deployer.actor_mode.actor_off": "Actor Disabled",
-  "itemGroup.create_interactive.create_interactive": "Create Interactive"
+  "itemGroup.create_interactive": "Create Interactive"
 }

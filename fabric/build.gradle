@@ -90,20 +90,20 @@ dependencies {
         modImplementation("io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version")
     }
 
-    modImplementation("me.alphamode:ForgeTags:${forge_tags_version}")
     modImplementation("net.minecraftforge:forgeconfigapiport-fabric:${forge_config_api_port_version}")
     modImplementation("com.jamieswhiteshirt:reach-entity-attributes:${reach_entity_attributes_version}")
     modImplementation("dev.cafeteria:fake-player-api:${fake_player_api_version}")
     modImplementation("io.github.tropheusj:milk-lib:${milk_lib_version}")
 
+    // TODO: Enable indium again later
     // Indium
-    modImplementation("curse.maven:indium-459496:3957480")
+    // modImplementation("curse.maven:indium-459496:4765124")
 
     // CBC
     modImplementation("maven.modrinth:create-big-cannons:${createbigcannons_version}")
 
     // Steam and rails
-    modImplementation("curse.maven:create-steam-n-rails-688231:4836195")
+    modImplementation("curse.maven:create-steam-n-rails-688231:4836196")
 }
 
 processResources {

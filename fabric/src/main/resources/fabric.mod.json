@@ -34,7 +34,7 @@
     "create_interactive.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=1.19.2",
+    "minecraft": ">=1.20.1",
     "valkyrienskies": ">=${vs2_version}",
     "fabricloader": ">=0.14.21",
     "create": ">=${create_fabric_version}"
