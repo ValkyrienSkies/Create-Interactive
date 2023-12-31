@@ -38,7 +38,7 @@ public abstract class MixinCarriageContraptionEntity extends OrientedContraption
      */
     @Inject(method = "tick", at = @At("HEAD"))
     private void preTick(final CallbackInfo ci) {
-        if (level.isClientSide) {
+        if (level().isClientSide) {
             return;
         }
         final CarriageContraptionEntity thisAs = CarriageContraptionEntity.class.cast(this);
@@ -49,7 +49,7 @@ public abstract class MixinCarriageContraptionEntity extends OrientedContraption
             }
         } else {
             if (ci$forceConstraintId != null) {
-                VSGameUtilsKt.getShipObjectWorld((ServerLevel) level).removeConstraint(ci$forceConstraintId);
+                VSGameUtilsKt.getShipObjectWorld((ServerLevel) level()).removeConstraint(ci$forceConstraintId);
                 ci$forceConstraintId = null;
             }
         }

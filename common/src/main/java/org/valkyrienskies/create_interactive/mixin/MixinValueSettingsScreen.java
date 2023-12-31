@@ -1,10 +1,9 @@
 package org.valkyrienskies.create_interactive.mixin;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsScreen;
 import com.simibubi.create.foundation.gui.AllIcons;
+import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.valkyrienskies.create_interactive.CreateInteractiveIcons;
@@ -12,12 +11,13 @@ import org.valkyrienskies.create_interactive.CreateInteractiveIcons;
 @Mixin(ValueSettingsScreen.class)
 public class MixinValueSettingsScreen {
 
-    @Redirect(method = "renderWindow", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/gui/AllIcons;render(Lcom/mojang/blaze3d/vertex/PoseStack;II)V"))
-    private void redirectIconRender(AllIcons instance, PoseStack matrixStack, int x, int y) {
+    // TODO: Is this mixin necessary?
+    @Redirect(method = "renderWindow", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/gui/AllIcons;render(Lnet/minecraft/client/gui/GuiGraphics;II)V"))
+    private void redirectIconRender(final AllIcons instance, final GuiGraphics graphics, final int x, final int y) {
         if (instance instanceof CreateInteractiveIcons cIcon) {
-            cIcon.render(matrixStack, x, y);
+            cIcon.render(graphics, x, y);
         } else {
-            instance.render(matrixStack, x, y);
+            instance.render(graphics, x, y);
         }
     }
 }

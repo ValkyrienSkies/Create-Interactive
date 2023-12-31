@@ -112,13 +112,13 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Inject(method = "disassemble", at = @At("HEAD"), remap = false)
     private void preDissemble(final CallbackInfo ci) {
         MixinAbstractContraptionEntityLogic.INSTANCE.preDisassemble$create_interactive(
-            AbstractContraptionEntity.class.cast(this), level, ci$shadowShipId
+            AbstractContraptionEntity.class.cast(this), level(), ci$shadowShipId
         );
     }
 
     @Inject(method = "disassemble", at = @At("RETURN"), remap = false)
     private void postDisassemble(final CallbackInfo ci) {
-        MixinAbstractContraptionEntityLogic.INSTANCE.postDisassemble$create_interactive(level, ci$shadowShipId);
+        MixinAbstractContraptionEntityLogic.INSTANCE.postDisassemble$create_interactive(level(), ci$shadowShipId);
     }
 
     /**

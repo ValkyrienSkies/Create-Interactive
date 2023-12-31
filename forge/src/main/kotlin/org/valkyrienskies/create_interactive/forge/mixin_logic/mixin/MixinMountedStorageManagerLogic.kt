@@ -5,9 +5,8 @@ import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.logistics.vault.ItemVaultBlockEntity
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper
 import net.minecraft.server.level.ServerLevel
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler
+import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.fluids.capability.IFluidHandler
-import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.IItemHandlerModifiable
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.properties.ShipId
@@ -26,12 +25,12 @@ internal object MixinMountedStorageManagerLogic {
         fluidInventory: CombinedTankWrapper,
     ) {
         if (shipId != null) {
-            val serverShip: ServerShip? = VS2KotlinHelper.getShipById(entity.level as ServerLevel, shipId)
+            val serverShip: ServerShip? = VS2KotlinHelper.getShipById(entity.level() as ServerLevel, shipId)
             val inventories: MutableList<IItemHandlerModifiable> = ArrayList()
             val fuelInventories: MutableList<IItemHandlerModifiable> = ArrayList()
             val fluidInventories: MutableList<IFluidHandler> = ArrayList()
             serverShip?.activeChunksSet?.forEach { chunkX: Int, chunkZ: Int ->
-                val chunk = entity.level.getChunk(chunkX, chunkZ)
+                val chunk = entity.level().getChunk(chunkX, chunkZ)
                 for (be in chunk.blockEntities.values) {
                     // TODO: Do we want to do this?
                     // if (!MountedStorage.canUseAsStorage(be)) {
@@ -41,7 +40,7 @@ internal object MixinMountedStorageManagerLogic {
                         inventories.add(be.inventoryOfBlock)
                     } else {
                         val newInv =
-                            be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve()
+                            be.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve()
                                 .orElse(null)
                         if (newInv != null) {
                             if (newInv is IItemHandlerModifiable) {
@@ -58,7 +57,7 @@ internal object MixinMountedStorageManagerLogic {
                 }
                 for (be in chunk.blockEntities.values) {
                     val newFluidInv =
-                        be.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+                        be.getCapability(ForgeCapabilities.FLUID_HANDLER)
                             .orElse(null)
                             ?: continue
                     // TODO: Do we want to do this?

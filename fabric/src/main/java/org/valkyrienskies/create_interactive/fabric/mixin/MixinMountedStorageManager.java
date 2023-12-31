@@ -42,7 +42,7 @@ public abstract class MixinMountedStorageManager {
     @Inject(method = "entityTick", at = @At("HEAD"), cancellable = true, remap = false)
     private void preEntityTick(final AbstractContraptionEntity entity, final CallbackInfo ci) {
         ci.cancel();
-        if (entity.level.isClientSide) return;
+        if (entity.level().isClientSide) return;
 
         if (inventory == null) inventory = new Contraption.ContraptionInvWrapper();
         if (fuelInventory == null) fuelInventory = new Contraption.ContraptionInvWrapper();

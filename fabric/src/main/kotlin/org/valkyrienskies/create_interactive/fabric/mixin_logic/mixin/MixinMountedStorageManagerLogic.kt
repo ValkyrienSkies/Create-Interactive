@@ -27,12 +27,12 @@ internal object MixinMountedStorageManagerLogic {
         // Recreate inventories
         if (shipId != null) {
             val serverShip: ServerShip? =
-                (entity.level as ServerLevel).shipObjectWorld.allShips.getById(shipId)
+                (entity.level() as ServerLevel).shipObjectWorld.allShips.getById(shipId)
             val inventories: MutableList<Storage<ItemVariant>> = ArrayList()
             val fuelInventories: MutableList<Storage<ItemVariant>> = ArrayList()
             val fluidInventories: MutableList<Storage<FluidVariant>> = ArrayList()
             serverShip?.activeChunksSet?.forEach { chunkX: Int, chunkZ: Int ->
-                val chunk = entity.level.getChunk(chunkX, chunkZ)
+                val chunk = entity.level().getChunk(chunkX, chunkZ)
                 for (be in chunk.blockEntities.values) {
                     // TODO: Do we want to do this?
                     // if (!MountedStorage.canUseAsStorage(be)) {

@@ -13,7 +13,7 @@ import net.minecraft.Util
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.BlockPos
-import net.minecraft.core.Registry
+import net.minecraft.core.registries.Registries
 import net.minecraft.util.datafix.fixes.References
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
-import net.minecraft.world.level.material.MaterialColor
+import net.minecraft.world.level.material.MapColor
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlock
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlockEntity
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopRenderer
@@ -36,9 +36,9 @@ import org.valkyrienskies.create_interactive.registry.RegistrySupplier
 import java.util.function.BiFunction
 
 object GameContent {
-    private val ITEMS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registry.ITEM_REGISTRY)
-    private val BLOCKS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registry.BLOCK_REGISTRY)
-    private val BLOCK_ENTITIES = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registry.BLOCK_ENTITY_TYPE_REGISTRY)
+    private val ITEMS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.ITEM)
+    private val BLOCKS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.BLOCK)
+    private val BLOCK_ENTITIES = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.BLOCK_ENTITY_TYPE)
 
     fun init() {
         BLOCKS.applyAll()
@@ -68,8 +68,8 @@ object GameContent {
         }
             .transform(TagGen.axeOrPickaxe())
             .properties { p: BlockBehaviour.Properties ->
-                p.color(
-                    MaterialColor.PODZOL
+                p.mapColor(
+                    MapColor.PODZOL
                 )
             }
             .transform(BuilderTransformers.bearing("mechanical", "gearbox"))
@@ -154,8 +154,8 @@ object GameContent {
     }
         .transform(TagGen.axeOrPickaxe())
         .properties { p: BlockBehaviour.Properties ->
-            p.color(
-                MaterialColor.PODZOL
+            p.mapColor(
+                MapColor.PODZOL
             )
             p.noOcclusion()
         }

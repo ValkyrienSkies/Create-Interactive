@@ -1,15 +1,17 @@
 package org.valkyrienskies.create_interactive.fabric;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import kotlin.jvm.functions.Function0;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.create_interactive.registry.DeferredRegister;
 import org.valkyrienskies.create_interactive.registry.RegistrySupplier;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
     private final String modId;
@@ -18,7 +20,7 @@ public class DeferredRegisterImpl<T> implements DeferredRegister<T> {
 
     public DeferredRegisterImpl(final String modId, final ResourceKey<Registry<T>> registry) {
         this.modId = modId;
-        this.registry = (Registry<T>) Registry.REGISTRY.get(registry.location());
+        this.registry = (Registry<T>) BuiltInRegistries.REGISTRY.get(registry.location());
     }
 
     @NotNull

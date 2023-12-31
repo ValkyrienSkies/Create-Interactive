@@ -19,7 +19,7 @@ internal object MixinEntityLogic {
         serverShipWorldCore.deleteShip(serverShip)
     }
 
-    internal fun preOutOfWorld(entity: Entity, ci: CallbackInfo) {
+    internal fun preOnBelowWorld(entity: Entity, ci: CallbackInfo) {
         if (entity !is AbstractContraptionEntity) return
         val shipId = (entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
         if (shipId != null) {
