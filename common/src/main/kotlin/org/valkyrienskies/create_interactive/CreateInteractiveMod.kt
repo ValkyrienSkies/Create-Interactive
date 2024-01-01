@@ -46,7 +46,7 @@ object CreateInteractiveMod {
 
     fun createCreativeTab(): CreativeModeTab {
         return CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
-            .title(Component.translatable("itemGroup.createinteractive"))
+            .title(Component.translatable("itemGroup.create_interactive"))
             .icon { GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK.asStack() }
             .displayItems { _, output ->
                 output.accept(GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK.asItem())
