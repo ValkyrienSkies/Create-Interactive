@@ -1,6 +1,7 @@
--packageobfuscationdictionary windows.txt
+-packageobfuscationdictionary keywords.txt
 -classobfuscationdictionary classnames.txt
 -obfuscationdictionary keywords.txt
+-useuniqueclassmembernames
 
 #noinspection ShrinkerUnresolvedReference
 -ignorewarnings
@@ -59,7 +60,7 @@ org.valkyrienskies.create_interactive.fabric.ValkyrienPreLaunch
 -keep class !org.valkyrienskies.create_interactive.** { *; }
 
 # repackage everything into one big class
--repackageclasses org.valkyrienskies.create_interactive.aux
+-repackageclasses org.valkyrienskies.create_interactive.code
 
 # Remove kotlin null checks
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {
