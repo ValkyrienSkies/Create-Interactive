@@ -29,6 +29,7 @@ import org.joml.Quaterniond
 import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
+import org.valkyrienskies.create_interactive.CreateInteractiveConfig
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
@@ -52,6 +53,11 @@ internal object MixinContraptionLogic {
         val prevId = (entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
         if (prevId != null && (level as ServerLevel).shipObjectWorld.allShips.getById(prevId) != null) {
             // If shadow ship already exists then don't make a new one
+            return
+        }
+
+        if (entity.contraption !is CarriageContraption && CreateInteractiveConfig.SERVER.onlyInteractTrains) {
+            // Only allow trains to become Ships
             return
         }
 

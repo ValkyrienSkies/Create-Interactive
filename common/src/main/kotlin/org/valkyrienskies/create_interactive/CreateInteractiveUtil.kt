@@ -5,6 +5,7 @@ import com.simibubi.create.content.contraptions.BlockMovementChecks
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.StructureTransform
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
+import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import com.simibubi.create.content.trains.entity.TrainRelocator
 import com.simibubi.create.content.trains.track.ITrackBlock
@@ -61,6 +62,12 @@ import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
+
+        if (contraption !is CarriageContraption && CreateInteractiveConfig.SERVER.onlyInteractTrains) {
+            // Only allow trains to become Ships
+            return null
+        }
+
         if (contraption.javaClass.packageName.contains("createbigcannons")) {
             // Do not create shadow ships for CBC, too hard
             return null

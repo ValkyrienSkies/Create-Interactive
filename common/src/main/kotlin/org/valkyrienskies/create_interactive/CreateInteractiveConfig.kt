@@ -17,5 +17,8 @@ object CreateInteractiveConfig {
     class Server {
         @JsonSchema(description = "Dummy config value")
         val maxConfig = 1
+
+        @JsonSchema(description = "Only make Trains Interactive")
+        val onlyInteractTrains = false
     }
 }
