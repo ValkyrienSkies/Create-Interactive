@@ -4,7 +4,12 @@ import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.BlockMovementChecks
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.StructureTransform
+import com.simibubi.create.content.contraptions.TranslatingContraption
+import com.simibubi.create.content.contraptions.bearing.BearingContraption
+import com.simibubi.create.content.contraptions.bearing.ClockworkContraption
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
+import com.simibubi.create.content.contraptions.mounted.MountedContraption
+import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import com.simibubi.create.content.trains.entity.TrainRelocator
 import com.simibubi.create.content.trains.track.ITrackBlock
@@ -62,6 +67,28 @@ import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
+
+        if (contraption is CarriageContraption && !CreateInteractiveConfig.SERVER.enableTrain) {
+            return null
+        }
+
+        if (contraption is BearingContraption && !CreateInteractiveConfig.SERVER.enableBearing) {
+            return null
+        }
+
+        if (contraption is ClockworkContraption && !CreateInteractiveConfig.SERVER.enableClockwork) {
+            return null
+        }
+
+        if (contraption is TranslatingContraption && !CreateInteractiveConfig.SERVER.enableTranslating) {
+            return null
+        }
+
+        if (contraption is MountedContraption && !CreateInteractiveConfig.SERVER.enableMounted) {
+            return null
+        }
+
+
         if (contraption.javaClass.packageName.contains("createbigcannons")) {
             // Do not create shadow ships for CBC, too hard
             return null
