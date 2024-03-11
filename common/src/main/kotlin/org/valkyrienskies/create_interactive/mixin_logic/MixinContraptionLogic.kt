@@ -61,12 +61,10 @@ internal object MixinContraptionLogic {
         }
 
         if (entity.contraption is CarriageContraption && !CreateInteractiveConfig.SERVER.enableTrain) {
-            // Only allow trains to become Ships
             return
         }
 
         if (entity.contraption is BearingContraption && !CreateInteractiveConfig.SERVER.enableBearing) {
-            // Only allow trains to become Ships
             return
         }
 
