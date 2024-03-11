@@ -6,11 +6,15 @@ import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.StructureTransform
+import com.simibubi.create.content.contraptions.TranslatingContraption
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
+import com.simibubi.create.content.contraptions.bearing.BearingContraption
+import com.simibubi.create.content.contraptions.bearing.ClockworkContraption
 import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
+import com.simibubi.create.content.contraptions.mounted.MountedContraption
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
@@ -29,6 +33,7 @@ import org.joml.Quaterniond
 import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
+import org.valkyrienskies.create_interactive.CreateInteractiveConfig
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
@@ -52,6 +57,26 @@ internal object MixinContraptionLogic {
         val prevId = (entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`()
         if (prevId != null && (level as ServerLevel).shipObjectWorld.allShips.getById(prevId) != null) {
             // If shadow ship already exists then don't make a new one
+            return
+        }
+
+        if (entity.contraption is CarriageContraption && !CreateInteractiveConfig.SERVER.enableTrain) {
+            return
+        }
+
+        if (entity.contraption is BearingContraption && !CreateInteractiveConfig.SERVER.enableBearing) {
+            return
+        }
+
+        if (entity.contraption is ClockworkContraption && !CreateInteractiveConfig.SERVER.enableClockwork) {
+            return
+        }
+
+        if (entity.contraption is TranslatingContraption && !CreateInteractiveConfig.SERVER.enableTranslating) {
+            return
+        }
+
+        if (entity.contraption is MountedContraption && !CreateInteractiveConfig.SERVER.enableMounted) {
             return
         }
 
