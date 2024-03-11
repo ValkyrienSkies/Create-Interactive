@@ -6,11 +6,15 @@ import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.StructureTransform
+import com.simibubi.create.content.contraptions.TranslatingContraption
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
+import com.simibubi.create.content.contraptions.bearing.BearingContraption
+import com.simibubi.create.content.contraptions.bearing.ClockworkContraption
 import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
+import com.simibubi.create.content.contraptions.mounted.MountedContraption
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
@@ -56,8 +60,25 @@ internal object MixinContraptionLogic {
             return
         }
 
-        if (entity.contraption !is CarriageContraption && CreateInteractiveConfig.SERVER.onlyInteractTrains) {
+        if (entity.contraption is CarriageContraption && !CreateInteractiveConfig.SERVER.enableTrain) {
             // Only allow trains to become Ships
+            return
+        }
+
+        if (entity.contraption is BearingContraption && !CreateInteractiveConfig.SERVER.enableBearing) {
+            // Only allow trains to become Ships
+            return
+        }
+
+        if (entity.contraption is ClockworkContraption && !CreateInteractiveConfig.SERVER.enableClockwork) {
+            return
+        }
+
+        if (entity.contraption is TranslatingContraption && !CreateInteractiveConfig.SERVER.enableTranslating) {
+            return
+        }
+
+        if (entity.contraption is MountedContraption && !CreateInteractiveConfig.SERVER.enableMounted) {
             return
         }
 
