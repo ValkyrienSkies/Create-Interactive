@@ -29,11 +29,10 @@ import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.AABB
 import org.apache.commons.lang3.tuple.MutablePair
-import org.joml.Quaterniond
 import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
-import org.valkyrienskies.create_interactive.CreateInteractiveConfig
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
@@ -60,23 +59,16 @@ internal object MixinContraptionLogic {
             return
         }
 
-        if (entity.contraption is CarriageContraption && !CreateInteractiveConfig.SERVER.enableTrain) {
+        if (!CreateInteractiveUtil.checkContraptionEnabled(entity.contraption)) {
             return
         }
 
-        if (entity.contraption is BearingContraption && !CreateInteractiveConfig.SERVER.enableBearing) {
+        val nonBrittleBlocks = entity.contraption.blocks
+        if (!CreateInteractiveUtil.checkInteractMeSticker(nonBrittleBlocks.entries)) {
             return
         }
 
-        if (entity.contraption is ClockworkContraption && !CreateInteractiveConfig.SERVER.enableClockwork) {
-            return
-        }
-
-        if (entity.contraption is TranslatingContraption && !CreateInteractiveConfig.SERVER.enableTranslating) {
-            return
-        }
-
-        if (entity.contraption is MountedContraption && !CreateInteractiveConfig.SERVER.enableMounted) {
+        if (CreateInteractiveUtil.checkInteractMeNotSticker(nonBrittleBlocks.entries)) {
             return
         }
 

@@ -68,7 +68,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:1.10.10+kotlin.1.9.10")
 
     // Mod menu
-    modImplementation("com.terraformersmc:modmenu:3.2.3")
+    modImplementation("com.terraformersmc:modmenu:7.2.2")
     modImplementation("me.shedaniel.cloth:cloth-config:${cloth_config_version}")
 
     // Remove the next line if you don't want to depend on the API
@@ -90,7 +90,7 @@ dependencies {
         modImplementation("io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version")
     }
 
-    modImplementation("net.minecraftforge:forgeconfigapiport-fabric:${forge_config_api_port_version}")
+
     modImplementation("com.jamieswhiteshirt:reach-entity-attributes:${reach_entity_attributes_version}")
     modImplementation("dev.cafeteria:fake-player-api:${fake_player_api_version}")
     modImplementation("io.github.tropheusj:milk-lib:${milk_lib_version}")

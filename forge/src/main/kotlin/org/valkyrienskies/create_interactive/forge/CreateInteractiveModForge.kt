@@ -1,5 +1,7 @@
 package org.valkyrienskies.create_interactive.forge
 
+import net.minecraft.client.renderer.ItemBlockRenderTypes
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.core.registries.Registries
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraftforge.api.distmarker.Dist
@@ -13,7 +15,7 @@ import net.minecraftforge.registries.DeferredRegister
 import org.valkyrienskies.create_interactive.CreateInteractiveMod
 import org.valkyrienskies.create_interactive.CreateInteractiveMod.init
 import org.valkyrienskies.create_interactive.CreateInteractiveMod.initClient
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod
+import org.valkyrienskies.create_interactive.GameContent
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import java.util.function.Supplier
 
@@ -42,6 +44,8 @@ class CreateInteractiveModForge {
             }
         }
 
+        ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME.get(), RenderType.cutout())
+        ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME_NOT.get(), RenderType.cutout())
         /*
         LOADING_CONTEXT.registerExtensionPoint(
             ConfigGuiFactory::class.java

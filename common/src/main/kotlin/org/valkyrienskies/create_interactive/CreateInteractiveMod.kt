@@ -50,6 +50,7 @@ object CreateInteractiveMod {
             .icon { GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK.asStack() }
             .displayItems { _, output ->
                 output.accept(GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK.asItem())
+                output.accept(GameContent.INTERACT_ME.asItem())
                 output.accept(GameContent.BUFFER_STOP_BLOCK.asItem())
             }
             .build()

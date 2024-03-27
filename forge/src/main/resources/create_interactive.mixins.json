@@ -9,6 +9,7 @@
     "MixinCombinedTankWrapper",
     "MixinMountedStorageManager",
     "MixinMovementContext",
+    "MixinTrackBlockOutline",
     "MixinTrain"
   ],
   "client": [

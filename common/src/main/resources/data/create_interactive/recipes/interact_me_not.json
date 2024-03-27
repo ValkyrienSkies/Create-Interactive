@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "H ",
+    "PD",
+    "S "
+  ],
+  "key": {
+    "H": {
+      "item": "create:brass_nugget"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "S": {
+      "item": "minecraft:slime_ball"
+    },
+    "D": {
+      "item": "minecraft:red_dye"
+    }
+  },
+  "result": {
+    "item": "create_interactive:interact_me"
+  }
+}

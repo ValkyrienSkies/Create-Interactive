@@ -56,6 +56,7 @@ dependencies {
             { exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml' }
     modCompileOnly("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
     modCompileOnly("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
+    modCompileOnly("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$forge_config_api_port_version")
 
     for (String module in port_lib_modules.split(",")) {
         modCompileOnly("io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version")
