@@ -7,11 +7,11 @@ import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toMinecraft
 
-internal object MixinTrackBlockOutlineLogic {
+object MixinTrackBlockOutlineLogic {
     /**
      * Fixed train station direction wrong on ships
      */
-    internal fun postClientTick() {
+    fun postClientTick() {
         val origResult = TrackBlockOutlineAccessor.getResult() ?: return
         val clientShip =
             origResult.blockEntity.level.getShipManagingPos(origResult.blockEntity.blockPos) as? ClientShip ?: return

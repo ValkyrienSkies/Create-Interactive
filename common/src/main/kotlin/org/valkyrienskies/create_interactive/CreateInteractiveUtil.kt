@@ -66,28 +66,63 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
-    fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
 
+    fun checkInteractMeNotSticker(nonBrittleBlocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>): Boolean {
+        var hasInteractMeBlock = false
+        for ((_, info) in nonBrittleBlocks) {
+            if (info.state.`is`(GameContent.INTERACT_ME_NOT.get())) {
+                hasInteractMeBlock = true
+                break
+            }
+        }
+        return hasInteractMeBlock
+    }
+
+    fun checkInteractMeSticker(nonBrittleBlocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>): Boolean {
+        if (CreateInteractiveConfig.SERVER.enableInteractMeBlock) {
+            var hasInteractMeBlock = false
+            for ((_, info) in nonBrittleBlocks) {
+                if (info.state.`is`(GameContent.INTERACT_ME.get())) {
+                    hasInteractMeBlock = true
+                    break
+                }
+            }
+            if (!hasInteractMeBlock) {
+                return false
+            }
+        }
+        return true
+    }
+
+    fun checkContraptionEnabled(contraption: Contraption): Boolean{
         if (contraption is CarriageContraption && !CreateInteractiveConfig.SERVER.enableTrain) {
-            return null
+            return false
         }
 
         if (contraption is BearingContraption && !CreateInteractiveConfig.SERVER.enableBearing) {
-            return null
+            return false
         }
 
         if (contraption is ClockworkContraption && !CreateInteractiveConfig.SERVER.enableClockwork) {
-            return null
+            return false
         }
 
         if (contraption is TranslatingContraption && !CreateInteractiveConfig.SERVER.enableTranslating) {
-            return null
+            return false
         }
 
         if (contraption is MountedContraption && !CreateInteractiveConfig.SERVER.enableMounted) {
+            return false
+        }
+        return true
+    }
+
+    fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
+
+
+        if (!checkContraptionEnabled(contraption)) {
             return null
         }
-
 
         if (contraption.javaClass.packageName.contains("createbigcannons")) {
             // Do not create shadow ships for CBC, too hard
@@ -103,6 +138,15 @@ object CreateInteractiveUtil {
         val nonBrittleBlocks = blocks.entries.filter { !BlockMovementChecks.isBrittle(it.value.state) }
         val brittleBlocks = blocks.entries.filter { BlockMovementChecks.isBrittle(it.value.state) }
         val blocksOrderedCorrectly = nonBrittleBlocks + brittleBlocks
+
+        if (!checkInteractMeSticker(nonBrittleBlocks)) {
+            return null
+        }
+
+        if (checkInteractMeNotSticker(nonBrittleBlocks)) {
+            return null
+        }
+
 
         for ((pos, structureInfo) in blocksOrderedCorrectly) {
             val newPos = pos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
@@ -465,6 +509,8 @@ object CreateInteractiveUtil {
     fun isTrainDerailed(carriageEntity: CarriageContraptionEntity): Boolean {
         return carriageEntity.carriage?.train?.derailed == true
     }
+
+
 
     data class ShipTeleportDataImplFixed(
         override val newPos: Vector3dc = Vector3d(),
