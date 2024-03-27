@@ -218,6 +218,7 @@ object GameContent {
         return INTERACT_ME_NOT
     }
 
+    @JvmStatic
     fun init() {
 
     }
