@@ -1,7 +1,5 @@
 package org.valkyrienskies.create_interactive.content.interact_me
 
-import com.simibubi.create.AllPackets
-import com.simibubi.create.content.contraptions.glue.GlueEffectPacket
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.InteractionResult
@@ -25,7 +23,6 @@ class InteractMeBlockItem(block: Block, properties: Properties) : BlockItem(bloc
 
         if (!world.isClientSide) {
             world.addFreshEntity(entity)
-            AllPackets.getChannel().sendToClientsTracking(GlueEffectPacket(gluePos, face, true), entity)
         }
 
         return super.place(ctx)

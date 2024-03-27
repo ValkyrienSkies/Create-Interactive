@@ -51,6 +51,7 @@ object CreateInteractiveMod {
             .displayItems { _, output ->
                 output.accept(GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK.asItem())
                 output.accept(GameContent.INTERACT_ME.asItem())
+                output.accept(GameContent.INTERACT_ME_NOT.asItem())
                 output.accept(GameContent.BUFFER_STOP_BLOCK.asItem())
             }
             .build()

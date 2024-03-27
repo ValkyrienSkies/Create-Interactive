@@ -7,6 +7,7 @@ import com.simibubi.create.foundation.data.BuilderTransformers
 import com.simibubi.create.foundation.data.ModelGen
 import com.simibubi.create.foundation.data.TagGen
 import com.tterrag.registrate.builders.BlockEntityBuilder
+import com.tterrag.registrate.util.entry.BlockEntityEntry
 import com.tterrag.registrate.util.entry.BlockEntry
 import com.tterrag.registrate.util.nullness.NonNullBiFunction
 import com.tterrag.registrate.util.nullness.NonNullFunction
@@ -33,34 +34,14 @@ import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechP
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlock
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlockEntity
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingRenderer
-import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlock
-import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlockEntity
-import org.valkyrienskies.create_interactive.registry.DeferredRegister
-import org.valkyrienskies.create_interactive.registry.RegistrySupplier
 import java.util.function.BiFunction
 
 object GameContent {
-    private val ITEMS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.ITEM)
-    private val BLOCKS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.BLOCK)
-    private val BLOCK_ENTITIES = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.BLOCK_ENTITY_TYPE)
 
-    fun init() {
-        BLOCKS.applyAll()
-        // Disable the creative tabs for the propagator
-        // BLOCKS.forEach {
-        //     ITEMS.register(it.name) { BlockItem(it.get(), Item.Properties().tab(AllCreativeModeTabs.BASE_CREATIVE_TAB)) }
-        // }
 
-        BLOCK_ENTITIES.applyAll()
-
-        ITEMS.applyAll()
-    }
 
     val CONNECTED = BooleanProperty.create("connected")
 
-    val PROPAGATOR = BLOCKS.register("propagator") { PropagatorBlock }
-    val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
-        PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
 
     val MECHANICAL_PROPAGATOR_BEARING_BLOCK: BlockEntry<MechanicalPropagatorBearingBlock> =
         CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
@@ -185,6 +166,7 @@ object GameContent {
         }
         .register()
 
+    @JvmField
     val INTERACT_ME: BlockEntry<InteractMeBlock> = CreateInteractiveMod.REGISTRATE.block<InteractMeBlock>(
         "interact_me"
     ) { properties: BlockBehaviour.Properties? ->
@@ -206,6 +188,11 @@ object GameContent {
         .transform(ModelGen.customItemModel())
         .register()
 
+    fun getInteractMeBlock(): BlockEntry<InteractMeBlock> {
+        return INTERACT_ME
+    }
+
+    @JvmField
     val INTERACT_ME_NOT: BlockEntry<InteractMeBlock> = CreateInteractiveMod.REGISTRATE.block<InteractMeBlock>(
         "interact_me_not"
     ) { properties: BlockBehaviour.Properties? ->
@@ -227,14 +214,11 @@ object GameContent {
         .transform(ModelGen.customItemModel())
         .register()
 
-    private fun <T : BlockEntity> RegistrySupplier<out Block>.hasBE(blockEntity: (BlockPos, BlockState) -> T) = Pair(setOf(this), blockEntity)
-    private fun <T : BlockEntity> Pair<Set<RegistrySupplier<out Block>>, (BlockPos, BlockState) -> T>.byName(name: String): RegistrySupplier<BlockEntityType<T>> =
-        BLOCK_ENTITIES.register(name) {
-            val type = Util.fetchChoiceType(References.BLOCK_ENTITY, name)
+    fun getInteractMeNotBlock(): BlockEntry<InteractMeBlock> {
+        return INTERACT_ME_NOT
+    }
 
-            BlockEntityType.Builder.of(
-                this.second,
-                *this.first.map { it.get() }.toTypedArray()
-            ).build(type)
-        }
+    fun init() {
+
+    }
 }
