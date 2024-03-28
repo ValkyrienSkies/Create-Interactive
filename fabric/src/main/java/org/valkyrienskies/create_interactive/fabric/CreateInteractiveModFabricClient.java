@@ -11,6 +11,6 @@ public class CreateInteractiveModFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         CreateInteractiveMod.initClient();
-        BlockRenderLayerMap.INSTANCE.putBlocks( RenderType.cutout(), GameContent.INTERACT_ME.get(), GameContent.INTERACT_ME_NOT.get());
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(), GameContent.INTERACT_ME.get(), GameContent.INTERACT_ME_NOT.get());
     }
 }

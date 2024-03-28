@@ -46,9 +46,7 @@ subprojects {
         maven { url = "https://mvn.devos.one/snapshots/" }
         maven { url = "https://mvn.devos.one/releases/" }
         maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
-        flatDir {
-            dirs 'lib'
-        }
+        maven { url 'https://www.jitpack.io' }
     }
 
     dependencies {

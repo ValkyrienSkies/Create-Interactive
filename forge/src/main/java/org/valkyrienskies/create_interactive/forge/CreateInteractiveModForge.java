@@ -2,29 +2,22 @@ package org.valkyrienskies.create_interactive.forge;
 
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.core.registries.Registries;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
 import org.valkyrienskies.create_interactive.CreateInteractiveMod;
 import org.valkyrienskies.create_interactive.GameContent;
 
 @Mod(CreateInteractiveMod.MOD_ID)
 public class CreateInteractiveModForge {
 
-
     public CreateInteractiveModForge() {
 
         var MOD_BUS = FMLJavaModLoadingContext.get().getModEventBus();
 
         CreateInteractiveMod.INSTANCE.getREGISTRATE().registerEventListeners(MOD_BUS);
-
-        var deferredRegister = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateInteractiveMod.MOD_ID);
-        deferredRegister.register("general", CreateInteractiveMod.INSTANCE::createCreativeTab);
-        deferredRegister.register(MOD_BUS);
 
         CreateInteractiveMod.init();
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> CreateInteractiveMod::initClient);
