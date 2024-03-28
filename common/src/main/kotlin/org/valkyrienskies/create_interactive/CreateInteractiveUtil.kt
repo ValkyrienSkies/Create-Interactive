@@ -66,32 +66,12 @@ import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
 
-    fun checkInteractMeNotSticker(nonBrittleBlocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>): Boolean {
-        var hasInteractMeBlock = false
-        for ((_, info) in nonBrittleBlocks) {
-            if (info.state.`is`(GameContent.INTERACT_ME_NOT.get())) {
-                hasInteractMeBlock = true
-                break
-            }
-        }
-        return hasInteractMeBlock
-    }
+    fun checkInteractMeNotSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
+            = blocks.any { it.value.state.`is`(GameContent.INTERACT_ME_NOT.get()) }
 
-    fun checkInteractMeSticker(nonBrittleBlocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>): Boolean {
-        if (CreateInteractiveConfig.SERVER.enableInteractMeBlock) {
-            var hasInteractMeBlock = false
-            for ((_, info) in nonBrittleBlocks) {
-                if (info.state.`is`(GameContent.INTERACT_ME.get())) {
-                    hasInteractMeBlock = true
-                    break
-                }
-            }
-            if (!hasInteractMeBlock) {
-                return false
-            }
-        }
-        return true
-    }
+    fun checkInteractMeSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
+            = CreateInteractiveConfig.SERVER.enableInteractMeBlock && blocks.any { it.value.state.`is`(GameContent.INTERACT_ME.get()) }
+
 
     fun checkContraptionEnabled(contraption: Contraption): Boolean{
         if (contraption is CarriageContraption && !CreateInteractiveConfig.SERVER.enableTrain) {
@@ -117,7 +97,6 @@ object CreateInteractiveUtil {
     }
 
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
-
 
         if (!checkContraptionEnabled(contraption)) {
             return null
@@ -145,7 +124,6 @@ object CreateInteractiveUtil {
         if (checkInteractMeNotSticker(nonBrittleBlocks)) {
             return null
         }
-
 
         for ((pos, structureInfo) in blocksOrderedCorrectly) {
             val newPos = pos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
@@ -509,8 +487,6 @@ object CreateInteractiveUtil {
     fun isTrainDerailed(carriageEntity: CarriageContraptionEntity): Boolean {
         return carriageEntity.carriage?.train?.derailed == true
     }
-
-
 
     data class ShipTeleportDataImplFixed(
         override val newPos: Vector3dc = Vector3d(),
