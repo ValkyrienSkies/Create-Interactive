@@ -57,9 +57,9 @@ class InteractMeBlock(properties: Properties) : DirectionalBlock(properties.noOc
     }
 
     override fun getShape(blockState: BlockState,
-                          blockGetter: BlockGetter?,
-                          blockPos: BlockPos?,
-                          collisionContext: CollisionContext?): VoxelShape? {
+            blockGetter: BlockGetter?,
+            blockPos: BlockPos?,
+            collisionContext: CollisionContext?): VoxelShape? {
         return AABBS[blockState.getValue(FACING)]
     }
 
