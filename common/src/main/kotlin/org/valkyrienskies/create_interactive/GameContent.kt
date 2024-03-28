@@ -188,10 +188,6 @@ object GameContent {
         .transform(ModelGen.customItemModel())
         .register()
 
-    fun getInteractMeBlock(): BlockEntry<InteractMeBlock> {
-        return INTERACT_ME
-    }
-
     @JvmField
     val INTERACT_ME_NOT: BlockEntry<InteractMeBlock> = CreateInteractiveMod.REGISTRATE.block<InteractMeBlock>(
         "interact_me_not"
@@ -213,10 +209,6 @@ object GameContent {
         })
         .transform(ModelGen.customItemModel())
         .register()
-
-    fun getInteractMeNotBlock(): BlockEntry<InteractMeBlock> {
-        return INTERACT_ME_NOT
-    }
 
     @JvmStatic
     fun init() {

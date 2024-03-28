@@ -37,12 +37,14 @@ class InteractMeBlock(properties: Properties) : DirectionalBlock(properties.noOc
         return levelReader.getBlockState(blockPos.relative((blockState.getValue(FACING)).opposite)).isSolid
     }
 
-    override fun updateShape(blockState: BlockState,
-                             direction: Direction,
-                             blockState2: BlockState?,
-                             levelAccessor: LevelAccessor?,
-                             blockPos: BlockPos?,
-                             blockPos2: BlockPos?): BlockState {
+    override fun updateShape(
+            blockState: BlockState,
+            direction: Direction,
+            blockState2: BlockState?,
+            levelAccessor: LevelAccessor?,
+            blockPos: BlockPos?,
+            blockPos2: BlockPos?,
+    ): BlockState {
         return if (direction.opposite == blockState.getValue(FACING) && !blockState.canSurvive(
                 levelAccessor,
                 blockPos)
