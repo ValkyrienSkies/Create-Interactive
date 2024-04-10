@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "create_interactive:block/interact_me",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "create_interactive:block/interact_me",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "create_interactive:block/interact_me"
+    },
+    "facing=south": {
+      "model": "create_interactive:block/interact_me",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "create_interactive:block/interact_me",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "create_interactive:block/interact_me",
+      "y": 270
+    }
+  }
+}

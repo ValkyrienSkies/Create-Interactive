@@ -11,17 +11,17 @@ import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.content.propagating_axis.PropagatingAxisBlock
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
-object PropagatorBlock : PropagatingAxisBlock(
-    Properties.of(Material.STONE)
-), IBE<PropagatorBlockEntity> {
-    @NoOptimize
-    override fun getBlockEntityClass(): Class<PropagatorBlockEntity> = PropagatorBlockEntity::class.java
+//object PropagatorBlock : PropagatingAxisBlock(
+//    Properties.of().mapColor(MapColor.PODZOL)
+//), IBE<PropagatorBlockEntity> {
+    //@NoOptimize
+    //override fun getBlockEntityClass(): Class<PropagatorBlockEntity> = PropagatorBlockEntity::class.java
 
-    @NoOptimize
-    override fun getBlockEntityType(): BlockEntityType<out PropagatorBlockEntity> = GameContent.PROPAGATOR_BE.get()
+   // @NoOptimize
+   // override fun getBlockEntityType(): BlockEntityType<out PropagatorBlockEntity> = GameContent.PROPAGATOR_BE.get()
 
-    @NoOptimize
-    override fun hasShaftTowards(world: LevelReader, pos: BlockPos, state: BlockState, face: Direction): Boolean {
-        return state.getValue(AXIS) != face.axis
-    }
-}
+//    @NoOptimize
+//    override fun hasShaftTowards(world: LevelReader, pos: BlockPos, state: BlockState, face: Direction): Boolean {
+//        return state.getValue(AXIS) != face.axis
+//    }
+//}

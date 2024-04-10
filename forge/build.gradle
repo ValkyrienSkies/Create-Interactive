@@ -77,7 +77,9 @@ dependencies {
     // Create compat
     modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge_version}:slim") { transitive = false }
     modImplementation("com.jozufozu.flywheel:flywheel-forge-${minecraft_version}:${flywheel_forge_version}")
-    modImplementation("com.tterrag.registrate:Registrate:${registrate_forge_version}")
+    modImplementation("com.tterrag.registrate:Registrate:${registrate_forge_version}") {
+        exclude group: 'com.github.LlamaLad7', module: ''
+    }
 }
 
 processResources {

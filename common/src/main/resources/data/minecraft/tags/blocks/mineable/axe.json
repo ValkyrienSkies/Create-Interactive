@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "create_interactive:buffer_stop",
+    "create_interactive:propagator_bearing"
+  ]
+}
