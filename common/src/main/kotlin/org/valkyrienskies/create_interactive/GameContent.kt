@@ -7,22 +7,13 @@ import com.simibubi.create.foundation.data.BuilderTransformers
 import com.simibubi.create.foundation.data.ModelGen
 import com.simibubi.create.foundation.data.TagGen
 import com.tterrag.registrate.builders.BlockEntityBuilder
-import com.tterrag.registrate.util.entry.BlockEntityEntry
 import com.tterrag.registrate.util.entry.BlockEntry
 import com.tterrag.registrate.util.nullness.NonNullBiFunction
 import com.tterrag.registrate.util.nullness.NonNullFunction
-import net.minecraft.Util
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
-import net.minecraft.core.BlockPos
-import net.minecraft.core.registries.Registries
-import net.minecraft.util.datafix.fixes.References
 import net.minecraft.world.item.Item
-import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockBehaviour
-import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.material.MapColor
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlock
@@ -37,27 +28,11 @@ import org.valkyrienskies.create_interactive.content.mechanical_propagator.Mecha
 import java.util.function.BiFunction
 
 object GameContent {
-    private val ITEMS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.ITEM)
-    private val BLOCKS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.BLOCK)
-    private val BLOCK_ENTITIES = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registries.BLOCK_ENTITY_TYPE)
 
-    fun init() {
-        BLOCKS.applyAll()
-        // Disable the creative tabs for the propagator
-        // BLOCKS.forEach {
-        //     ITEMS.register(it.name) { BlockItem(it.get(), Item.Properties().tab(AllCreativeModeTabs.BASE_CREATIVE_TAB)) }
-        // }
 
-        BLOCK_ENTITIES.applyAll()
-
-        ITEMS.applyAll()
-    }
 
     val CONNECTED = BooleanProperty.create("connected")
 
-    val PROPAGATOR = BLOCKS.register("propagator") { PropagatorBlock }
-    val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
-        PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
 
     val MECHANICAL_PROPAGATOR_BEARING_BLOCK: BlockEntry<MechanicalPropagatorBearingBlock> =
         CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
@@ -191,8 +166,8 @@ object GameContent {
         )
     }
         .properties { p: BlockBehaviour.Properties ->
-            p.color(
-                MaterialColor.PODZOL
+            p.mapColor(
+                MapColor.PODZOL
             )
             p.noOcclusion()
         }
@@ -213,8 +188,8 @@ object GameContent {
         )
     }
         .properties { p: BlockBehaviour.Properties ->
-            p.color(
-                MaterialColor.PODZOL
+            p.mapColor(
+                MapColor.PODZOL
             )
             p.noOcclusion()
         }

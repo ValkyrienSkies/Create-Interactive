@@ -6,7 +6,6 @@ import net.minecraft.core.Direction
 import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.material.MapColor
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.content.propagating_axis.PropagatingAxisBlock
 import org.valkyrienskies.create_interactive.services.NoOptimize

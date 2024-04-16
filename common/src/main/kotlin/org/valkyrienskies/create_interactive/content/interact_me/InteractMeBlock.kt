@@ -34,7 +34,7 @@ class InteractMeBlock(properties: Properties) : DirectionalBlock(properties.noOc
     }
 
     override fun canSurvive(blockState: BlockState, levelReader: LevelReader, blockPos: BlockPos): Boolean {
-        return levelReader.getBlockState(blockPos.relative((blockState.getValue(FACING)).opposite)).material.isSolid
+        return levelReader.getBlockState(blockPos.relative((blockState.getValue(FACING)).opposite)).isSolid
     }
 
     override fun updateShape(
