@@ -19,10 +19,10 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.util.RandomSource
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.level.levelgen.RandomSource
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.Vec3
 import org.joml.Quaterniond
@@ -62,6 +62,8 @@ import org.valkyrienskies.mod.common.util.toJOML
 import org.valkyrienskies.mod.common.util.toMinecraft
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
+import java.util.Random
+import java.util.random.RandomGenerator
 import kotlin.math.round
 import kotlin.math.roundToInt
 
