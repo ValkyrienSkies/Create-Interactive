@@ -7,7 +7,9 @@ import com.simibubi.create.foundation.data.BuilderTransformers
 import com.simibubi.create.foundation.data.ModelGen
 import com.simibubi.create.foundation.data.TagGen
 import com.tterrag.registrate.builders.BlockEntityBuilder
+import com.tterrag.registrate.util.entry.BlockEntityEntry
 import com.tterrag.registrate.util.entry.BlockEntry
+import com.tterrag.registrate.util.nullness.NonNullBiFunction
 import com.tterrag.registrate.util.nullness.NonNullFunction
 import net.minecraft.Util
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
@@ -15,6 +17,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Registry
 import net.minecraft.util.datafix.fixes.References
+import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
@@ -25,38 +28,20 @@ import net.minecraft.world.level.material.MaterialColor
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlock
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlockEntity
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopRenderer
+import org.valkyrienskies.create_interactive.content.interact_me.InteractMeBlock
+import org.valkyrienskies.create_interactive.content.interact_me.InteractMeBlockItem
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechPropBearingInstance
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlock
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlockEntity
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingRenderer
-import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlock
-import org.valkyrienskies.create_interactive.content.propagator.PropagatorBlockEntity
-import org.valkyrienskies.create_interactive.registry.DeferredRegister
-import org.valkyrienskies.create_interactive.registry.RegistrySupplier
 import java.util.function.BiFunction
 
 object GameContent {
-    private val ITEMS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registry.ITEM_REGISTRY)
-    private val BLOCKS = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registry.BLOCK_REGISTRY)
-    private val BLOCK_ENTITIES = DeferredRegister.create(CreateInteractiveMod.MOD_ID, Registry.BLOCK_ENTITY_TYPE_REGISTRY)
 
-    fun init() {
-        BLOCKS.applyAll()
-        // Disable the creative tabs for the propagator
-        // BLOCKS.forEach {
-        //     ITEMS.register(it.name) { BlockItem(it.get(), Item.Properties().tab(AllCreativeModeTabs.BASE_CREATIVE_TAB)) }
-        // }
 
-        BLOCK_ENTITIES.applyAll()
-
-        ITEMS.applyAll()
-    }
 
     val CONNECTED = BooleanProperty.create("connected")
 
-    val PROPAGATOR = BLOCKS.register("propagator") { PropagatorBlock }
-    val PROPAGATOR_BE: RegistrySupplier<BlockEntityType<PropagatorBlockEntity>> =
-        PROPAGATOR.hasBE { pos, state -> PropagatorBlockEntity(::PROPAGATOR_BE.get().get(), pos, state) }.byName("propagator")
 
     val MECHANICAL_PROPAGATOR_BEARING_BLOCK: BlockEntry<MechanicalPropagatorBearingBlock> =
         CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
@@ -181,14 +166,52 @@ object GameContent {
         }
         .register()
 
-    private fun <T : BlockEntity> RegistrySupplier<out Block>.hasBE(blockEntity: (BlockPos, BlockState) -> T) = Pair(setOf(this), blockEntity)
-    private fun <T : BlockEntity> Pair<Set<RegistrySupplier<out Block>>, (BlockPos, BlockState) -> T>.byName(name: String): RegistrySupplier<BlockEntityType<T>> =
-        BLOCK_ENTITIES.register(name) {
-            val type = Util.fetchChoiceType(References.BLOCK_ENTITY, name)
-
-            BlockEntityType.Builder.of(
-                this.second,
-                *this.first.map { it.get() }.toTypedArray()
-            ).build(type)
+    @JvmField
+    val INTERACT_ME: BlockEntry<InteractMeBlock> = CreateInteractiveMod.REGISTRATE.block<InteractMeBlock>(
+        "interact_me"
+    ) { properties: BlockBehaviour.Properties? ->
+        InteractMeBlock(
+            properties!!
+        )
+    }
+        .properties { p: BlockBehaviour.Properties ->
+            p.color(
+                MaterialColor.PODZOL
+            )
+            p.noOcclusion()
         }
+        .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+        .item(NonNullBiFunction<InteractMeBlock, Item.Properties, InteractMeBlockItem> { block: InteractMeBlock, properties: Item.Properties ->
+            InteractMeBlockItem(block,
+                properties)
+        })
+        .transform(ModelGen.customItemModel())
+        .register()
+
+    @JvmField
+    val INTERACT_ME_NOT: BlockEntry<InteractMeBlock> = CreateInteractiveMod.REGISTRATE.block<InteractMeBlock>(
+        "interact_me_not"
+    ) { properties: BlockBehaviour.Properties? ->
+        InteractMeBlock(
+            properties!!
+        )
+    }
+        .properties { p: BlockBehaviour.Properties ->
+            p.color(
+                MaterialColor.PODZOL
+            )
+            p.noOcclusion()
+        }
+        .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+        .item(NonNullBiFunction<InteractMeBlock, Item.Properties, InteractMeBlockItem> { block: InteractMeBlock, properties: Item.Properties ->
+            InteractMeBlockItem(block,
+                properties)
+        })
+        .transform(ModelGen.customItemModel())
+        .register()
+
+    @JvmStatic
+    fun init() {
+
+    }
 }

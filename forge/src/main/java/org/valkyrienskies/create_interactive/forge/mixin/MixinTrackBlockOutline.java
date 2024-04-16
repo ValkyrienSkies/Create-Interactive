@@ -1,4 +1,4 @@
-package org.valkyrienskies.create_interactive.mixin.client;
+package org.valkyrienskies.create_interactive.forge.mixin;
 
 import com.simibubi.create.content.trains.track.TrackBlockOutline;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +14,6 @@ public class MixinTrackBlockOutline {
      */
     @Inject(method = "pickCurves", at = @At("RETURN"), remap = false)
     private static void postClientTick(final CallbackInfo ci) {
-        MixinTrackBlockOutlineLogic.INSTANCE.postClientTick$create_interactive();
+        MixinTrackBlockOutlineLogic.INSTANCE.postClientTick();
     }
 }

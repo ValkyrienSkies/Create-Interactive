@@ -15,6 +15,9 @@ object CreateInteractiveConfig {
     }
 
     class Server {
+        @JsonSchema(description = "Requires contraptions to have the \"Interact Me\" block for it to be Interactive")
+        val enableInteractMeBlock = true
+
         @JsonSchema(description = "Make Translating Contraptions Interactive (Piston, Gantry, Pulley)")
         val enableTranslating = true
 

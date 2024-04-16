@@ -5,6 +5,7 @@
   "mixins": [
     "MixinCarriageEntityHandler",
     "MixinMountedStorageManager",
+    "MixinTrackBlockOutline",
     "MixinTrain"
   ],
   "client": [
