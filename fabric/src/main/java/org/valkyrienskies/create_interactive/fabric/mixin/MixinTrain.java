@@ -16,13 +16,12 @@ public class MixinTrain {
      * @reason Don't collide trains with derailed trains
      */
     @Overwrite(remap = false)
-    public static Pair<Train, Vec3> findCollidingTrain(
+    public Pair<Train, Vec3> findCollidingTrain(
         final Level level,
         final Vec3 start,
         final Vec3 end,
-        final Train ignore,
         final ResourceKey<Level> dimension
     ) {
-        return MixinTrainLogic.INSTANCE.findCollidingTrain(level, start, end, ignore, dimension);
+        return MixinTrainLogic.INSTANCE.findCollidingTrain(level, start, end, Train.class.cast(this), dimension);
     }
 }
