@@ -1,10 +1,6 @@
 package org.valkyrienskies.create_interactive
 
-import com.simibubi.create.content.contraptions.AbstractContraptionEntity
-import com.simibubi.create.content.contraptions.BlockMovementChecks
-import com.simibubi.create.content.contraptions.Contraption
-import com.simibubi.create.content.contraptions.StructureTransform
-import com.simibubi.create.content.contraptions.TranslatingContraption
+import com.simibubi.create.content.contraptions.*
 import com.simibubi.create.content.contraptions.bearing.BearingContraption
 import com.simibubi.create.content.contraptions.bearing.ClockworkContraption
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
@@ -19,18 +15,12 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.util.RandomSource
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.Vec3
-import org.joml.Quaterniond
-import org.joml.Quaterniondc
-import org.joml.Vector3d
-import org.joml.Vector3dc
-import org.joml.Vector3i
-import org.joml.Vector3ic
+import org.joml.*
 import org.joml.primitives.AABBd
 import org.joml.primitives.AABBdc
 import org.valkyrienskies.core.api.ships.ClientShip
@@ -55,25 +45,19 @@ import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
-import org.valkyrienskies.mod.common.util.set
-import org.valkyrienskies.mod.common.util.settings
-import org.valkyrienskies.mod.common.util.toBlockPos
-import org.valkyrienskies.mod.common.util.toJOML
-import org.valkyrienskies.mod.common.util.toMinecraft
+import org.valkyrienskies.mod.common.util.*
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
-import java.util.Random
-import java.util.random.RandomGenerator
 import kotlin.math.round
 import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
 
-    fun checkInteractMeNotSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
+    fun hasInteractMeNotSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
             = blocks.any { it.value.state.`is`(GameContent.INTERACT_ME_NOT.get()) }
 
-    fun checkInteractMeSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
-            = CreateInteractiveConfig.SERVER.enableInteractMeBlock && blocks.any { it.value.state.`is`(GameContent.INTERACT_ME.get()) }
+    fun hasInteractMeSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
+            = blocks.any { it.value.state.`is`(GameContent.INTERACT_ME.get()) }
 
 
     fun checkContraptionEnabled(contraption: Contraption): Boolean{
@@ -96,11 +80,12 @@ object CreateInteractiveUtil {
         if (contraption is MountedContraption && !CreateInteractiveConfig.SERVER.enableMounted) {
             return false
         }
+
         return true
     }
 
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
-
+        // Checking if our contraption type is enabled
         if (!checkContraptionEnabled(contraption)) {
             return null
         }
@@ -114,12 +99,17 @@ object CreateInteractiveUtil {
         val brittleBlocks = blocks.entries.filter { BlockMovementChecks.isBrittle(it.value.state) }
         val blocksOrderedCorrectly = nonBrittleBlocks + brittleBlocks
 
-        if (!checkInteractMeSticker(nonBrittleBlocks)) {
-            return null
-        }
-
-        if (checkInteractMeNotSticker(nonBrittleBlocks)) {
-            return null
+        // Are we interactive by default?
+        if (CreateInteractiveConfig.SERVER.aInteractiveByDefault) {
+            // If yes, make sure we don't have an interact-me-not sticker
+            if (hasInteractMeNotSticker(nonBrittleBlocks)) {
+                return null
+            }
+        } else {
+            // If no, make sure we have an interact-me sticker
+            if (!hasInteractMeSticker(nonBrittleBlocks)) {
+                return null
+            }
         }
         // Try adding the rigid body of this entity from the world
         val serverShip: ServerShip = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
@@ -166,7 +156,7 @@ object CreateInteractiveUtil {
         var minPosNotRelative: Vector3i? = null
         var maxPosNotRelative: Vector3i? = null
         val posAsJOML = Vector3i()
-        val random = RandomSource.create()
+        val random = java.util.Random()
         for ((pos, structureInfo) in localBlocks) {
             if (structureInfo.state.block is ITrackBlock) {
                 // Tick the track block to create its track graph immediately (normally create waits until the next tick, but that's too slow for us)
