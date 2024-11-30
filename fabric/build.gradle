@@ -61,7 +61,8 @@ repositories {
 }
 
 dependencies {
-    include(annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1")))
+    //include(annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1")))
+    implementation(include(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
 
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"

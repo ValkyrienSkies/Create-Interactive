@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.forge.mixin_logic.mixin.MixinMountedStorageManagerLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 
@@ -27,10 +26,6 @@ public abstract class MixinMountedStorageManager {
     private Long ci$shipId = null;
     @Unique
     private List<IItemHandlerModifiable> ci$externalStorages;
-    @Unique
-    private boolean ci$checkInteractMe = false;
-    @Unique
-    private boolean ci$hasInteractMe = false;
     @Shadow
     protected Contraption.ContraptionInvWrapper inventory;
     @Shadow
@@ -45,12 +40,8 @@ public abstract class MixinMountedStorageManager {
 
     @Inject(method = "entityTick", at = @At("HEAD"), cancellable = true, remap = false)
     private void preEntityTick(final AbstractContraptionEntity entity, final CallbackInfo ci) {
-        if (!ci$checkInteractMe) {
-            ci$hasInteractMe = !CreateInteractiveUtil.INSTANCE.checkInteractMeNotSticker(entity.getContraption().getBlocks().entrySet()) &&
-                    CreateInteractiveUtil.INSTANCE.checkInteractMeSticker(entity.getContraption().getBlocks().entrySet());
-            ci$checkInteractMe = true;
-        }
-        if (ci$hasInteractMe) {
+        ci$shipId = ((AbstractContraptionEntityDuck) entity).ci$getShadowShipId();
+        if (check()) {
             ci.cancel();
             if (entity.level.isClientSide) return;
 
@@ -59,8 +50,6 @@ public abstract class MixinMountedStorageManager {
             if (fluidInventory == null) fluidInventory = new CombinedTankWrapper();
 
             // Recreate inventories
-            final AbstractContraptionEntityDuck duck = (AbstractContraptionEntityDuck) entity;
-            ci$shipId = duck.ci$getShadowShipId();
 
             MixinMountedStorageManagerLogic.INSTANCE.preEntityTick$create_interactive(entity, ci$shipId, ci$externalStorages, inventory, fuelInventory, fluidInventory);
         }
@@ -68,7 +57,7 @@ public abstract class MixinMountedStorageManager {
 
     @Inject(method = "createHandlers", at = @At("HEAD"), cancellable = true, remap = false)
     private void preCreateHandlers(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
             // Empty storages
             inventory = new Contraption.ContraptionInvWrapper();
@@ -79,63 +68,63 @@ public abstract class MixinMountedStorageManager {
 
     @Inject(method = "addBlock", at = @At("HEAD"), cancellable = true, remap = false)
     private void preAddBlock(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "read", at = @At("HEAD"), cancellable = true, remap = false)
     private void preRead(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "bindTanks", at = @At("HEAD"), cancellable = true, remap = false)
     private void preBindTanks(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "write", at = @At("HEAD"), cancellable = true, remap = false)
     private void preWrite(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "removeStorageFromWorld", at = @At("HEAD"), cancellable = true, remap = false)
     private void preRemoveStorageFromWorld(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "addStorageToWorld", at = @At("HEAD"), cancellable = true, remap = false)
     private void preAddStorageToWorld(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "clear", at = @At("HEAD"), cancellable = true, remap = false)
     private void preClear(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "updateContainedFluid", at = @At("HEAD"), cancellable = true, remap = false)
     private void preUpdateContainedFluid(final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "attachExternal", at = @At("HEAD"), cancellable = true, remap = false)
     private void preAttachExternal(final IItemHandlerModifiable externalStorage, final CallbackInfo ci) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             ci.cancel();
             if (externalStorage == null) return;
             ci$externalStorages.add(externalStorage);
@@ -144,9 +133,14 @@ public abstract class MixinMountedStorageManager {
 
     @Inject(method = "handlePlayerStorageInteraction", at = @At("HEAD"), cancellable = true, remap = false)
     private void preHandlePlayerStorageInteraction(final Contraption contraption, final Player player, final BlockPos localPos, final CallbackInfoReturnable<Boolean> cir) {
-        if (ci$hasInteractMe) {
+        if (check()) {
             // Disable this entirely
             cir.setReturnValue(false);
         }
+    }
+
+    @Unique
+    private boolean check() {
+        return ci$shipId != null;
     }
 }
