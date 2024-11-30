@@ -2,10 +2,12 @@ package org.valkyrienskies.create_interactive.content.interact_me
 
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Maps
+import com.simibubi.create.content.contraptions.glue.SuperGlueEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.block.*
@@ -35,6 +37,28 @@ class InteractMeBlock(properties: Properties) : DirectionalBlock(properties.noOc
 
     override fun canSurvive(blockState: BlockState, levelReader: LevelReader, blockPos: BlockPos): Boolean {
         return levelReader.getBlockState(blockPos.relative((blockState.getValue(FACING)).opposite)).material.isSolid
+    }
+
+    override fun onRemove(
+        blockState: BlockState,
+        level: Level,
+        blockPos: BlockPos,
+        blockState2: BlockState,
+        bl: Boolean
+    ) {
+        if (!level.isClientSide()) {
+            val face = blockState.getValue(FACING)
+            val aabb = SuperGlueEntity.span(blockPos, blockPos.relative(face.opposite))
+            val glueNearby = level.getEntitiesOfClass(SuperGlueEntity::class.java, aabb)
+            for (glue in glueNearby) {
+                if (glue.boundingBox.equals(aabb)) {
+                    glue.spawnParticles()
+                    glue.discard()
+                    break
+                }
+            }
+        }
+        super.onRemove(blockState, level, blockPos, blockState2, bl)
     }
 
     override fun updateShape(
