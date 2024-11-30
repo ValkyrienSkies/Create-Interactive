@@ -29,7 +29,6 @@ import org.apache.commons.lang3.tuple.MutablePair
 import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
@@ -57,23 +56,6 @@ internal object MixinContraptionLogic {
             return
         }
 
-        if (!CreateInteractiveUtil.checkContraptionEnabled(entity.contraption)) {
-            return
-        }
-
-        val nonBrittleBlocks = entity.contraption.blocks
-        if (!CreateInteractiveUtil.checkInteractMeSticker(nonBrittleBlocks.entries)) {
-            return
-        }
-
-        if (CreateInteractiveUtil.checkInteractMeNotSticker(nonBrittleBlocks.entries)) {
-            return
-        }
-
-        if (entity.contraption.javaClass.packageName.contains("createbigcannons")) {
-            // Do not create shadow ships for CBC, too hard
-            return
-        }
 
         val blockPos = BlockPos(entity.position())
         val shipId = createShipForContraption(level as ServerLevel, entity.contraption, blockPos, initialBlocks) ?: return
