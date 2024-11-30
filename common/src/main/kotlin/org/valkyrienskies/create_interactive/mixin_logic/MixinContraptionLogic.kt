@@ -6,15 +6,11 @@ import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.StructureTransform
-import com.simibubi.create.content.contraptions.TranslatingContraption
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
-import com.simibubi.create.content.contraptions.bearing.BearingContraption
-import com.simibubi.create.content.contraptions.bearing.ClockworkContraption
 import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
-import com.simibubi.create.content.contraptions.mounted.MountedContraption
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
@@ -32,8 +28,6 @@ import org.apache.commons.lang3.tuple.MutablePair
 import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
-import org.valkyrienskies.create_interactive.CreateInteractiveUtil
-import org.valkyrienskies.create_interactive.CreateInteractiveConfig
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
@@ -60,23 +54,6 @@ internal object MixinContraptionLogic {
             return
         }
 
-        if (!CreateInteractiveUtil.checkContraptionEnabled(entity.contraption)) {
-            return
-        }
-
-        val nonBrittleBlocks = entity.contraption.blocks
-        if (!CreateInteractiveUtil.checkInteractMeSticker(nonBrittleBlocks.entries)) {
-            return
-        }
-
-        if (CreateInteractiveUtil.checkInteractMeNotSticker(nonBrittleBlocks.entries)) {
-            return
-        }
-
-        if (entity.contraption.javaClass.packageName.contains("createbigcannons")) {
-            // Do not create shadow ships for CBC, too hard
-            return
-        }
 
         val blockPos = BlockPos.containing(entity.position())
         val shipId = createShipForContraption(level as ServerLevel, entity.contraption, blockPos, initialBlocks) ?: return
