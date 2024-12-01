@@ -13,15 +13,15 @@ import java.util.Collection;
 @Mixin(CombinedTankWrapper.class)
 public class MixinCombinedTankWrapper implements CombinedTankWrapperDuck {
     @Final
-    @Shadow
+    @Shadow(remap = false)
     @Mutable
     protected IFluidHandler[] itemHandler;
     @Final
-    @Shadow
+    @Shadow(remap = false)
     @Mutable
     protected int[] baseIndex;
     @Final
-    @Shadow
+    @Shadow(remap = false)
     @Mutable
     protected int tankCount;
 

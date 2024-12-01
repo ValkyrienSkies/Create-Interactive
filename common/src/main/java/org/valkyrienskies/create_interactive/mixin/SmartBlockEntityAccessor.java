@@ -7,18 +7,18 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(SmartBlockEntity.class)
 public interface SmartBlockEntityAccessor {
 
-    @Accessor("initialized")
+    @Accessor(value = "initialized",remap = false)
     boolean getInitialized();
 
-    @Accessor("initialized")
+    @Accessor(value = "initialized",remap = false)
     void setInitialized(boolean initialized);
 
-    @Accessor("lazyTickCounter")
+    @Accessor(value = "lazyTickCounter",remap = false)
     int getLazyTickCounter();
 
-    @Accessor("lazyTickCounter")
+    @Accessor(value = "lazyTickCounter",remap = false)
     void setLazyTickCounter(int lazyTickCounter);
 
-    @Accessor("lazyTickRate")
+    @Accessor(value = "lazyTickRate",remap = false)
     int getLazyTickRate();
 }

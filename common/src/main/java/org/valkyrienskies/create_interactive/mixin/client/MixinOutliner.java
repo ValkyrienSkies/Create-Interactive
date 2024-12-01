@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Mixin(Outliner.class)
 public class MixinOutliner {
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private Map<Object, Outliner.OutlineEntry> outlines;
 

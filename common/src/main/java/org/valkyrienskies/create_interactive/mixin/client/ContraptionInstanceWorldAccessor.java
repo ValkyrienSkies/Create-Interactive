@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(FlwContraption.ContraptionInstanceWorld.class)
 public interface ContraptionInstanceWorldAccessor {
-    @Accessor("blockEntityInstanceManager")
+    @Accessor(value = "blockEntityInstanceManager",remap = false)
     ContraptionInstanceManager getBlockEntityInstanceManager();
 }

@@ -15,8 +15,8 @@ import org.valkyrienskies.create_interactive.CreateInteractiveIcons;
 @Mixin(ValueBox.IconValueBox.class)
 public class MixinIconValueBox {
 
-    @Shadow
-    public AllIcons icon;
+    @Shadow(remap = false)
+    AllIcons icon;
 
     @Inject(method = "renderContents", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/gui/AllIcons;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", shift = At.Shift.BEFORE), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     private void altRenderContents(PoseStack ms, MultiBufferSource buffer, CallbackInfo ci, float scale, int overrideColor) {
