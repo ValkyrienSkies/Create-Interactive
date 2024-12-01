@@ -35,7 +35,7 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
     }
 
     @Unique
-    private Map<BlockPos, ActorInstance> ci$actorToInstanceMap;
+    private final Map<BlockPos, ActorInstance> ci$actorToInstanceMap = new HashMap<>();
 
     /**
      * Completely disable contraption block rendering
@@ -56,7 +56,7 @@ public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
     @Inject(method = "buildActors", at = @At("HEAD"), cancellable = true, remap = false)
     private void preBuildActors(final CallbackInfo ci) {
         // We have to initialize this, it can't be in the function
-        ci$actorToInstanceMap = new HashMap<>();
+        ci$actorToInstanceMap.clear();
         MixinFlwContraptionLogic.INSTANCE.preBuildActors$create_interactive(instanceWorld, ci$actorToInstanceMap, contraption, ci);
     }
 
