@@ -3,7 +3,6 @@ package org.valkyrienskies.create_interactive.mixin.deployer;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
-import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.Lang;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,7 +23,7 @@ public class MixinDeployerBlockEntity implements DeployerDuck {
 
     @Inject(method = "addBehaviours", at = @At("RETURN"), remap = false)
     private void onAddBehaviours(List<BlockEntityBehaviour> behaviours, final CallbackInfo ci) {
-        actorBehaviour = new ScrollOptionBehaviour<DeployerActorMode>(
+        actorBehaviour = new ScrollOptionBehaviour<>(
                 DeployerActorMode.class,
                 Lang.text("Deployer Actor").component(),
                 ((DeployerBlockEntity) (Object) this),

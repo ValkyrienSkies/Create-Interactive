@@ -23,9 +23,9 @@ public interface MovementContextAccessor {
     @Accessor("relativeMotion")
     void setRelativeMotion(Vec3 relativeMotion);
 
-    @Accessor("firstMovement")
+    @Accessor(value = "firstMovement",remap = false)
     boolean getFirstMovement();
 
-    @Accessor("contraption")
+    @Accessor(value = "contraption",remap = false)
     Contraption getContraption();
 }

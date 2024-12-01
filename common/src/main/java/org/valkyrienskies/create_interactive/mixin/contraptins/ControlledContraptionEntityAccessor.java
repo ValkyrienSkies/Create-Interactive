@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(ControlledContraptionEntity.class)
 public interface ControlledContraptionEntityAccessor {
-    @Invoker("getController")
+    @Invoker(value = "getController", remap = false)
     IControlContraption invokeGetController();
 }

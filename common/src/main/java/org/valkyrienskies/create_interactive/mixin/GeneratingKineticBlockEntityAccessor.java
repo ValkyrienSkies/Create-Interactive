@@ -6,9 +6,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(GeneratingKineticBlockEntity.class)
 public interface GeneratingKineticBlockEntityAccessor {
-    @Accessor("reActivateSource")
+    @Accessor(value = "reActivateSource",remap = false)
     boolean getReActivateSource();
 
-    @Accessor("reActivateSource")
+    @Accessor(value = "reActivateSource",remap = false)
     void setReActivateSource(boolean reActivateSource);
 }

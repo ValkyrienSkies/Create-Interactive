@@ -9,30 +9,30 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(KineticBlockEntity.class)
 public interface KineticBlockEntityAccessor {
 
-    @Accessor("flickerTally")
+    @Accessor(value = "flickerTally",remap = false)
     int getFlickerTally();
 
-    @Accessor("flickerTally")
+    @Accessor(value = "flickerTally",remap = false)
     void setFlickerTally(int flickerTally);
 
-    @Accessor("validationCountdown")
+    @Accessor(value = "validationCountdown",remap = false)
     int getValidationCountdown();
 
-    @Accessor("validationCountdown")
+    @Accessor(value = "validationCountdown",remap = false)
     void setValidationCountdown(int validationCountdown);
 
-    @Invoker("validateKinetics")
+    @Invoker(value = "validateKinetics",remap = false)
     void invokeValidateKinetics();
 
-    @Accessor("preventSpeedUpdate")
+    @Accessor(value = "preventSpeedUpdate",remap = false)
     void setPreventSpeedUpdate(int preventSpeedUpdate);
 
-    @Accessor("networkDirty")
+    @Accessor(value = "networkDirty",remap = false)
     void setNetworkDirty(boolean networkDirty);
 
-    @Accessor("networkDirty")
+    @Accessor(value = "networkDirty",remap = false)
     boolean getNetworkDirty();
 
-    @Accessor("sequenceContext")
+    @Accessor(value = "sequenceContext",remap = false)
     SequencedGearshiftBlockEntity.SequenceContext getSequenceContext();
 }

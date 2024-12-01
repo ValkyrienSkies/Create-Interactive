@@ -14,7 +14,7 @@ import java.util.List;
 
 @Mixin(PSIActorInstance.class)
 public class MixinPSIActorInstance implements ActorInstanceDuck {
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private PIInstance instance;
 
