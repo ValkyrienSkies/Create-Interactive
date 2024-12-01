@@ -24,7 +24,7 @@ public class MixinCarriage implements CarriageDuck {
     @Unique
     private Long ci$shadowShipId = null;
 
-    @Shadow
+    @Shadow(remap = false)
     private Map<ResourceKey<Level>, Carriage.DimensionalCarriageEntity> entities;
 
     @Override

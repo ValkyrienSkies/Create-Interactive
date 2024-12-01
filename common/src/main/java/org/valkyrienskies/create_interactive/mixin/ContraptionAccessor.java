@@ -13,10 +13,10 @@ import org.spongepowered.asm.mixin.gen.Invoker;
  */
 @Mixin(Contraption.class)
 public interface ContraptionAccessor {
-    @Accessor("stalled")
+    @Accessor(value = "stalled",remap = false)
     boolean getStalled();
 
-    @Accessor("stalled")
+    @Accessor(value = "stalled",remap = false)
     void setStalled(boolean stalled);
 
     @Invoker("getBlockEntityNBT")
