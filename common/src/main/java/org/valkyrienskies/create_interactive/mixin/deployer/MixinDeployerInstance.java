@@ -18,15 +18,15 @@ import org.valkyrienskies.create_interactive.mixin_logic.deployer.MixinDeployerR
 
 @Mixin(DeployerInstance.class)
 public abstract class MixinDeployerInstance extends ShaftInstance<DeployerBlockEntity> {
-    @Shadow
+    @Shadow(remap = false)
     float progress;
     @Shadow
     @Final
     Direction facing;
-    @Shadow
+    @Shadow(remap = false)
     @Final
     protected OrientedData pole;
-    @Shadow
+    @Shadow(remap = false)
     protected OrientedData hand;
 
     public MixinDeployerInstance(MaterialManager materialManager, DeployerBlockEntity blockEntity) {

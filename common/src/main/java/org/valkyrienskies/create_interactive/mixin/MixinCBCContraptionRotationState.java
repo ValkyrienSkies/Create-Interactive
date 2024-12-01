@@ -14,10 +14,10 @@ import rbasamoyai.createbigcannons.cannon_control.contraption.PitchOrientedContr
 
 @Mixin(CBCContraptionRotationState.class)
 public class MixinCBCContraptionRotationState implements ContraptionRotationStateDuck {
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private PitchOrientedContraptionEntity entity;
-    @Shadow
+    @Shadow(remap = false)
     private float yaw;
     @Override
     public Quaterniond ci$getRotationQuaternion(final Quaterniond dest) {

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Mixin(DrillActorInstance.class)
 public class MixinDrillActorInstance implements ActorInstanceDuck {
-    @Shadow
+    @Shadow(remap = false)
     ActorData drillHead;
 
     @Override

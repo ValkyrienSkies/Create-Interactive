@@ -21,10 +21,10 @@ import java.util.ArrayList;
 
 @Mixin(ContraptionInstanceManager.class)
 public abstract class MixinContraptionInstanceManager extends BlockEntityInstanceManager implements ContraptionInstanceManagerDuck {
-    @Shadow
+    @Shadow(remap = false)
     protected ArrayList<ActorInstance> actors;
 
-    @Shadow
+    @Shadow(remap = false)
     private Contraption contraption;
 
     @Unique

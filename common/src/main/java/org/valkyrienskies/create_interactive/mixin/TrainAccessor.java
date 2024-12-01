@@ -10,12 +10,12 @@ import java.util.List;
 
 @Mixin(Train.class)
 public interface TrainAccessor {
-    @Accessor("migratingPoints")
+    @Accessor(value = "migratingPoints", remap = false)
     List<TrainMigration> getMigratingPoints();
 
-    @Accessor("graph")
+    @Accessor(value = "graph",remap = false)
     void setGraph(TrackGraph graph);
 
-    @Accessor("derailed")
+    @Accessor(value = "derailed",remap = false)
     void setDerailed(boolean derailed);
 }
