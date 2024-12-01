@@ -13,15 +13,15 @@ import java.util.Collection;
 @Mixin(CombinedInvWrapper.class)
 public class MixinCombinedInvWrapper implements CombinedInvWrapperDuck {
     @Final
-    @Shadow
+    @Shadow(remap = false)
     @Mutable
     protected IItemHandlerModifiable[] itemHandler;
     @Final
-    @Shadow
+    @Shadow(remap = false)
     @Mutable
     protected int[] baseIndex;
     @Final
-    @Shadow
+    @Shadow(remap = false)
     @Mutable
     protected int slotCount;
     @Override

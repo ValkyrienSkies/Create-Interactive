@@ -26,7 +26,7 @@ import java.util.Map;
 
 @Mixin(FlwContraption.class)
 public abstract class MixinFlwContraption extends ContraptionRenderInfo  {
-    @Shadow
+    @Shadow(remap = false)
     @Final
     private FlwContraption.ContraptionInstanceWorld instanceWorld;
 

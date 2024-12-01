@@ -16,7 +16,7 @@ import java.util.Map;
 @Pseudo
 @Mixin(AbstractCannonDrillBlockEntity.class)
 public class MixinAbstractCannonDrillBlockEntity {
-    @Shadow
+    @Shadow(remap = false)
     protected AbstractContraptionEntity latheEntity;
 
     /**
