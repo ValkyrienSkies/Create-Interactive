@@ -237,6 +237,14 @@ internal object MixinContraptionLogic {
             val newIsBurner = structureBlockInfo.state.block is BlazeBurnerBlock
             if (prevWasBurner && !newIsBurner) {
                 (contraption as CarriageContraptionAccessor).assembledBlazeBurners.remove(localPos)
+                contraption.blazeBurnerConductors = Couple.create(false, false)
+                for (burners in (contraption as CarriageContraptionAccessor).assembledBlazeBurners) {
+                    for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
+                        if (contraption.inControl(burners, direction)) {
+                            contraption.blazeBurnerConductors.set(direction != contraption.assemblyDirection, true)
+                        }
+                    }
+                }
             } else if (!prevWasBurner && newIsBurner) {
                 (contraption as CarriageContraptionAccessor).assembledBlazeBurners.add(localPos)
                 for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
