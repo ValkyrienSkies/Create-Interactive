@@ -6,7 +6,6 @@ import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.actors.seat.SeatInteractionBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.SimpleBlockMovingInteraction;
 import com.simibubi.create.content.kinetics.deployer.DeployerMovingInteraction;
-import com.simibubi.create.content.processing.burner.BlazeBurnerInteractionBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -14,7 +13,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 
 @Mixin(value = {
-        BlazeBurnerInteractionBehaviour.class,
         DeployerMovingInteraction.class,
         SeatInteractionBehaviour.class,
         SimpleBlockMovingInteraction.class
