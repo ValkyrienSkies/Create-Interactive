@@ -3,9 +3,7 @@ package org.valkyrienskies.create_interactive.mixin;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
-import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovingInteraction;
 import com.simibubi.create.content.contraptions.actors.seat.SeatInteractionBehaviour;
-import com.simibubi.create.content.contraptions.actors.trainControls.ControlsInteractionBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.SimpleBlockMovingInteraction;
 import com.simibubi.create.content.kinetics.deployer.DeployerMovingInteraction;
 import com.simibubi.create.content.processing.burner.BlazeBurnerInteractionBehaviour;
@@ -17,8 +15,6 @@ import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntit
 
 @Mixin(value = {
         BlazeBurnerInteractionBehaviour.class,
-        ContraptionControlsMovingInteraction.class,
-        ControlsInteractionBehaviour.class,
         DeployerMovingInteraction.class,
         SeatInteractionBehaviour.class,
         SimpleBlockMovingInteraction.class
