@@ -6,15 +6,12 @@ import com.simibubi.create.AllMovementBehaviours
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.StructureTransform
-import com.simibubi.create.content.contraptions.TranslatingContraption
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
-import com.simibubi.create.content.contraptions.bearing.BearingContraption
-import com.simibubi.create.content.contraptions.bearing.ClockworkContraption
 import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
-import com.simibubi.create.content.contraptions.mounted.MountedContraption
+import com.simibubi.create.content.processing.burner.BlazeBurnerBlock
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
@@ -33,11 +30,11 @@ import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil
-import org.valkyrienskies.create_interactive.CreateInteractiveConfig
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
+import org.valkyrienskies.create_interactive.mixin.CarriageContraptionAccessor
 import org.valkyrienskies.create_interactive.mixin.ContraptionAccessor
 import org.valkyrienskies.create_interactive.mixin.StructureBlockInfoAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
@@ -232,6 +229,19 @@ internal object MixinContraptionLogic {
                             contraption.conductorSeats.computeIfAbsent(seatPos) { Couple.create(false, false) }
                                 .set(direction2 != contraption.assemblyDirection, true)
                         }
+                    }
+                }
+            }
+
+            val prevWasBurner = prevBlockState?.block is BlazeBurnerBlock
+            val newIsBurner = structureBlockInfo.state.block is BlazeBurnerBlock
+            if (prevWasBurner && !newIsBurner) {
+                (contraption as CarriageContraptionAccessor).assembledBlazeBurners.remove(localPos)
+            } else if (!prevWasBurner && newIsBurner) {
+                (contraption as CarriageContraptionAccessor).assembledBlazeBurners.add(localPos)
+                for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
+                    if (contraption.inControl(localPos, direction)) {
+                        contraption.blazeBurnerConductors.set(direction != contraption.assemblyDirection, true)
                     }
                 }
             }
