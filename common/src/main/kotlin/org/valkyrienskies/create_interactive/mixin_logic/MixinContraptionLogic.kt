@@ -11,6 +11,7 @@ import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
 import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
+import com.simibubi.create.content.processing.burner.BlazeBurnerBlock
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
@@ -28,10 +29,12 @@ import org.apache.commons.lang3.tuple.MutablePair
 import org.joml.Vector3ic
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateActorImmutable
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.createShipForContraption
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
+import org.valkyrienskies.create_interactive.mixin.CarriageContraptionAccessor
 import org.valkyrienskies.create_interactive.mixin.ContraptionAccessor
 import org.valkyrienskies.create_interactive.mixin.StructureBlockInfoAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
@@ -209,6 +212,27 @@ internal object MixinContraptionLogic {
                             contraption.conductorSeats.computeIfAbsent(seatPos) { Couple.create(false, false) }
                                 .set(direction2 != contraption.assemblyDirection, true)
                         }
+                    }
+                }
+            }
+
+            val prevWasBurner = prevBlockState?.block is BlazeBurnerBlock
+            val newIsBurner = structureBlockInfo.state.block is BlazeBurnerBlock
+            if (prevWasBurner && !newIsBurner) {
+                (contraption as CarriageContraptionAccessor).assembledBlazeBurners.remove(localPos)
+                contraption.blazeBurnerConductors = Couple.create(false, false)
+                for (burners in (contraption as CarriageContraptionAccessor).assembledBlazeBurners) {
+                    for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
+                        if (contraption.inControl(burners, direction)) {
+                            contraption.blazeBurnerConductors.set(direction != contraption.assemblyDirection, true)
+                        }
+                    }
+                }
+            } else if (!prevWasBurner && newIsBurner) {
+                (contraption as CarriageContraptionAccessor).assembledBlazeBurners.add(localPos)
+                for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
+                    if (contraption.inControl(localPos, direction)) {
+                        contraption.blazeBurnerConductors.set(direction != contraption.assemblyDirection, true)
                     }
                 }
             }
