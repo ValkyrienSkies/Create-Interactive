@@ -52,8 +52,9 @@ dependencies {
 
     //Common create compat,
     //We just use a version from a platform and hope the classes exist on both versions and mixins apply correctly
-    modCompileOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
-            { exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml' }
+    modCompileOnly files("jar/create-fabric-0.5.1-j-build.1604+mc1.20.1.jar")
+    /*modCompileOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
+            { exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml' }*/
     modCompileOnly("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
     modCompileOnly("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
 
