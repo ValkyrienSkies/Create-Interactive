@@ -76,6 +76,7 @@
     "Vec3iAccessor",
     "bearing.MixinMechanicalBearingBlockEntity",
     "bearing.StabilizedBearingMovementBehaviourAccessor",
+    "client.MixinFilteringRenderer",
     "compat.cbc.MixinAbstractCannonDrillBlockEntity",
     "contraptins.ControlledContraptionEntityAccessor",
     "deployer.DeployerBlockEntityAccessor",
