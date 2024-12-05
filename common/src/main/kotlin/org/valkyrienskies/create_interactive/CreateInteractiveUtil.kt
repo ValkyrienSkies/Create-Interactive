@@ -15,6 +15,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.util.RandomSource
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -156,7 +157,7 @@ object CreateInteractiveUtil {
         var minPosNotRelative: Vector3i? = null
         var maxPosNotRelative: Vector3i? = null
         val posAsJOML = Vector3i()
-        val random = java.util.Random()
+        val random = RandomSource.create()
         for ((pos, structureInfo) in localBlocks) {
             if (structureInfo.state.block is ITrackBlock) {
                 // Tick the track block to create its track graph immediately (normally create waits until the next tick, but that's too slow for us)
