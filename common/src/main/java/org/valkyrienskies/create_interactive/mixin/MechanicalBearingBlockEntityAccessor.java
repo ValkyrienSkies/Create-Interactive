@@ -8,30 +8,30 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(MechanicalBearingBlockEntity.class)
 public interface MechanicalBearingBlockEntityAccessor {
-    @Accessor("sequencedAngleLimit")
+    @Accessor(value = "sequencedAngleLimit",remap = false)
     double getSequencedAngleLimit();
 
-    @Accessor("sequencedAngleLimit")
+    @Accessor(value = "sequencedAngleLimit",remap = false)
     void setSequencedAngleLimit(double sequencedAngleLimit);
 
-    @Accessor("assembleNextTick")
+    @Accessor(value = "assembleNextTick",remap = false)
     boolean getAssembleNextTick();
 
-    @Accessor("assembleNextTick")
+    @Accessor(value = "assembleNextTick",remap = false)
     void setAssembleNextTick(boolean assembleNextTick);
 
-    @Accessor("angle")
+    @Accessor(value = "angle",remap = false)
     void setAngle(float angle);
 
-    @Accessor("angle")
+    @Accessor(value = "angle",remap = false)
     float getAngle();
 
-    @Accessor("clientAngleDiff")
+    @Accessor(value = "clientAngleDiff", remap = false)
     float getClientAngleDiff();
 
-    @Accessor("clientAngleDiff")
+    @Accessor(value = "clientAngleDiff",remap = false)
     void setClientAngleDiff(float clientAngleDiff);
 
-    @Accessor("movementMode")
+    @Accessor(value = "movementMode",remap = false)
     ScrollOptionBehaviour<IControlContraption.RotationMode> getMovementMode();
 }

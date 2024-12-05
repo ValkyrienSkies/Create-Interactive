@@ -6,6 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ControlledContraptionEntity.class)
 public interface ControlledContraptionEntityAccessor {
-    @Accessor("angleDelta")
+    @Accessor(value = "angleDelta",remap = false)
     float getAngleDelta();
 }

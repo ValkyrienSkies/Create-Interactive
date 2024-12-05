@@ -9,12 +9,12 @@ import org.valkyrienskies.create_interactive.mixinducks.ContraptionRotationState
 
 @Mixin(AbstractContraptionEntity.ContraptionRotationState.class)
 public class MixinContraptionRotationState implements ContraptionRotationStateDuck {
-    @Shadow
-    float xRotation;
-    @Shadow
-    float yRotation;
-    @Shadow
-    float zRotation;
+    @Shadow(remap = false)
+    public float xRotation;
+    @Shadow(remap = false)
+    public float yRotation;
+    @Shadow(remap = false)
+    public float zRotation;
 
     @Override
     public Quaterniond ci$getRotationQuaternion(final Quaterniond dest) {

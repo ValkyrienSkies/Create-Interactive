@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.valkyrienskies.create_interactive.CreateActor
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.doesContraptionHaveShipLoaded
 import org.valkyrienskies.create_interactive.mixin.client.ContraptionInstanceWorldAccessor
+import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionInstanceManagerDuck
 
@@ -30,6 +31,9 @@ internal object MixinFlwContraptionLogic {
     }
 
     internal fun preTick(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance?>, contraption: Contraption) {
+        val entity = contraption.entity
+        if (entity is AbstractContraptionEntityDuck && entity.`ci$getShadowShipId`() == null) { return }
+
         for (blockPos in (contraption as ContraptionDuck).`ci$getChangedActors`()) {
             val actor = contraption.getActorAt(blockPos)
 
@@ -59,6 +63,9 @@ internal object MixinFlwContraptionLogic {
     }
 
     internal fun preBuildActors(instanceWorld: FlwContraption.ContraptionInstanceWorld, actorToInstanceMap: MutableMap<BlockPos, ActorInstance?>, contraption: Contraption, ci: CallbackInfo) {
+        val entity = contraption.entity
+        if (entity is AbstractContraptionEntityDuck && entity.`ci$getShadowShipId`() == null) { return }
+
         for (actor in contraption.actors) {
             if (removeActorRendererInContraption(actor)) {
                 continue

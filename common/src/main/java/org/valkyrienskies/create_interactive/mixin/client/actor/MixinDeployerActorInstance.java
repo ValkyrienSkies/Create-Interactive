@@ -14,11 +14,11 @@ import java.util.List;
 
 @Mixin(DeployerActorInstance.class)
 public class MixinDeployerActorInstance implements ActorInstanceDuck {
-    @Shadow
+    @Shadow(remap = false)
     ModelData pole;
-    @Shadow
+    @Shadow(remap = false)
     ModelData hand;
-    @Shadow
+    @Shadow(remap = false)
     RotatingData shaft;
 
     @Override

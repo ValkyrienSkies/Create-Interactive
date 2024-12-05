@@ -8,15 +8,15 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(CarriageBogey.class)
 public interface CarriageBogeyAccessor {
-    @Accessor("isLeading")
+    @Accessor(value = "isLeading",remap = false)
     boolean getIsLeading();
 
-    @Accessor("yaw")
+    @Accessor(value = "yaw",remap = false)
     LerpedFloat getYaw();
 
-    @Accessor("pitch")
+    @Accessor(value = "pitch",remap = false)
     LerpedFloat getPitch();
 
-    @Accessor("type")
+    @Accessor(value = "type",remap = false)
     AbstractBogeyBlock<?> getType();
 }

@@ -6,12 +6,12 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(TrackBlockOutline.class)
 public interface TrackBlockOutlineAccessor {
-    @Accessor("result")
+    @Accessor(value = "result", remap = false)
     static TrackBlockOutline.BezierPointSelection getResult() {
         throw new IllegalStateException();
     }
 
-    @Accessor("result")
+    @Accessor(value = "result",remap = false)
     static void setResult(TrackBlockOutline.BezierPointSelection result) {
         throw new IllegalStateException();
     }

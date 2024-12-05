@@ -33,7 +33,8 @@ loom {
 }
 
 dependencies {
-    annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1"))
+    //annotationProcessor(implementation("com.github.LlamaLad7:MixinExtras:0.1.1"))
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
 
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader

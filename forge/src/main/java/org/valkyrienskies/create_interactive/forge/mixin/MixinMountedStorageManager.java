@@ -26,11 +26,11 @@ public abstract class MixinMountedStorageManager {
     private Long ci$shipId = null;
     @Unique
     private List<IItemHandlerModifiable> ci$externalStorages;
-    @Shadow
+    @Shadow(remap = false)
     protected Contraption.ContraptionInvWrapper inventory;
-    @Shadow
+    @Shadow(remap = false)
     protected Contraption.ContraptionInvWrapper fuelInventory;
-    @Shadow
+    @Shadow(remap = false)
     protected CombinedTankWrapper fluidInventory;
 
     @Inject(method = "<init>", at = @At("RETURN"))
@@ -40,79 +40,107 @@ public abstract class MixinMountedStorageManager {
 
     @Inject(method = "entityTick", at = @At("HEAD"), cancellable = true, remap = false)
     private void preEntityTick(final AbstractContraptionEntity entity, final CallbackInfo ci) {
-        ci.cancel();
-        if (entity.level.isClientSide) return;
+        ci$shipId = ((AbstractContraptionEntityDuck) entity).ci$getShadowShipId();
+        if (check()) {
+            ci.cancel();
+            if (entity.level.isClientSide) return;
 
-        if (inventory == null) inventory = new Contraption.ContraptionInvWrapper();
-        if (fuelInventory == null) fuelInventory = new Contraption.ContraptionInvWrapper();
-        if (fluidInventory == null) fluidInventory = new CombinedTankWrapper();
+            if (inventory == null) inventory = new Contraption.ContraptionInvWrapper();
+            if (fuelInventory == null) fuelInventory = new Contraption.ContraptionInvWrapper();
+            if (fluidInventory == null) fluidInventory = new CombinedTankWrapper();
 
-        // Recreate inventories
-        final AbstractContraptionEntityDuck duck = (AbstractContraptionEntityDuck) entity;
-        ci$shipId = duck.ci$getShadowShipId();
+            // Recreate inventories
 
-        MixinMountedStorageManagerLogic.INSTANCE.preEntityTick$create_interactive(entity, ci$shipId, ci$externalStorages, inventory, fuelInventory, fluidInventory);
+            MixinMountedStorageManagerLogic.INSTANCE.preEntityTick$create_interactive(entity, ci$shipId, ci$externalStorages, inventory, fuelInventory, fluidInventory);
+        }
     }
 
     @Inject(method = "createHandlers", at = @At("HEAD"), cancellable = true, remap = false)
     private void preCreateHandlers(final CallbackInfo ci) {
-        ci.cancel();
-        // Empty storages
-        inventory = new Contraption.ContraptionInvWrapper();
-        fuelInventory = new Contraption.ContraptionInvWrapper();
-        fluidInventory = new CombinedTankWrapper();
+        if (check()) {
+            ci.cancel();
+            // Empty storages
+            inventory = new Contraption.ContraptionInvWrapper();
+            fuelInventory = new Contraption.ContraptionInvWrapper();
+            fluidInventory = new CombinedTankWrapper();
+        }
     }
 
     @Inject(method = "addBlock", at = @At("HEAD"), cancellable = true, remap = false)
     private void preAddBlock(final CallbackInfo ci) {
-        ci.cancel();
+        if (check()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "read", at = @At("HEAD"), cancellable = true, remap = false)
     private void preRead(final CallbackInfo ci) {
-        ci.cancel();
+        if (check()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "bindTanks", at = @At("HEAD"), cancellable = true, remap = false)
     private void preBindTanks(final CallbackInfo ci) {
-        ci.cancel();
+        if (check()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "write", at = @At("HEAD"), cancellable = true, remap = false)
     private void preWrite(final CallbackInfo ci) {
-        ci.cancel();
+        if (check()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "removeStorageFromWorld", at = @At("HEAD"), cancellable = true, remap = false)
     private void preRemoveStorageFromWorld(final CallbackInfo ci) {
-        ci.cancel();
+        if (check()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "addStorageToWorld", at = @At("HEAD"), cancellable = true, remap = false)
     private void preAddStorageToWorld(final CallbackInfo ci) {
-        ci.cancel();
+        if (check()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "clear", at = @At("HEAD"), cancellable = true, remap = false)
     private void preClear(final CallbackInfo ci) {
-        ci.cancel();
+        if (check()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "updateContainedFluid", at = @At("HEAD"), cancellable = true, remap = false)
     private void preUpdateContainedFluid(final CallbackInfo ci) {
-        ci.cancel();
+        if (check()) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "attachExternal", at = @At("HEAD"), cancellable = true, remap = false)
     private void preAttachExternal(final IItemHandlerModifiable externalStorage, final CallbackInfo ci) {
-        ci.cancel();
-        if (externalStorage == null) return;
-        ci$externalStorages.add(externalStorage);
+        if (check()) {
+            ci.cancel();
+            if (externalStorage == null) return;
+            ci$externalStorages.add(externalStorage);
+        }
     }
 
     @Inject(method = "handlePlayerStorageInteraction", at = @At("HEAD"), cancellable = true, remap = false)
     private void preHandlePlayerStorageInteraction(final Contraption contraption, final Player player, final BlockPos localPos, final CallbackInfoReturnable<Boolean> cir) {
-        // Disable this entirely
-        cir.setReturnValue(false);
+        if (check()) {
+            // Disable this entirely
+            cir.setReturnValue(false);
+        }
+    }
+
+    @Unique
+    private boolean check() {
+        return ci$shipId != null;
     }
 }
