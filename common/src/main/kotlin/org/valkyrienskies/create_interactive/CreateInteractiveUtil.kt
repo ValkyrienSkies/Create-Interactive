@@ -67,11 +67,11 @@ import kotlin.math.roundToInt
 
 object CreateInteractiveUtil {
 
-    fun checkInteractMeNotSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
+    fun hasInteractMeNotSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
             = blocks.any { it.value.state.`is`(GameContent.INTERACT_ME_NOT.get()) }
 
-    fun checkInteractMeSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
-            = CreateInteractiveConfig.SERVER.enableInteractMeBlock && blocks.any { it.value.state.`is`(GameContent.INTERACT_ME.get()) }
+    fun hasInteractMeSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
+            = blocks.any { it.value.state.`is`(GameContent.INTERACT_ME.get()) }
 
 
     fun checkContraptionEnabled(contraption: Contraption): Boolean{
@@ -94,11 +94,12 @@ object CreateInteractiveUtil {
         if (contraption is MountedContraption && !CreateInteractiveConfig.SERVER.enableMounted) {
             return false
         }
+
         return true
     }
 
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
-
+        // Checking if our contraption type is enabled
         if (!checkContraptionEnabled(contraption)) {
             return null
         }
@@ -112,12 +113,17 @@ object CreateInteractiveUtil {
         val brittleBlocks = blocks.entries.filter { BlockMovementChecks.isBrittle(it.value.state) }
         val blocksOrderedCorrectly = nonBrittleBlocks + brittleBlocks
 
-        if (!checkInteractMeSticker(nonBrittleBlocks)) {
-            return null
-        }
-
-        if (checkInteractMeNotSticker(nonBrittleBlocks)) {
-            return null
+        // Are we interactive by default?
+        if (CreateInteractiveConfig.SERVER.aInteractiveByDefault) {
+            // If yes, make sure we don't have an interact-me-not sticker
+            if (hasInteractMeNotSticker(nonBrittleBlocks)) {
+                return null
+            }
+        } else {
+            // If no, make sure we have an interact-me sticker
+            if (!hasInteractMeSticker(nonBrittleBlocks)) {
+                return null
+            }
         }
         // Try adding the rigid body of this entity from the world
         val serverShip: ServerShip = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
@@ -171,8 +177,9 @@ object CreateInteractiveUtil {
                 val posInWorld = pos.offset(offsetPos)
                 val posInShip = pos.offset(shipCenter.toBlockPos())
                 val stateInWorld = level.getBlockState(posInShip)
-                if (stateInWorld.block is TrackBlock) {
-                    stateInWorld.block.tick(stateInWorld, level, posInShip, random)
+                val block = stateInWorld.block
+                if (block is TrackBlock) {
+                    block.tick(stateInWorld, level, posInShip, random)
                 }
                 posAsJOML.set(posInWorld)
                 if (minPosNotRelative == null) {
