@@ -15,8 +15,9 @@ object CreateInteractiveConfig {
     }
 
     class Server {
-        @JsonSchema(description = "Requires contraptions to have the \"Interact Me\" block for it to be Interactive")
-        val enableInteractMeBlock = true
+        @JsonSchema(description = "If false, requires contraptions to have the \"Interact Me\" block for it to be Interactive")
+        // If someone knows a better way of making this config option come up first other than adding 'a', please do replace this
+        val aInteractiveByDefault = false
 
         @JsonSchema(description = "Make Translating Contraptions Interactive (Piston, Gantry, Pulley)")
         val enableTranslating = true
