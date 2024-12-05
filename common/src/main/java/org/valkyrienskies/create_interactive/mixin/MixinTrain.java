@@ -28,7 +28,8 @@ public abstract class MixinTrain implements TrainDuck {
      */
     @Inject(
         method = "tick",
-        at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/entity/TrainStatus;endOfTrack()V")
+        at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/entity/TrainStatus;endOfTrack()V"),
+        remap = false
     )
     private void tickOnEndOfTrack(final Level level, final CallbackInfo ci) {
         MixinTrainLogic.INSTANCE.tickOnEndOfTrack$create_interactive(Train.class.cast(this));

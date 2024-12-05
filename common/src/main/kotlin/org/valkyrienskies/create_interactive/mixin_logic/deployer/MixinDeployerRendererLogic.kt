@@ -6,6 +6,7 @@ import com.simibubi.create.foundation.utility.VecHelper
 import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getActorAtPos
+import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.DeployerDuck
 
 internal object MixinDeployerRendererLogic {
@@ -13,7 +14,9 @@ internal object MixinDeployerRendererLogic {
         val actorAtPos = getActorAtPos(
             be.level!!, be.blockPos
         )
-        if (actorAtPos != null && (be as DeployerDuck).`ci$getActorMode`().equals(DeployerActorMode.ACTOR_ON)) {
+        val entity = actorAtPos?.right?.contraption?.entity ?: return null
+        if (entity !is AbstractContraptionEntityDuck || entity.`ci$getShadowShipId`() != null) return null
+        if ((be as DeployerDuck).`ci$getActorMode`().equals(DeployerActorMode.ACTOR_ON)) {
             val context = actorAtPos.right
             val factor: Double =
                 if (context!!.contraption.stalled || context.position == null || context.data.contains("StationaryTimer")) {

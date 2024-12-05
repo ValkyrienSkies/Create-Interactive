@@ -9,12 +9,12 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(AbstractContraptionEntity.class)
 public interface AbstractContraptionEntityAccessor {
-    @Invoker("onContraptionStalled")
+    @Invoker(value = "onContraptionStalled",remap = false)
     void invokeOnContraptionStalled();
 
     @Accessor("STALLED")
     EntityDataAccessor<Boolean> getStalled();
 
-    @Accessor("contraption")
+    @Accessor(value = "contraption",remap = false)
     Contraption getContraption();
 }

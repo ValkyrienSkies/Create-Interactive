@@ -48,12 +48,12 @@ public abstract class MixinContraption implements ContraptionDuck {
     protected List<MutablePair<StructureBlockInfo, MovementContext>> actors;
     @Shadow(remap = false)
     protected Map<BlockPos, MovingInteractionBehaviour> interactors;
-    @Shadow
+    @Shadow(remap = false)
     protected abstract void disableActorOnStart(final MovementContext context);
     @Shadow
     protected abstract CompoundTag getBlockEntityNBT(final Level world, final BlockPos pos);
 
-    @Inject(method = "<init>", at = @At("RETURN"))
+    @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     private void postInit(final CallbackInfo ci) {
         ci$changedActors = new HashSet<>();
     }

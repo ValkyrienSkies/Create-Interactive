@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(CarriageSyncData.class)
 public interface CarriageSyncDataAccessor {
-    @Accessor("fallbackLocations")
+    @Accessor(value = "fallbackLocations",remap = false)
     void setFallbackLocations(Pair<Vec3, Couple<Vec3>> fallbackLocations);
 }

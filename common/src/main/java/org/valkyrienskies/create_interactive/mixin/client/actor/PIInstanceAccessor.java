@@ -7,8 +7,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(PIInstance.class)
 public interface PIInstanceAccessor {
-    @Accessor("middle")
+    @Accessor(value = "middle",remap = false)
     ModelData getMiddle();
-    @Accessor("top")
+    @Accessor(value = "top",remap = false)
     ModelData getTop();
 }

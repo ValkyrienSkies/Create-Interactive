@@ -20,15 +20,15 @@ import org.valkyrienskies.create_interactive.mixin_logic.client.MixinTrackTarget
 public class MixinTrackTargetingClient {
     @Shadow
     static BlockPos lastHovered;
-    @Shadow
+    @Shadow(remap = false)
     static boolean lastDirection;
-    @Shadow
+    @Shadow(remap = false)
     static EdgePointType<?> lastType;
-    @Shadow
+    @Shadow(remap = false)
     static BezierTrackPointLocation lastHoveredBezierSegment;
-    @Shadow
+    @Shadow(remap = false)
     static TrackTargetingBlockItem.OverlapResult lastResult;
-    @Shadow
+    @Shadow(remap = false)
     static TrackGraphLocation lastLocation;
 
     /**

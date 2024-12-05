@@ -12,7 +12,7 @@ public class MixinTrackNodeLocation {
     /**
      * This mixin fixes TrackNodeLocation not working in the shipyard
      */
-    @Inject(method = "<init>(DDD)V", at = @At("RETURN"))
+    @Inject(method = "<init>(DDD)V", at = @At("RETURN"), remap = false)
     private void postInit(final double x, final double y, final double z, final CallbackInfo ci) {
         MixinTrackNodeLocationLogic.INSTANCE.postInit$create_interactive(TrackNodeLocation.class.cast(this), x, y, z);
     }
