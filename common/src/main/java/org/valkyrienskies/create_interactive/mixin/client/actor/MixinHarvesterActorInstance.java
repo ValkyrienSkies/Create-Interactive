@@ -13,7 +13,7 @@ import java.util.List;
 
 @Mixin(HarvesterActorInstance.class)
 public class MixinHarvesterActorInstance implements ActorInstanceDuck {
-    @Shadow
+    @Shadow(remap = false)
     protected ModelData harvester;
 
     @Override

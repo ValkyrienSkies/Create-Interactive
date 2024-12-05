@@ -13,7 +13,7 @@ import java.util.List;
 
 @Mixin(RollerActorInstance.class)
 public class MixinRollerActorInstance implements ActorInstanceDuck {
-    @Shadow
+    @Shadow(remap = false)
     ModelData frame;
 
     @Override

@@ -15,10 +15,10 @@ import java.util.List;
 
 @Mixin(StabilizedBearingInstance.class)
 public class MixinStabilizedBearingInstance implements ActorInstanceDuck {
-    @Shadow
+    @Shadow(remap = false)
     @Final
     OrientedData topInstance;
-    @Shadow
+    @Shadow(remap = false)
     @Final
     RotatingData shaft;
     @Override

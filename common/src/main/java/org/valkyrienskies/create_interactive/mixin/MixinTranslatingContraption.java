@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Mixin(TranslatingContraption.class)
 public abstract class MixinTranslatingContraption extends MixinContraption {
-    @Shadow
+    @Shadow(remap = false)
     protected Set<BlockPos> cachedColliders;
 
     @Override

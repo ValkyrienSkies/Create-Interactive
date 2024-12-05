@@ -109,12 +109,6 @@ object CreateInteractiveUtil {
             // Do not create shadow ships for CBC, too hard
             return null
         }
-        // Try adding the rigid body of this entity from the world
-        val serverShip: ServerShip = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
-
-        // Anchor at ship center
-        val shipCenter: Vector3ic = serverShip.getChunkClaimCenterPos(level)
-
         // Order the blocks such that we place non-brittle blocks first, then brittle blocks (Inspired by Contraption.addBlocksToWorld())
         val nonBrittleBlocks = blocks.entries.filter { !BlockMovementChecks.isBrittle(it.value.state) }
         val brittleBlocks = blocks.entries.filter { BlockMovementChecks.isBrittle(it.value.state) }
@@ -127,6 +121,11 @@ object CreateInteractiveUtil {
         if (checkInteractMeNotSticker(nonBrittleBlocks)) {
             return null
         }
+        // Try adding the rigid body of this entity from the world
+        val serverShip: ServerShip = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
+
+        // Anchor at ship center
+        val shipCenter: Vector3ic = serverShip.getChunkClaimCenterPos(level)
 
         for ((pos, structureInfo) in blocksOrderedCorrectly) {
             val newPos = pos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
