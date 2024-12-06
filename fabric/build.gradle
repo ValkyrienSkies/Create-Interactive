@@ -79,12 +79,14 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     // Create compat
-    modRuntimeOnly files("jars/create-fabric-0.5.1-j-build.1604+mc1.20.1.jar")
-    modCompileOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}") {
+    //modRuntimeOnly files("jars/create-fabric-0.5.1-j-build.1604+mc1.20.1.jar")
+    modImplementation("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}") {
         exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml'
     }
     modImplementation("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
-    modImplementation("com.tterrag.registrate_fabric:Registrate:${registrate_version}")
+    modImplementation("com.tterrag.registrate_fabric:Registrate:$registrate_version") {
+        exclude(group: "io.github.fabricators_of_create") // avoid duplicate Porting Lib
+    }
 
     // modImplementation("io.github.fabricators_of_create.Porting-Lib:Porting-Lib:$port_lib_version")
     for (String module in port_lib_modules.split(",")) {
@@ -92,20 +94,19 @@ dependencies {
     }
 
     //modImplementation("net.minecraftforge:forgeconfigapiport-fabric:${forge_config_api_port_version}")
-    modCompileOnly("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$forge_config_api_port_version")
+    modImplementation("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$forge_config_api_port_version")
     modImplementation("com.jamieswhiteshirt:reach-entity-attributes:${reach_entity_attributes_version}")
     modImplementation("dev.cafeteria:fake-player-api:${fake_player_api_version}")
     modImplementation("io.github.tropheusj:milk-lib:${milk_lib_version}")
 
-    // TODO: Enable indium again later
     // Indium
-    // modImplementation("curse.maven:indium-459496:4765124")
+    modRuntimeOnly("maven.modrinth:indium:${indium_version}")
 
     // CBC
-    modImplementation("maven.modrinth:create-big-cannons:${createbigcannons_version}")
+    modCompileOnly("maven.modrinth:create-big-cannons:${createbigcannons_version}")
 
     // Steam and rails
-    modImplementation("curse.maven:create-steam-n-rails-688231:4836196")
+    modCompileOnly("curse.maven:create-steam-n-rails-688231:4836196")
 }
 
 processResources {

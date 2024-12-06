@@ -1,7 +1,7 @@
 plugins {
     // Needed for Forge+Fabric
-    id "architectury-plugin" version "3.4.146"
-    id "dev.architectury.loom" version "1.3.355" apply false
+    id "architectury-plugin" version "3.4.+"
+    id "dev.architectury.loom" version "1.7.+" apply false
     // Kotlin
     id "org.jetbrains.kotlin.jvm" version "1.9.10" apply false
     // Kotlin linter
@@ -46,6 +46,27 @@ subprojects {
         maven { url = "https://mvn.devos.one/snapshots/" }
         maven { url = "https://mvn.devos.one/releases/" }
         maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "Modrinth"
+                    url = "https://api.modrinth.com/maven"
+                }
+            }
+            filter {
+                includeGroup "maven.modrinth"
+            }
+        }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url "https://cursemaven.com"
+                }
+            }
+            filter {
+                includeGroup "curse.maven"
+            }
+        }
     }
 
     dependencies {
