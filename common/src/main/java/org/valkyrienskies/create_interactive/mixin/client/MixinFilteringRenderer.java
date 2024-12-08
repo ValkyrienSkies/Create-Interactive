@@ -41,7 +41,8 @@ public abstract class MixinFilteringRenderer {
             at = @At(
                     value = "INVOKE",
                     target = "Lcom/simibubi/create/foundation/blockEntity/SmartBlockEntity;getBehaviour(Lcom/simibubi/create/foundation/blockEntity/behaviour/BehaviourType;)Lcom/simibubi/create/foundation/blockEntity/behaviour/BlockEntityBehaviour;"
-            )
+            ),
+            cancellable = true
     )
     private static void preRenderOnBlockEntity(SmartBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay, CallbackInfo ci) {
         if (be instanceof ContraptionControlsBlockEntity) {
