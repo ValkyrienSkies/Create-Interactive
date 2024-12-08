@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Block
 
 class InteractMeBlockItem(block: Block, properties: Properties) : BlockItem(block, properties) {
 
+    /*
     override fun place(ctx: BlockPlaceContext): InteractionResult {
         val world = ctx.level
         val gluePos = ctx.clickedPos
@@ -27,4 +28,5 @@ class InteractMeBlockItem(block: Block, properties: Properties) : BlockItem(bloc
 
         return super.place(ctx)
     }
+    */
 }

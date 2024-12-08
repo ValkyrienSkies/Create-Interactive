@@ -39,6 +39,7 @@ class InteractMeBlock(properties: Properties) : DirectionalBlock(properties.noOc
         return levelReader.getBlockState(blockPos.relative((blockState.getValue(FACING)).opposite)).isSolid
     }
 
+    /*
     override fun onRemove(
         blockState: BlockState,
         level: Level,
@@ -60,6 +61,7 @@ class InteractMeBlock(properties: Properties) : DirectionalBlock(properties.noOc
         }
         super.onRemove(blockState, level, blockPos, blockState2, bl)
     }
+    */
 
     override fun updateShape(
             blockState: BlockState,

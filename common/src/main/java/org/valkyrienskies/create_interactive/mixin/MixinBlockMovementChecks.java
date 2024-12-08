@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.contraptions.BlockMovementChecks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,5 +24,16 @@ public class MixinBlockMovementChecks {
         CallbackInfoReturnable<Boolean> cir
     ) {
         MixinBlockMovementChecksLogic.INSTANCE.preIsMovementAllowedFallback$create_interactive(state, cir);
+    }
+
+    @Inject(method = "isBlockAttachedTowardsFallback", at = @At("RETURN"), cancellable = true)
+    private static void postIsBlockAttachedTowardsFallback(
+            final BlockState state,
+            final Level world,
+            final BlockPos pos,
+            final Direction direction,
+            final CallbackInfoReturnable<Boolean> cir
+    ) {
+        MixinBlockMovementChecksLogic.INSTANCE.postIsBlockAttachedTowardsFallback$create_interactive(state, direction, cir);
     }
 }
