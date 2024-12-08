@@ -99,6 +99,9 @@ dependencies {
     modImplementation("dev.cafeteria:fake-player-api:${fake_player_api_version}")
     modImplementation("io.github.tropheusj:milk-lib:${milk_lib_version}")
 
+    // Sodium
+    modRuntimeOnly("maven.modrinth:sodium:${sodium_version}")
+
     // Indium
     modRuntimeOnly("maven.modrinth:indium:${indium_version}")
 
