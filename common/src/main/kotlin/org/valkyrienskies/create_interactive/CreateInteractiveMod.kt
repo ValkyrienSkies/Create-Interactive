@@ -1,17 +1,24 @@
 package org.valkyrienskies.create_interactive
 
+import com.simibubi.create.foundation.config.ConfigBase
 import com.simibubi.create.foundation.data.CreateRegistrate
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
+import net.minecraftforge.common.ForgeConfigSpec
+import net.minecraftforge.fml.config.ModConfig
 import org.valkyrienskies.core.impl.config.VSConfigClass
 import org.valkyrienskies.core.impl.hooks.VSEvents
+import java.util.*
+import java.util.function.Supplier
+
 
 object CreateInteractiveMod {
     const val MOD_ID = "create_interactive"
     val REGISTRATE: CreateRegistrate = CreateRegistrate.create(MOD_ID)
+
     val INTERACTIVE_CREATIVE_TAB = ResourceKey.create(
         Registries.CREATIVE_MODE_TAB, ResourceLocation(
             MOD_ID,
@@ -21,7 +28,6 @@ object CreateInteractiveMod {
 
     @JvmStatic
     fun init() {
-        VSConfigClass.registerConfig("create_interactive", CreateInteractiveConfig::class.java)
         registerCommonEvents()
         GameContent.init()
     }
