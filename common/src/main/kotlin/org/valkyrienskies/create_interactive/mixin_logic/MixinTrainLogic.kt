@@ -3,7 +3,9 @@ package org.valkyrienskies.create_interactive.mixin_logic
 import com.simibubi.create.Create
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.Train
+import com.simibubi.create.content.trains.entity.TrainRelocator
 import com.simibubi.create.content.trains.graph.TrackNodeLocation
+import com.simibubi.create.content.trains.track.ITrackBlock
 import com.simibubi.create.foundation.utility.Iterate
 import com.simibubi.create.foundation.utility.Pair
 import com.simibubi.create.foundation.utility.VecHelper
@@ -17,10 +19,21 @@ import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.joml.Vector3i
 import org.joml.Vector3ic
+import org.joml.primitives.AABBd
+import org.joml.primitives.AABBdc
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+import org.valkyrienskies.core.api.ships.Ship
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.attemptTrainRelocation
+import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.mixin.TrainAccessor
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod
+import org.valkyrienskies.mod.common.getShipsIntersecting
+import kotlin.math.roundToInt
+import kotlin.math.floor
+import kotlin.math.ceil
+
 
 object MixinTrainLogic {
     internal fun preCanDisassemble(train: Train, cir: CallbackInfoReturnable<Boolean?>) {
@@ -145,6 +158,17 @@ object MixinTrainLogic {
         if (train.targetSpeed != 0.0 && train.collidingWithBufferStop()) {
             return
         }
+
+        /*System.out.println("E")
+        var stallSpeed = train.speedBeforeStall;
+        if (stallSpeed != null) {
+            System.out.println(stallSpeed)
+        } else {
+            System.out.println("null")
+        }
+
+        System.out.println(train.targetSpeed)*/
+
         (train as TrainAccessor).migratingPoints.clear()
         train.navigation.cancelNavigation()
         train.setGraph(null)
@@ -270,5 +294,5 @@ object MixinTrainLogic {
         // val shipsColliding = level.getShipsIntersecting(searchBox)
         // val firstBogeyPos =
     }
-     */
+
 }

@@ -2,12 +2,10 @@ package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.Create
 import com.simibubi.create.foundation.data.CreateRegistrate
-import net.minecraft.ChatFormatting
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.CreativeModeTab
 import org.valkyrienskies.core.impl.config.VSConfigClass
 import org.valkyrienskies.core.impl.hooks.VSEvents
@@ -29,7 +27,6 @@ object CreateInteractiveMod {
     @JvmStatic
     fun init() {
         REGISTRATE.creativeModeTab { BASE_CREATIVE_TAB }
-        VSConfigClass.registerConfig("create_interactive", CreateInteractiveConfig::class.java)
         registerCommonEvents()
         GameContent.init()
     }

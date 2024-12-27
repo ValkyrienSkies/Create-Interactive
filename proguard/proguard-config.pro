@@ -34,7 +34,6 @@ org.valkyrienskies.create_interactive.forge.mixin.ValkyrienForgeMixinConfigPlugi
 org.valkyrienskies.create_interactive.forge.CreateInteractiveModForge,
 org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabric,
 org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabricClient,
-org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabricModMenu,
 org.valkyrienskies.create_interactive.fabric.ValkyrienPreLaunch
 { *; }
 

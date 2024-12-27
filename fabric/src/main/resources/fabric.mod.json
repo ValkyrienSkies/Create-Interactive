@@ -3,7 +3,7 @@
   "id": "create_interactive",
   "version": "${version}",
   "name": "Create: Interactive",
-  "description": "Create made interactive!",
+  "description": "Create made interactive! Use the create config system to configure",
   "authors": [
     "Tri0de"
   ],
@@ -24,9 +24,6 @@
     ],
     "preLaunch": [
       "org.valkyrienskies.create_interactive.fabric.ValkyrienPreLaunch"
-    ],
-    "modmenu": [
-      "org.valkyrienskies.create_interactive.fabric.CreateInteractiveModFabricModMenu"
     ]
   },
   "mixins": [

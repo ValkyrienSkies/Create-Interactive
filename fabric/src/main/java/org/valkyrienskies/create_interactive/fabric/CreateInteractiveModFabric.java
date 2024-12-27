@@ -1,5 +1,8 @@
 package org.valkyrienskies.create_interactive.fabric;
 
+import com.simibubi.create.foundation.config.ConfigBase;
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.core.Registry;
