@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -23,6 +24,8 @@ public class CreateInteractiveModForge {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> CreateInteractiveMod::initClient);
 
         MOD_BUS.addListener(CreateInteractiveModForge::onClientSetup);
+
+        ForgeConfigImpl.register(ModLoadingContext.get());
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {

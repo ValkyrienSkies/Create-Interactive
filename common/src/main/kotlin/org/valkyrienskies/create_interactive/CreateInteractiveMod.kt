@@ -1,11 +1,17 @@
 package org.valkyrienskies.create_interactive
 
+import com.simibubi.create.foundation.config.ConfigBase
 import com.simibubi.create.Create
 import com.simibubi.create.foundation.data.CreateRegistrate
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
+import net.minecraftforge.common.ForgeConfigSpec
+import net.minecraftforge.fml.config.ModConfig
 import org.valkyrienskies.core.impl.config.VSConfigClass
 import org.valkyrienskies.core.impl.hooks.VSEvents
+import java.util.*
+import java.util.function.Supplier
+
 
 object CreateInteractiveMod {
     const val MOD_ID = "create_interactive"
@@ -20,7 +26,6 @@ object CreateInteractiveMod {
     @JvmStatic
     fun init() {
         REGISTRATE.creativeModeTab { BASE_CREATIVE_TAB }
-        VSConfigClass.registerConfig("create_interactive", CreateInteractiveConfig::class.java)
         registerCommonEvents()
         GameContent.init()
     }

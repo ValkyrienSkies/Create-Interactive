@@ -12,5 +12,7 @@ public class CreateInteractiveModFabric implements ModInitializer {
 
         CreateInteractiveMod.init();
         CreateInteractiveMod.INSTANCE.getREGISTRATE().register();
+
+        FabricConfigImpl.register();
     }
 }
