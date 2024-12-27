@@ -1,10 +1,6 @@
 package org.valkyrienskies.create_interactive
 
-import com.simibubi.create.content.contraptions.AbstractContraptionEntity
-import com.simibubi.create.content.contraptions.BlockMovementChecks
-import com.simibubi.create.content.contraptions.Contraption
-import com.simibubi.create.content.contraptions.StructureTransform
-import com.simibubi.create.content.contraptions.TranslatingContraption
+import com.simibubi.create.content.contraptions.*
 import com.simibubi.create.content.contraptions.bearing.BearingContraption
 import com.simibubi.create.content.contraptions.bearing.ClockworkContraption
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
@@ -43,6 +39,8 @@ import org.valkyrienskies.core.apigame.ShipTeleportData
 import org.valkyrienskies.core.apigame.world.properties.DimensionId
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.core.util.expand
+import org.valkyrienskies.create_interactive.config.CreateInteractiveConfigs
+import org.valkyrienskies.create_interactive.config.InteractiveHandling
 import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixin.DimensionalCarriageEntityAccessor
 import org.valkyrienskies.create_interactive.mixin.TrainAccessor
@@ -72,58 +70,65 @@ object CreateInteractiveUtil {
     fun hasInteractMeSticker(blocks: Iterable<Map.Entry<BlockPos, StructureTemplate.StructureBlockInfo>>)
             = blocks.any { it.value.state.`is`(GameContent.INTERACT_ME.get()) }
 
+    /**
+     * Gets the interactive state of the contraption type from the config
+     */
+    fun shouldBeInteractive(contraption: Contraption): InteractiveHandling {
 
-    fun checkContraptionEnabled(contraption: Contraption): Boolean{
-        if (contraption is CarriageContraption && !CreateInteractiveConfig.SERVER.enableTrain) {
-            return false
+        if (contraption is CarriageContraption) {
+            return CreateInteractiveConfigs.server().trainHandling.get();
         }
 
-        if (contraption is BearingContraption && !CreateInteractiveConfig.SERVER.enableBearing) {
-            return false
+        if (contraption is BearingContraption) {
+            return CreateInteractiveConfigs.server().bearingHandling.get();
         }
 
-        if (contraption is ClockworkContraption && !CreateInteractiveConfig.SERVER.enableClockwork) {
-            return false
+        if (contraption is ClockworkContraption) {
+            return CreateInteractiveConfigs.server().clockworkHandling.get();
         }
 
-        if (contraption is TranslatingContraption && !CreateInteractiveConfig.SERVER.enableTranslating) {
-            return false
+        if (contraption is TranslatingContraption) {
+            return CreateInteractiveConfigs.server().translatingHandling.get();
         }
 
-        if (contraption is MountedContraption && !CreateInteractiveConfig.SERVER.enableMounted) {
-            return false
+        if (contraption is MountedContraption) {
+            return CreateInteractiveConfigs.server().mountedHandling.get();
         }
 
-        return true
+        // Contraption type we don't understand, don't let it be interactive (unless config has changed...)
+        return CreateInteractiveConfigs.server().otherHandling.get();
     }
 
     fun createShipForContraption(level: ServerLevel, contraption: Contraption, blockPos: BlockPos, blocks: Map<BlockPos, StructureTemplate.StructureBlockInfo> = contraption.blocks): ShipId? {
-        // Checking if our contraption type is enabled
-        if (!checkContraptionEnabled(contraption)) {
-            return null
-        }
 
         if (contraption.javaClass.packageName.contains("createbigcannons")) {
             // Do not create shadow ships for CBC, too hard
             return null
         }
+
         // Order the blocks such that we place non-brittle blocks first, then brittle blocks (Inspired by Contraption.addBlocksToWorld())
         val nonBrittleBlocks = blocks.entries.filter { !BlockMovementChecks.isBrittle(it.value.state) }
         val brittleBlocks = blocks.entries.filter { BlockMovementChecks.isBrittle(it.value.state) }
         val blocksOrderedCorrectly = nonBrittleBlocks + brittleBlocks
 
-        // Are we interactive by default?
-        if (CreateInteractiveConfig.SERVER.aInteractiveByDefault) {
-            // If yes, make sure we don't have an interact-me-not sticker
-            if (hasInteractMeNotSticker(nonBrittleBlocks)) {
-                return null
-            }
-        } else {
-            // If no, make sure we have an interact-me sticker
-            if (!hasInteractMeSticker(nonBrittleBlocks)) {
-                return null
-            }
+        // Should we be interactive
+        val handling = shouldBeInteractive(contraption)
+        val shouldBeInteractive = when(handling) {
+
+            InteractiveHandling.ALWAYS -> true
+
+            InteractiveHandling.WITHOUT_STICKER -> !hasInteractMeNotSticker(blocksOrderedCorrectly)
+
+            InteractiveHandling.WITH_STICKER -> hasInteractMeSticker(blocksOrderedCorrectly)
+
+            InteractiveHandling.NEVER -> false
+
         }
+
+        if (!shouldBeInteractive) {
+            return null;
+        }
+
         // Try adding the rigid body of this entity from the world
         val serverShip: ServerShip = level.shipObjectWorld.createNewShipAtBlock(blockPos.toJOML(), false, 1.0, level.dimensionId)
 

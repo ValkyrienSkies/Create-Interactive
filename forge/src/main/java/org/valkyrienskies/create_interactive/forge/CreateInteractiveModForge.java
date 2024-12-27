@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.Registries;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -29,6 +30,8 @@ public class CreateInteractiveModForge {
         var deferredRegister = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateInteractiveMod.MOD_ID);
         deferredRegister.register("general", CreateInteractiveMod::createCreativeTab);
         deferredRegister.register(MOD_BUS);
+
+        ForgeConfigImpl.register(ModLoadingContext.get());
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {
