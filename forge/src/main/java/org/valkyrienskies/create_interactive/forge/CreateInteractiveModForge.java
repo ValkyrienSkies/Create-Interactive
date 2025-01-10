@@ -3,6 +3,9 @@ package org.valkyrienskies.create_interactive.forge;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -15,6 +18,9 @@ import org.valkyrienskies.create_interactive.GameContent;
 public class CreateInteractiveModForge {
 
     public CreateInteractiveModForge() {
+
+        // So we can @SubscribeEvent in this class
+        MinecraftForge.EVENT_BUS.register(CreateInteractiveModForge.class);
 
         var MOD_BUS = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -31,5 +37,12 @@ public class CreateInteractiveModForge {
     private static void onClientSetup(FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME_NOT.get(), RenderType.cutout());
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent joinEvent) {
+        if (joinEvent.getEntity() instanceof ServerPlayer player) {
+            CreateInteractiveEventsClient.INSTANCE.onPlayerJoin(player);
+        }
     }
 }

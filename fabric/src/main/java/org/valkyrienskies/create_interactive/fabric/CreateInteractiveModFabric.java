@@ -13,6 +13,11 @@ public class CreateInteractiveModFabric implements ModInitializer {
         CreateInteractiveMod.init();
         CreateInteractiveMod.INSTANCE.getREGISTRATE().register();
 
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayer player = handler.getPlayer();
+            CreateInteractiveEventsClient.INSTANCE.onPlayerJoin(player);
+        });
+
         FabricConfigImpl.register();
     }
 }
