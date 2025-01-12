@@ -18,9 +18,9 @@ if (project.hasProperty("CustomReleaseVersion")) {
     // Remove release/ from the version if present
     version = project.property("CustomReleaseVersion").replaceFirst("^release/", "")
 } else {
-    String gitRevision = "git rev-parse HEAD".execute().text.trim()
+    //String gitRevision = "git rev-parse HEAD".execute().text.trim()
 
-    version = create_interactive_version + '+' + gitRevision.substring(0, 10)
+    // Version is now set in allprojects
 }
 
 architectury {
@@ -33,6 +33,8 @@ subprojects {
     apply plugin: "org.jlleitschuh.gradle.ktlint"
     // apply plugin: "checkstyle"
     apply plugin: "org.jetbrains.kotlin.jvm"
+
+
 
     loom {
         silentMojangMappingsLicense()
@@ -116,7 +118,10 @@ allprojects {
     apply plugin: "maven-publish"
 
     archivesBaseName = rootProject.archives_base_name
-    version = rootProject.version
+
+    // Formats jar to be archives_base_name - create_interactive_version _ minecraft_version - loader
+    // E.g. create_interactive-1.1.1-beta.3_1.20.1-forge
+    version = rootProject.create_interactive_version + '_' + rootProject.minecraft_version + "-" + loader_platform.toLowerCase()
     group = rootProject.maven_group
 
     repositories {
