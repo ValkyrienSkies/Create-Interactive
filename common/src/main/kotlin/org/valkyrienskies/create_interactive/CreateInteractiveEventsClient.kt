@@ -2,6 +2,7 @@ package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
+import io.github.fabricators_of_create.porting_lib.util.PlayerEntityHelper
 import io.netty.util.collection.LongObjectHashMap
 import io.netty.util.collection.LongObjectMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap
@@ -9,8 +10,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
 import net.minecraft.ChatFormatting
+import net.minecraft.Util
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextComponent
 import net.minecraft.server.level.ServerPlayer
 import org.joml.Vector3d
 import org.joml.Vector3ic
@@ -29,6 +32,7 @@ import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntit
 import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.IShipObjectWorldClientProvider
 import org.valkyrienskies.mod.common.getShipManagingPos
+import org.valkyrienskies.mod.common.playerWrapper
 import java.lang.ref.WeakReference
 
 object CreateInteractiveEventsClient {
@@ -146,13 +150,11 @@ object CreateInteractiveEventsClient {
      */
     fun onPlayerJoin(player: ServerPlayer) {
         if (!CreateInteractiveConfigs.client().disableChatWarning.get()) {
-            player.sendSystemMessage(
+            player.sendMessage(
                 // Should we make this a translatable?
-                Component.literal(
-                    "Create: Interactive is installed. Please report bugs to Interactive BEFORE reporting them to Create. You can disable this message in the Interactive client config."
-                ).withStyle(
-                    ChatFormatting.YELLOW
-                )
+                TextComponent("Create: Interactive is installed. Please report bugs to Interactive BEFORE reporting them to Create. You can disable this message in the Interactive client config.")
+                    .withStyle(ChatFormatting.YELLOW),
+                Util.NIL_UUID
             );
         }
     }

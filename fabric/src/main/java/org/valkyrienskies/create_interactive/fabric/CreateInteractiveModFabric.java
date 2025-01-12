@@ -1,6 +1,9 @@
 package org.valkyrienskies.create_interactive.fabric;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.level.ServerPlayer;
+import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient;
 import org.valkyrienskies.create_interactive.CreateInteractiveMod;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
