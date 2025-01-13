@@ -78,6 +78,7 @@
     "bearing.StabilizedBearingMovementBehaviourAccessor",
     "client.MixinFilteringRenderer",
     "compat.cbc.MixinAbstractCannonDrillBlockEntity",
+    "compat.cbc.MixinPitchOrientedContraptionEntity",
     "contraptins.ControlledContraptionEntityAccessor",
     "deployer.DeployerBlockEntityAccessor",
     "deployer.MixinDeployerBlockEntity",
