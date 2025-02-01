@@ -166,7 +166,7 @@ object CreateInteractiveEventsClient {
      * Registered as an event seperately on forge and fabric
      */
     fun onPlayerJoin(player: ServerPlayer) {
-        if (!CreateInteractiveConfigs.client().disableChatWarning.get()) {
+        if (!CreateInteractiveConfigs.common().disableChatWarning.get()) {
             player.sendSystemMessage(
                 // Should we make this a translatable?
                 Component.literal(

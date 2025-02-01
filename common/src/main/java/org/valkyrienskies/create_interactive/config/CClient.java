@@ -5,7 +5,7 @@ import com.simibubi.create.foundation.config.ConfigBase;
 @SuppressWarnings("unused")
 public class CClient extends ConfigBase {
 
-    public final ConfigBool disableChatWarning = b(false, "disableChatWarning", Comments.disableChatWarning);
+    public final ConfigBool doesNothing = b(false, "doesNothing", Comments.doesNothing);
 
     @Override
     public String getName() {
@@ -13,6 +13,7 @@ public class CClient extends ConfigBase {
     }
 
     private static class Comments {
-        static String disableChatWarning = "Disable warning message in chat on loading a world";
+        static String doesNothing = "Placeholder";
+
     }
 }
