@@ -166,11 +166,11 @@ object CreateInteractiveEventsClient {
      * Registered as an event seperately on forge and fabric
      */
     fun onPlayerJoin(player: ServerPlayer) {
-        if (!CreateInteractiveConfigs.client().disableChatWarning.get()) {
+        if (!CreateInteractiveConfigs.common().disableChatWarning.get()) {
             player.sendSystemMessage(
                 // Should we make this a translatable?
                 Component.literal(
-                    "Create: Interactive is installed. Please report bugs to Interactive BEFORE reporting them to Create. You can disable this message in the Interactive client config."
+                    "Create: Interactive is installed. Please report bugs to Interactive BEFORE reporting them to Create. You can disable this message in the Interactive common config. (Servers need to set this separately)"
                 ).withStyle(
                     ChatFormatting.YELLOW
                 )
