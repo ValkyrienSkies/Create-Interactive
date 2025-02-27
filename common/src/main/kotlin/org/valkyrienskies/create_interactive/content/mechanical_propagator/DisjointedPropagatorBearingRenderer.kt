@@ -27,6 +27,7 @@ class DisjointedPropagatorBearingRenderer(context: BlockEntityRendererProvider.C
         val cog = CreateInteractivePartialModels.BEARING_COG
         val superBuffer = CachedBufferer.partial(top, be.blockState)
         val cogBuffer = CachedBufferer.partial(cog, be.blockState)
+
         val interpolatedAngle: Float = be.getDisjointInterpolatedAngle(partialTicks - 1)
         val cogAngle: Float = be.getInterpolatedAngle(partialTicks - 1)
         kineticRotationTransform(superBuffer, be, facing.axis, (interpolatedAngle / 180 * Math.PI).toFloat(), light)
