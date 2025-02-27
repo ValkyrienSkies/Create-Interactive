@@ -73,32 +73,30 @@ class DisjointedPropagatorBearingBlockEntity(
         if (disjointSpeed == 0f) speed = 0f
         if (level!!.isClientSide) {
             speed *= ServerSpeedProvider.get()
-            speed += clientAngleDiff / 3f
+            speed += clientAngleDiff / 3.0F
         }
         return speed
     }
 
-    // Commented out because Proguard is SUS!!!
-//    private fun onDisjointSpeedChanged(prevSpeed: Float) {
+    private fun onDisjointSpeedChanged(prevSpeed: Float) {
         // assembleNextTick = true
-//        sequencedAngleLimit = -1.0
-//
-//        if (movedContraption != null && sign(prevSpeed) != sign(getSpeed()) && prevSpeed != 0f) {
-//            if (!movedContraption.isStalled) {
-//                angle = Math.round(angle).toFloat()
-//                applyRotation()
-//            }
-//            movedContraption.contraption
-//                .stop(level)
-//        }
-//
-//        if (!isWindmill && sequenceContext != null
-//            && sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE
-//        ) sequencedAngleLimit = sequenceContext.getEffectiveValue(
-//            theoreticalSpeed.toDouble()
-//        )
-//        setChanged()
-//    }
+        sequencedAngleLimit = -1.0
+        if (movedContraption != null && sign(prevSpeed) != sign(getSpeed()) && prevSpeed != 0f) {
+            if (!movedContraption.isStalled) {
+                angle = Math.round(angle).toFloat()
+                applyRotation()
+            }
+            movedContraption.contraption
+                .stop(level)
+        }
+
+        if (!isWindmill && sequenceContext != null
+            && sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE
+        ) sequencedAngleLimit = sequenceContext.getEffectiveValue(
+            theoreticalSpeed.toDouble()
+        )
+        setChanged()
+    }
 
     @NoOptimize
     override fun write(compound: CompoundTag, clientPacket: Boolean) {
@@ -159,7 +157,7 @@ class DisjointedPropagatorBearingBlockEntity(
 
     @NoOptimize
     override fun onSpeedChanged(prevSpeed: Float) {
-        //super.onSpeedChanged(prevSpeed)
+        super.onSpeedChanged(prevSpeed)
         setChanged()
     }
 
@@ -260,7 +258,7 @@ class DisjointedPropagatorBearingBlockEntity(
                     setChanged()
 
                     // endregion
-                    // this.onDisjointSpeedChanged(prevDisjointSpeed)
+                    this.onDisjointSpeedChanged(prevDisjointSpeed)
                 }
             }
         } else {
@@ -283,14 +281,14 @@ class DisjointedPropagatorBearingBlockEntity(
             setChanged()
 
             // endregion
-            // this.onDisjointSpeedChanged(prevDisjointSpeed)
+            this.onDisjointSpeedChanged(prevDisjointSpeed)
         }
 
-//        if (movedContraption != null) {
-//            this.disjointAngle += this.disjointSpeed
-//        } else {
-//            this.disjointAngle = 0.0f
-//        }
+        if (movedContraption != null) {
+            this.disjointAngle += this.disjointSpeed
+        } else {
+            this.disjointAngle = 0.0f
+        }
 
         if (level!!.isClientSide) mechAccess.clientAngleDiff /= 2f
 

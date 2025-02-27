@@ -30,10 +30,7 @@ import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlock
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopRenderer
 import org.valkyrienskies.create_interactive.content.interact_me.InteractMeBlock
 import org.valkyrienskies.create_interactive.content.interact_me.InteractMeBlockItem
-import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechPropBearingInstance
-import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlock
-import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingBlockEntity
-import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechanicalPropagatorBearingRenderer
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.*
 import java.util.function.BiFunction
 
 object GameContent {
@@ -61,7 +58,7 @@ object GameContent {
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .register()
 
-    /*
+
     val DISJOINTED_PROPAGATOR_BEARING_BLOCK: BlockEntry<DisjointedPropagatorBearingBlock> =
         CreateInteractiveMod.REGISTRATE.block<DisjointedPropagatorBearingBlock>(
             "disjointed_propagator_bearing"
@@ -72,15 +69,15 @@ object GameContent {
         }
             .transform(TagGen.axeOrPickaxe())
             .properties { p: BlockBehaviour.Properties ->
-                p.color(
-                    MaterialColor.PODZOL
+                p.mapColor(
+                    MapColor.PODZOL
                 )
             }
             .transform(BuilderTransformers.bearing("mechanical", "gearbox"))
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .register()
 
-     */
+
 
     val MECHANICAL_PROPAGATOR_BEARING_BE = CreateInteractiveMod.REGISTRATE
         .blockEntity("propagator_bearing",
@@ -109,7 +106,7 @@ object GameContent {
         }
         .register()
 
-    /*
+
     val DISJOINTED_PROPAGATOR_BEARING_BE = CreateInteractiveMod.REGISTRATE
         .blockEntity("disjointed_propagator_bearing",
             BlockEntityBuilder.BlockEntityFactory<DisjointedPropagatorBearingBlockEntity> { type, pos, state ->
@@ -128,7 +125,7 @@ object GameContent {
             }
         }
         .register()
-     */
+
 
     val BUFFER_STOP_BLOCK: BlockEntry<BufferStopBlock> = CreateInteractiveMod.REGISTRATE.block<BufferStopBlock>(
         "buffer_stop"

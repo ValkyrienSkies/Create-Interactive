@@ -31,19 +31,34 @@ class MechanicalPropagatorBearingRenderer<T>(context: BlockEntityRendererProvide
 
         val facing = be.blockState.getValue(BlockStateProperties.FACING)
         val top = CreateInteractivePartialModels.BEARING_TOP_PROPAGATOR
+        val shaft = AllPartialModels.SHAFT_HALF
         val superBuffer = CachedBufferer.partial(top, be.blockState)
+        val shaftBuffer = CachedBufferer.partial(shaft, be.blockState)
+        val topShaftBuffer = CachedBufferer.partial(shaft, be.blockState)
         val interpolatedAngle = be.getInterpolatedAngle(partialTicks - 1)
 
         kineticRotationTransform(superBuffer, be, facing.axis, (interpolatedAngle / 180 * Math.PI).toFloat(), light)
+
         if (facing.axis.isHorizontal) superBuffer.rotateCentered(
-            Direction.UP,
+            Direction.UP,2
             AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble())
         )
         superBuffer.rotateCentered(
             Direction.EAST,
             AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble())
         )
+        shaftBuffer.rotateCentered(
+            Direction.EAST,
+            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble())
+        )
+        topShaftBuffer.rotateCentered(
+            Direction.EAST,
+            AngleHelper.rad((90 - AngleHelper.verticalAngle(facing)).toDouble())
+        )
         superBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))
+        shaftBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))
+        topShaftBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))
+
     }
 
     @NoOptimize
