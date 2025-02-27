@@ -9,10 +9,6 @@ buildscript {
             }
         }
     }
-    dependencies {
-        // Proguard
-        classpath 're.obfuscator:dprotect-gradle:1.0.0'
-    }
 }
 
 plugins {
@@ -58,46 +54,6 @@ dependencies {
     modCompileOnly("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
     modCompileOnly("io.github.fabricators_of_create.Porting-Lib:Porting-Lib:$port_lib_version+$minecraft_version")
     modCompileOnly("maven.modrinth:create-big-cannons:${createbigcannons_version}")
-}
-
-def proguardJarFile = layout.buildDirectory.file("libs/common-proguarded-minified.jar")
-
-tasks.register('proguardJar', proguard.gradle.ProGuardTask) {
-    configuration file('../proguard/proguard-config.pro')
-
-    injars(tasks.named('remapJar').flatMap { it.archiveFile })
-
-    // Automatically handle the Java version of this build.
-    if (System.getProperty('java.version').startsWith('1.')) {
-        // Before Java 9, the runtime classes were packaged in a single jar file.
-        libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
-    } else {
-        // As of Java 9, the runtime classes are packaged in modular jmod files.
-        libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
-        //libraryjars "${System.getProperty('java.home')}/jmods/....."
-    }
-
-    libraryjars(configurations.runtimeClasspath)
-
-    verbose
-
-    outjars(proguardJarFile)
-}
-
-artifacts {
-    add("runtimeElements", proguardJarFile) {
-        builtBy(proguardJar)
-    }
-    add("apiElements", proguardJarFile) {
-        builtBy(proguardJar)
-    }
-}
-
-// Remove the non-proguarded artifacts
-configurations {
-    [runtimeElements, apiElements].forEach { config ->
-        config.artifacts.removeIf { it.file.canonicalPath != proguardJarFile.get().getAsFile().canonicalPath }
-    }
 }
 
 publishing {
