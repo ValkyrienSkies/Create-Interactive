@@ -40,7 +40,7 @@ class MechanicalPropagatorBearingRenderer<T>(context: BlockEntityRendererProvide
         kineticRotationTransform(superBuffer, be, facing.axis, (interpolatedAngle / 180 * Math.PI).toFloat(), light)
 
         if (facing.axis.isHorizontal) superBuffer.rotateCentered(
-            Direction.UP,2
+            Direction.UP,
             AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble())
         )
         superBuffer.rotateCentered(
@@ -53,7 +53,7 @@ class MechanicalPropagatorBearingRenderer<T>(context: BlockEntityRendererProvide
         )
         topShaftBuffer.rotateCentered(
             Direction.EAST,
-            AngleHelper.rad((90 - AngleHelper.verticalAngle(facing)).toDouble())
+            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble())
         )
         superBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))
         shaftBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))

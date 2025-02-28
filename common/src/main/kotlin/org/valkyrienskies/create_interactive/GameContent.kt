@@ -30,7 +30,7 @@ object GameContent {
 
     val CONNECTED = BooleanProperty.create("connected")
 
-
+    @JvmField
     val MECHANICAL_PROPAGATOR_BEARING_BLOCK: BlockEntry<MechanicalPropagatorBearingBlock> =
         CreateInteractiveMod.REGISTRATE.block<MechanicalPropagatorBearingBlock>(
             "propagator_bearing"
@@ -50,6 +50,7 @@ object GameContent {
             .register()
 
 
+    @JvmField
     val DISJOINTED_PROPAGATOR_BEARING_BLOCK: BlockEntry<DisjointedPropagatorBearingBlock> =
         CreateInteractiveMod.REGISTRATE.block<DisjointedPropagatorBearingBlock>(
             "disjointed_propagator_bearing"
