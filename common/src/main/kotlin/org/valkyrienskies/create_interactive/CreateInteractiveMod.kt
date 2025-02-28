@@ -4,6 +4,7 @@ import com.simibubi.create.foundation.data.CreateRegistrate
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
 import org.valkyrienskies.core.impl.hooks.VSEvents
+import org.valkyrienskies.create_interactive.ponders.PonderTags
 
 
 object CreateInteractiveMod {
@@ -14,7 +15,7 @@ object CreateInteractiveMod {
             MOD_ID,
             "create_interactive"
         )
-    ) { GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK.asStack() }
+    ) { GameContent.INTERACT_ME.asStack() }
 
     @JvmStatic
     fun init() {
@@ -27,6 +28,7 @@ object CreateInteractiveMod {
     fun initClient() {
         registerClientEvents()
         CreateInteractivePartialModels.init()
+        PonderTags.register()
     }
 
     private fun registerCommonEvents() {
