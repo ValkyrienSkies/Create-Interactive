@@ -3,6 +3,7 @@ package org.valkyrienskies.create_interactive.content.mechanical_propagator
 import com.simibubi.create.AllSoundEvents
 import com.simibubi.create.content.contraptions.AssemblyException
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity
+import com.simibubi.create.content.contraptions.DirectionalExtenderScrollOptionSlot
 import com.simibubi.create.content.contraptions.IControlContraption
 import com.simibubi.create.content.contraptions.bearing.BearingBlock
 import com.simibubi.create.content.contraptions.bearing.BearingContraption
@@ -13,15 +14,19 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntity
 import com.simibubi.create.content.kinetics.transmission.sequencer.SequencerInstructions
 import com.simibubi.create.foundation.advancement.AllAdvancements
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
+import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform
 import com.simibubi.create.foundation.utility.ServerSpeedProvider
 import com.simibubi.create.infrastructure.config.AllConfigs
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.Mth
+import net.minecraft.world.entity.decoration.LeashFenceKnotEntity.OFFSET_Y
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import net.minecraft.world.phys.Vec3
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.mixin.GeneratingKineticBlockEntityAccessor
@@ -33,8 +38,8 @@ import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toBlockPos
 import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.sign
+
 
 class DisjointedPropagatorBearingBlockEntity(
     type: BlockEntityType<out DisjointedPropagatorBearingBlockEntity>, pos: BlockPos, state: BlockState
@@ -56,6 +61,21 @@ class DisjointedPropagatorBearingBlockEntity(
         val ship: Ship = level.shipObjectWorld.allShips.getById(shipId) ?: return null
         // Anchor at ship center
         return ship.getChunkClaimCenterPos(level!!).toBlockPos()
+    }
+
+    override fun getMovementModeSlot(): ValueBoxTransform {
+        return object: DirectionalExtenderScrollOptionSlot({ state: BlockState, d: Direction ->
+            val axis = d.axis
+            val bearingAxis =
+                (state.getValue(BearingBlock.FACING) as Direction).axis
+            bearingAxis !== axis
+
+        }) {
+            override fun getLocalOffset(state: BlockState?): Vec3 {
+                val defaultOffset = super.getLocalOffset(state)
+                return defaultOffset.subtract(0.0, 0.25, 0.0);
+            }
+        }
     }
 
     fun getDisjointInterpolatedAngle(partialTicks: Float): Float {
