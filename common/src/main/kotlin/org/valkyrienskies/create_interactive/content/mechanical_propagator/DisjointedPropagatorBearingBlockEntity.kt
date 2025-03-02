@@ -12,7 +12,6 @@ import com.simibubi.create.content.kinetics.base.IRotate
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity
 import com.simibubi.create.content.kinetics.transmission.sequencer.SequencerInstructions
 import com.simibubi.create.foundation.advancement.AllAdvancements
-import com.simibubi.create.foundation.blockEntity.SmartBlockEntity
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.utility.ServerSpeedProvider
 import com.simibubi.create.infrastructure.config.AllConfigs
@@ -34,6 +33,7 @@ import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toBlockPos
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.math.sign
 
 class DisjointedPropagatorBearingBlockEntity(
@@ -79,11 +79,11 @@ class DisjointedPropagatorBearingBlockEntity(
     }
 
     private fun onDisjointSpeedChanged(prevSpeed: Float) {
-        // assembleNextTick = true
+        assembleNextTick = true
         sequencedAngleLimit = -1.0
         if (movedContraption != null && sign(prevSpeed) != sign(getSpeed()) && prevSpeed != 0f) {
             if (!movedContraption.isStalled) {
-                angle = Math.round(angle).toFloat()
+                angle = Math.round(disjointAngle).toFloat()
                 applyRotation()
             }
             movedContraption.contraption
@@ -158,6 +158,7 @@ class DisjointedPropagatorBearingBlockEntity(
     @NoOptimize
     override fun onSpeedChanged(prevSpeed: Float) {
         super.onSpeedChanged(prevSpeed)
+        assembleNextTick = true
         setChanged()
     }
 
