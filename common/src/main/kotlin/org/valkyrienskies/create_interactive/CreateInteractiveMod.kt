@@ -7,7 +7,8 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
 import org.valkyrienskies.core.impl.hooks.VSEvents
-import org.valkyrienskies.create_interactive.ponders.PonderTags
+import org.valkyrienskies.create_interactive.content.ponders.PonderRegistry
+import org.valkyrienskies.create_interactive.content.ponders.PonderTags
 
 
 object CreateInteractiveMod {
@@ -31,6 +32,7 @@ object CreateInteractiveMod {
     fun initClient() {
         registerClientEvents()
         CreateInteractivePartialModels.init()
+        PonderRegistry.register()
         PonderTags.register()
     }
 

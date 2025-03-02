@@ -22,6 +22,7 @@ class DisjointedPropagatorBearingBlock(properties: Properties): MechanicalBearin
     @NoOptimize
     override fun getBlockEntityType(): BlockEntityType<out DisjointedPropagatorBearingBlockEntity> = GameContent.DISJOINTED_PROPAGATOR_BEARING_BE.get()
 
+
     /**
      * Don't clip the sides of blocks
      */
