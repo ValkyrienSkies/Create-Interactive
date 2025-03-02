@@ -23,7 +23,7 @@ class DisjointedPropagatorBearingRenderer(context: BlockEntityRendererProvider.C
         if (type != null) renderRotatingBuffer(be, getRotatedModel(be, state), ms, buffer.getBuffer(type), light)
 
         val facing: Direction = be.blockState.getValue(BlockStateProperties.FACING)
-        val top = CreateInteractivePartialModels.BEARING_TOP_PROPAGATOR
+        val top = CreateInteractivePartialModels.BEARING_TOP_PROPAGATOR_DISJOINTED
         val cog = CreateInteractivePartialModels.BEARING_COG
         val superBuffer = CachedBufferer.partial(top, be.blockState)
         val cogBuffer = CachedBufferer.partial(cog, be.blockState)

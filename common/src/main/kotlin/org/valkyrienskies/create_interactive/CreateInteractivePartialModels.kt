@@ -6,6 +6,8 @@ import net.minecraft.resources.ResourceLocation
 object CreateInteractivePartialModels {
     lateinit var BEARING_TOP_PROPAGATOR: PartialModel
         private set
+    lateinit var BEARING_TOP_PROPAGATOR_DISJOINTED: PartialModel
+        private set
     lateinit var BEARING_COG: PartialModel
         private set
 
@@ -14,8 +16,9 @@ object CreateInteractivePartialModels {
     }
 
     fun init() {
-        println("Init")
+        //println("Init")
         BEARING_TOP_PROPAGATOR = block("propagator_bearing_top")
+        BEARING_TOP_PROPAGATOR_DISJOINTED = block("disjointed_propagator_bearing_top")
         BEARING_COG = block("disjointed_propagator_bearing_cog")
     }
 }
