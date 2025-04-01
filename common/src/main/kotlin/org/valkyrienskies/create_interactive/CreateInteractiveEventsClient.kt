@@ -152,7 +152,11 @@ object CreateInteractiveEventsClient {
         if (!CreateInteractiveConfigs.common().disableChatWarning.get()) {
             player.sendMessage(
                 // Should we make this a translatable?
-                TextComponent("Create: Interactive is installed. Please report bugs to Interactive BEFORE reporting them to Create. You can disable this message in the Interactive client config.")
+                TextComponent(
+                    "Create: Interactive is installed. Please report bugs to Interactive BEFORE reporting them to Create. " +
+                        "You can disable this message in the Interactive common config. " +
+                        "(Servers will need to set this separately)"
+                    )
                     .withStyle(ChatFormatting.YELLOW),
                 Util.NIL_UUID
             );
