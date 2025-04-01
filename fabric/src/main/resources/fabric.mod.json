@@ -34,6 +34,6 @@
     "minecraft": ">=1.20.1",
     "valkyrienskies": ">=${vs2_version}",
     "fabricloader": ">=0.14.21",
-    "create": ">=${create_fabric_version}"
+    "create": [">=0.5.1-f-build.1335+mc1.20.1 <0.5.1-j-build.1600+mc1.20.1",">=0.5.1-j-build.1631+mc1.20.1 <6.0.0"]
   }
 }
