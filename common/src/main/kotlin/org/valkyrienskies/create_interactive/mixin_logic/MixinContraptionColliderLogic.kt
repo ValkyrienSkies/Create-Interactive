@@ -6,9 +6,10 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil.doesContrapti
 
 internal object MixinContraptionColliderLogic {
     internal fun preCollideEntities(contraptionEntity: AbstractContraptionEntity?, ci: CallbackInfo) {
-        // Only disable collision if the contraption has a ship
+        // Only disable collision if the contraption is loaded (isn't null)
         if (contraptionEntity == null) return;
 
+        // Only disable collision if the contraption has a ship
         if (doesContraptionHaveShipLoaded(contraptionEntity.contraption)) {
             ci.cancel()
         }
