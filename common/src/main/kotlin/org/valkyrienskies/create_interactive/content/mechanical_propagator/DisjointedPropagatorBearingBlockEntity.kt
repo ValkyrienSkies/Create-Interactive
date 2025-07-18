@@ -305,12 +305,6 @@ class DisjointedPropagatorBearingBlockEntity(
             this.onDisjointSpeedChanged(prevDisjointSpeed)
         }
 
-        if (movedContraption != null) {
-            this.disjointAngle += this.disjointSpeed
-        } else {
-            this.disjointAngle = 0.0f
-        }
-
         if (level!!.isClientSide) mechAccess.clientAngleDiff /= 2f
 
         if (!level!!.isClientSide && mechAccess.assembleNextTick) {
