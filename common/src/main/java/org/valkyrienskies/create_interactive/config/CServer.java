@@ -32,7 +32,7 @@ public class CServer extends ConfigBase {
 
         static String trainHandling = "How trains are handled for interactivity";
         static String translatingHandling = "How translating contraptions are handled for interactivity (Piston, Gantry, Pulley)";
-        static String bearingHandling = "How bearing contraptions are handled for interactivity";
+        static String bearingHandling = "How bearing contraptions are handled for interactivity (includes Propagator bearings)";
         static String clockworkHandling = "How clockwork contraptions are handled for interactivity (Flaps, etc)";
         static String mountedHandling = "How mounted contraptions are handled for interactivity (minecart)";
         static String otherHandling = "How any other contraptions are handled for interactivity (create addons, etc)";
