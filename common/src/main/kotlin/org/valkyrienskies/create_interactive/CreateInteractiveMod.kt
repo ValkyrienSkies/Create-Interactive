@@ -50,9 +50,10 @@ object CreateInteractiveMod {
     fun createCreativeTab(): CreativeModeTab {
         return CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
             .title(Component.translatable("itemGroup.create_interactive"))
-            .icon { GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK.asStack() }
+            .icon { GameContent.INTERACT_ME.asStack() }
             .displayItems { _, output ->
                 output.accept(GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK.asItem())
+                output.accept(GameContent.DISJOINTED_PROPAGATOR_BEARING_BLOCK.asItem())
                 output.accept(GameContent.BUFFER_STOP_BLOCK.asItem())
                 output.accept(GameContent.INTERACT_ME.asItem())
                 output.accept(GameContent.INTERACT_ME_NOT.asItem())
