@@ -1,13 +1,22 @@
 package org.valkyrienskies.create_interactive.content.ponders
 
 import com.simibubi.create.foundation.ponder.PonderRegistrationHelper
+import com.simibubi.create.foundation.ponder.PonderRegistry
+import com.simibubi.create.foundation.ponder.PonderTag
+import net.minecraft.network.chat.Component
 import org.valkyrienskies.create_interactive.CreateInteractiveMod
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.content.ponders.scenes.PropagatorBearings
 
-class PonderRegistry {
+class InteractivePonderRegistry {
     companion object {
         val HELPER: PonderRegistrationHelper = PonderRegistrationHelper(CreateInteractiveMod.MOD_ID)
+        val TAG: PonderTag = HELPER.createTag("ponders")
+            .item(GameContent.INTERACT_ME.asItem())
+            // "Create: Interactive"
+            // "Mechanics and features of Create: Interactive"
+            .defaultLang(getPonderLang("tag.ponders").string, getPonderLang("tag.ponders.description").string)
+            .addToIndex()
 
         fun register() {
             HELPER.forComponents(
