@@ -23,8 +23,18 @@ class InteractivePonderRegistry {
                 GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK,
                 GameContent.DISJOINTED_PROPAGATOR_BEARING_BLOCK
             )
-            .addStoryBoard("propagator_bearing", PropagatorBearings::standardBearing);
+            .addStoryBoard("propagator_bearing", PropagatorBearings::standardBearing)
+            .addStoryBoard("disjointed_bearing", PropagatorBearings::disjointedBearing)
 
+            PonderRegistry.TAGS.forTag(TAG)
+                .add(GameContent.INTERACT_ME)
+                .add(GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK)
+                .add(GameContent.DISJOINTED_PROPAGATOR_BEARING_BLOCK)
+
+        }
+
+        fun getPonderLang(key: String): Component {
+            return Component.translatable(CreateInteractiveMod.MOD_ID+".ponder."+key)
         }
     }
 }
