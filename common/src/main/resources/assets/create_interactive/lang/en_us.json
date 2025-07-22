@@ -6,5 +6,21 @@
   "block.create_interactive.interact_me_not": "Interact Me Not",
   "create.deployer.actor_mode.actor_on": "Actor Enabled",
   "create.deployer.actor_mode.actor_off": "Actor Disabled",
-  "itemGroup.create_interactive": "Create Interactive"
+  "itemGroup.create_interactive": "Create: Interactive",
+  "create_interactive.ponder.tag.ponders": "Create: Interactive",
+  "create_interactive.ponder.tag.ponders.description": "Mechanics and features of Create: Interactive",
+  "create_interactive.ponder.propagator_bearing.header": "Using the Propagator bearing",
+  "create_interactive.ponder.disjointed_bearing.header": "Using the Disjointed Propagator bearing",
+  "create_interactive.ponder.propagator_bearing.text_1": "Propagator bearings act like normal bearings",
+  "create_interactive.ponder.propagator_bearing.text_2": "They still need an interact-me (with the default config)",
+  "create_interactive.ponder.propagator_bearing.text_3": "However, unlike normal bearings, they can provide a source of rotation",
+  "create_interactive.ponder.propagator_bearing.text_4": "They provide the same rpm at which the bearing is spinning",
+  "create_interactive.ponder.propagator_bearing.text_5": "12 rpm",
+  "create_interactive.ponder.propagator_bearing.text_6": "12 rpm",
+  "create_interactive.ponder.disjointed_bearing.text_1": "Disjointed bearings have 2 rotational inputs",
+  "create_interactive.ponder.disjointed_bearing.text_2": "The bottom controls the bearing rotation",
+  "create_interactive.ponder.disjointed_bearing.text_3": "The side controls the rotation on the contraption",
+  "create_interactive.ponder.disjointed_bearing.text_4": "12 rpm",
+  "create_interactive.ponder.disjointed_bearing.text_5": "32 rpm",
+  "create_interactive.ponder.disjointed_bearing.text_6": "32 rpm"
 }
