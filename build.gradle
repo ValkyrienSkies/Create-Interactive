@@ -108,6 +108,11 @@ allprojects {
 
     repositories {
         mavenLocal()
+
+        maven { url = "https://modmaven.dev/" } // Flywheel
+
+        maven { url = "https://api.modrinth.com/maven" }  // idk
+
         maven {
             name = 'Kotlin for Forge'
             url = 'https://thedarkcolour.github.io/KotlinForForge/'
