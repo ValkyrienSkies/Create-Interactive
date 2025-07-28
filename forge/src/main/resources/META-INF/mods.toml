@@ -30,7 +30,7 @@ side = "BOTH"
 [[dependencies.create_interactive]]
 modId = "valkyrienskies"
 mandatory = true
-versionRange = "[${vs2_version},)"
+versionRange = "[2.3.0-beta.5,2.5.0)"
 ordering = "AFTER"
 side = "BOTH"
 
