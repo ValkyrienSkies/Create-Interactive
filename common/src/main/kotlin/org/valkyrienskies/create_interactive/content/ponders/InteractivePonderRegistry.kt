@@ -12,7 +12,7 @@ class InteractivePonderRegistry {
     companion object {
         val HELPER: PonderRegistrationHelper = PonderRegistrationHelper(CreateInteractiveMod.MOD_ID)
         val TAG: PonderTag = HELPER.createTag("ponders")
-            .item(GameContent.INTERACT_ME.asItem())
+            .item(GameContent.INTERACT_ME.get().asItem())
 
             // This Lang is NOT default. It secretly does forced datagen behind the scenes.
             // Without it, the tag ISN'T REGISTERED, what the fuck create
