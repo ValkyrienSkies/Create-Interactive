@@ -6,7 +6,7 @@
   "block.create_interactive.interact_me_not": "Interact Me Not",
   "create.deployer.actor_mode.actor_on": "Actor Enabled",
   "create.deployer.actor_mode.actor_off": "Actor Disabled",
-  "itemGroup.create_interactive": "Create: Interactive",
+  "itemGroup.create_interactive.create_interactive": "Create: Interactive",
   "create_interactive.ponder.tag.ponders": "Create: Interactive",
   "create_interactive.ponder.tag.ponders.description": "Mechanics and features of Create: Interactive",
   "create_interactive.ponder.propagator_bearing.header": "Using the Propagator bearing",

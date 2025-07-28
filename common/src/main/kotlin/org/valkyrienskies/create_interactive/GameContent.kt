@@ -70,8 +70,8 @@ object GameContent {
         }
             .transform(TagGen.axeOrPickaxe())
             .properties { p: BlockBehaviour.Properties ->
-                p.mapColor(
-                    MapColor.PODZOL
+                p.color(
+                    MaterialColor.PODZOL
                 )
             }
             .transform(BuilderTransformers.bearing("mechanical", "gearbox"))

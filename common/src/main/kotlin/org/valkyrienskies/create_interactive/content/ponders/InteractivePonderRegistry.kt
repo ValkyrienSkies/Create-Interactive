@@ -1,8 +1,11 @@
 package org.valkyrienskies.create_interactive.content.ponders
 
 import com.simibubi.create.foundation.ponder.*
+import com.simibubi.create.foundation.utility.Components
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.TextComponent
+import net.minecraft.network.chat.TranslatableComponent
 import org.valkyrienskies.create_interactive.CreateInteractiveMod
 import org.valkyrienskies.create_interactive.GameContent
 import org.valkyrienskies.create_interactive.content.ponders.scenes.InteractMe
@@ -12,7 +15,7 @@ class InteractivePonderRegistry {
     companion object {
         val HELPER: PonderRegistrationHelper = PonderRegistrationHelper(CreateInteractiveMod.MOD_ID)
         val TAG: PonderTag = HELPER.createTag("ponders")
-            .item(GameContent.INTERACT_ME.asItem())
+            .item(GameContent.INTERACT_ME.get().asItem())
 
             // This Lang is NOT default. It secretly does forced datagen behind the scenes.
             // Without it, the tag ISN'T REGISTERED, what the fuck create
@@ -43,7 +46,7 @@ class InteractivePonderRegistry {
         }
 
         fun getPonderLang(key: String): Component {
-            return Component.translatable(CreateInteractiveMod.MOD_ID+".ponder."+key)
+            return TranslatableComponent(CreateInteractiveMod.MOD_ID+".ponder."+key)
         }
 
         fun getNextLang(ponder: String, count: Int): String {
