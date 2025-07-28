@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.level.ServerPlayer;
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient;
 import org.valkyrienskies.create_interactive.CreateInteractiveMod;
+import org.valkyrienskies.create_interactive.content.ponders.InteractivePonderRegistry;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
 public class CreateInteractiveModFabric implements ModInitializer {
@@ -15,6 +16,8 @@ public class CreateInteractiveModFabric implements ModInitializer {
 
         CreateInteractiveMod.init();
         CreateInteractiveMod.INSTANCE.getREGISTRATE().register();
+
+        InteractivePonderRegistry.Companion.register();
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();

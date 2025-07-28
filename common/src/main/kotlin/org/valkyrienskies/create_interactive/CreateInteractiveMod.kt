@@ -28,7 +28,7 @@ object CreateInteractiveMod {
     fun initClient() {
         registerClientEvents()
         CreateInteractivePartialModels.init()
-        InteractivePonderRegistry.register()
+
     }
 
     private fun registerCommonEvents() {
