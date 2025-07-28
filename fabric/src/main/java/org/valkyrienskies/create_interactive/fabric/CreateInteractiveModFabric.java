@@ -7,6 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient;
 import org.valkyrienskies.create_interactive.CreateInteractiveMod;
+import org.valkyrienskies.create_interactive.content.ponders.InteractivePonderRegistry;
 import org.valkyrienskies.mod.fabric.common.ValkyrienSkiesModFabric;
 
 public class CreateInteractiveModFabric implements ModInitializer {
@@ -23,6 +24,8 @@ public class CreateInteractiveModFabric implements ModInitializer {
             CreateInteractiveMod.INSTANCE.getINTERACTIVE_CREATIVE_TAB(),
             CreateInteractiveMod.INSTANCE.createCreativeTab()
         );
+
+        InteractivePonderRegistry.Companion.register();
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayer player = handler.getPlayer();

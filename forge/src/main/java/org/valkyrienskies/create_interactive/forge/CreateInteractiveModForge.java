@@ -17,6 +17,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import org.valkyrienskies.create_interactive.CreateInteractiveEventsClient;
 import org.valkyrienskies.create_interactive.CreateInteractiveMod;
 import org.valkyrienskies.create_interactive.GameContent;
+import org.valkyrienskies.create_interactive.content.ponders.InteractivePonderRegistry;
 
 @Mod(CreateInteractiveMod.MOD_ID)
 public class CreateInteractiveModForge {
@@ -45,6 +46,7 @@ public class CreateInteractiveModForge {
     private static void onClientSetup(FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME_NOT.get(), RenderType.cutout());
+        InteractivePonderRegistry.Companion.register();
     }
 
     @SubscribeEvent
