@@ -17,8 +17,9 @@ import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import org.valkyrienskies.create_interactive.CreateInteractiveMod
 import org.valkyrienskies.create_interactive.GameContent
+import org.valkyrienskies.create_interactive.content.ponders.InteractivePonderRegistry.Companion.getNextLang
 import org.valkyrienskies.create_interactive.content.ponders.InteractivePonderRegistry.Companion.getPonderLang
-import org.valkyrienskies.create_interactive.content.ponders.scenes.PropagatorBearings.Companion.selection
+import org.valkyrienskies.create_interactive.content.ponders.InteractivePonderRegistry.Companion.selection
 
 class PropagatorBearings {
     companion object {
@@ -340,7 +341,7 @@ class PropagatorBearings {
             return AllBlocks.SPEEDOMETER.defaultState.setValue(GaugeBlock.FACING, Direction.WEST).rotate(Rotation.CLOCKWISE_90)
         }
 
-        fun setCogsSpeed(scene: SceneBuilder, util: SceneBuildingUtil, speed: Float) {
+        private fun setCogsSpeed(scene: SceneBuilder, util: SceneBuildingUtil, speed: Float) {
             // Normal bearing
             val cog1 = util.select.position(5, 0, 3)
             val cog2 = util.select.position(4, 1, 3)
@@ -357,15 +358,6 @@ class PropagatorBearings {
             scene.world.setKineticSpeed(cog3, -speed)
             scene.world.setKineticSpeed(cog4, speed)
             scene.world.setKineticSpeed(shaft, speed)
-        }
-
-        private fun getNextLang(ponder: String, count: Int): String {
-            return getPonderLang("$ponder.text_$count").string
-        }
-
-
-        private fun BlockPos.selection(util: SceneBuildingUtil): Selection {
-            return util.select.position(this)
         }
     }
 }

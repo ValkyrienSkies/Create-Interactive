@@ -1,11 +1,11 @@
 package org.valkyrienskies.create_interactive.content.ponders
 
-import com.simibubi.create.foundation.ponder.PonderRegistrationHelper
-import com.simibubi.create.foundation.ponder.PonderRegistry
-import com.simibubi.create.foundation.ponder.PonderTag
+import com.simibubi.create.foundation.ponder.*
+import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import org.valkyrienskies.create_interactive.CreateInteractiveMod
 import org.valkyrienskies.create_interactive.GameContent
+import org.valkyrienskies.create_interactive.content.ponders.scenes.InteractMe
 import org.valkyrienskies.create_interactive.content.ponders.scenes.PropagatorBearings
 
 class InteractivePonderRegistry {
@@ -26,15 +26,31 @@ class InteractivePonderRegistry {
             .addStoryBoard("propagator_bearing", PropagatorBearings::standardBearing)
             .addStoryBoard("disjointed_bearing", PropagatorBearings::disjointedBearing)
 
+            HELPER.forComponents(
+                GameContent.INTERACT_ME,
+                GameContent.INTERACT_ME_NOT
+            )
+            .addStoryBoard("normal_sticker", InteractMe::normalSticker)
+            .addStoryBoard("inverted_sticker", InteractMe::invertedSticker)
+
             PonderRegistry.TAGS.forTag(TAG)
                 .add(GameContent.INTERACT_ME)
+                .add(GameContent.INTERACT_ME_NOT)
                 .add(GameContent.MECHANICAL_PROPAGATOR_BEARING_BLOCK)
                 .add(GameContent.DISJOINTED_PROPAGATOR_BEARING_BLOCK)
-
         }
 
         fun getPonderLang(key: String): Component {
             return Component.translatable(CreateInteractiveMod.MOD_ID+".ponder."+key)
+        }
+
+        fun getNextLang(ponder: String, count: Int): String {
+            return getPonderLang("$ponder.text_$count").string
+        }
+
+
+        fun BlockPos.selection(util: SceneBuildingUtil): Selection {
+            return util.select.position(this)
         }
     }
 }
