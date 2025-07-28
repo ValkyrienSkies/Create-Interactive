@@ -113,7 +113,8 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version, "vs2_version": project.vs2_version.substring(0, project.vs2_version.indexOf('+')), "create_fabric_version": project.create_fabric_version
+        //.substring(0, project.vs2_version.indexOf('+'))
+        expand "version": project.version, "vs2_version": project.vs2_version, "create_fabric_version": project.create_fabric_version
     }
 }
 
