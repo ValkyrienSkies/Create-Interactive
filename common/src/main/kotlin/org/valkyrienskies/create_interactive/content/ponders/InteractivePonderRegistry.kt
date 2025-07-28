@@ -13,9 +13,11 @@ class InteractivePonderRegistry {
         val HELPER: PonderRegistrationHelper = PonderRegistrationHelper(CreateInteractiveMod.MOD_ID)
         val TAG: PonderTag = HELPER.createTag("ponders")
             .item(GameContent.INTERACT_ME.asItem())
-            // "Create: Interactive"
-            // "Mechanics and features of Create: Interactive"
-            .defaultLang(getPonderLang("tag.ponders").string, getPonderLang("tag.ponders.description").string)
+
+            // This Lang is NOT default. It secretly does forced datagen behind the scenes.
+            // Without it, the tag ISN'T REGISTERED, what the fuck create
+            // OH WAIT, on Fabric it ISN'T datagenned, so you still need it in the lang ANYWAY :SOB:
+            .defaultLang("Create: Interactive", "Mechanics and features of Create: Interactive")
             .addToIndex()
 
         fun register() {
