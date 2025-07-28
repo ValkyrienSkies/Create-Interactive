@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "EBE",
+    " E "
+  ],
+  "key": {
+    "B": {
+      "item": "create:mechanical_bearing"
+    },
+    "S": {
+      "item": "create:cogwheel"
+    },
+    "E": {
+      "item": "create:iron_sheet"
+    }
+  },
+  "result": {
+    "item": "create_interactive:disjointed_propagator_bearing"
+  }
+}
