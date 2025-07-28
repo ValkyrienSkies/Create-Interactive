@@ -22,5 +22,18 @@
   "create_interactive.ponder.disjointed_bearing.text_3": "The side controls the rotation on the contraption",
   "create_interactive.ponder.disjointed_bearing.text_4": "12 rpm",
   "create_interactive.ponder.disjointed_bearing.text_5": "32 rpm",
-  "create_interactive.ponder.disjointed_bearing.text_6": "32 rpm"
+  "create_interactive.ponder.disjointed_bearing.text_6": "32 rpm",
+  "create_interactive.ponder.normal_sticker.header": "Using the Interact Me",
+  "create_interactive.ponder.normal_sticker.text_1": "Normal Create contraptions can't be interacted with",
+  "create_interactive.ponder.normal_sticker.text_2": "While assembled, their blocks can't be changed",
+  "create_interactive.ponder.normal_sticker.text_3": "And can't be used",
+  "create_interactive.ponder.normal_sticker.text_4": "Using an Interact Me sticker, you can make contraptions interactive",
+  "create_interactive.ponder.normal_sticker.text_5": "When interactive, blocks can be modified and used to their full extent",
+  "create_interactive.ponder.normal_sticker.text_6": "Even while moving",
+  "create_interactive.ponder.inverted_sticker.header": "Using the Interact Me Not",
+  "create_interactive.ponder.inverted_sticker.text_1": "The Interact-Me-Not isn't needed with the default config",
+  "create_interactive.ponder.inverted_sticker.text_2": "It's only needed if the config uses 'WITHOUT STICKER' handling",
+  "create_interactive.ponder.inverted_sticker.text_3": "'WITHOUT STICKER' handling means the contraption will always be interactive",
+  "create_interactive.ponder.inverted_sticker.text_4": "Unless an Interact-Me-Not is used",
+  "create_interactive.ponder.inverted_sticker.text_5": "When handling is 'WITHOUT STICKER', the Interact-Me has no affect"
 }
