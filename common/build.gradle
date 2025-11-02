@@ -88,7 +88,7 @@ publishing {
             println "Publishing to Github Packages"
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/StewStrong/Create-Interactive")
+                url = uri("https://maven.pkg.github.com/ValkyrienSkies/Create-Interactive")
                 credentials {
                     username = System.getenv("GITHUB_ACTOR")
                     password = System.getenv("GITHUB_TOKEN")
