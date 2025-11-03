@@ -1,23 +1,34 @@
+//buildscript {
+//    repositories {
+//        mavenCentral()
+//        maven {
+//            url = uri("https://maven.pkg.github.com/open-obfuscator/dProtect")
+//            credentials {
+//                username = "Rubydesic"
+//                password = "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"
+//            }
+//        }
+//    }
+//    dependencies {
+//        // Make sure this version matches the one included in Kotlin for Forge
+//        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
+//        // OPTIONAL Gradle plugin for Kotlin Serialization
+//        classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
+//        // Proguard
+//        classpath 're.obfuscator:dprotect-gradle:1.0.0'
+//    }
+//}
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/open-obfuscator/dProtect")
-            credentials {
-                username = "Rubydesic"
-                password = "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"
-            }
-        }
+        gradlePluginPortal()
     }
     dependencies {
-        // Make sure this version matches the one included in Kotlin for Forge
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
-        // OPTIONAL Gradle plugin for Kotlin Serialization
-        classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
-        // Proguard
-        classpath 're.obfuscator:dprotect-gradle:1.0.0'
+        classpath 'com.guardsquare:proguard-gradle:7.4.0'
     }
 }
+
+
 
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
@@ -83,7 +94,8 @@ dependencies {
     modImplementation("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}") {
         exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml'
     }
-    modImplementation("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
+//    modCompileOnly("dev.engine-room.flywheel:flywheel-fabric-api-${minecraft_version}:${flywheel_version}")
+//    modRuntimeOnly("dev.engine-room.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version}")
     modImplementation("com.tterrag.registrate_fabric:Registrate:$registrate_version") {
         exclude(group: "io.github.fabricators_of_create") // avoid duplicate Porting Lib
     }
@@ -222,5 +234,10 @@ publishing {
                 }
             }
         }
+    }
+}
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }

@@ -159,3 +159,10 @@ allprojects {
         options.release = 17
     }
 }
+configurations.all {
+    resolutionStrategy {
+        force 'dev.engine-room.flywheel:flywheel-fabric-1.20.1:1.0.0-217'
+        exclude group: 'dev.engine-room.flywheel', module: 'flywheel-fabric-api-1.20.1'
+    }
+}
+
