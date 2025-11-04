@@ -69,6 +69,12 @@ subprojects {
                 includeGroup "curse.maven"
             }
         }
+        maven { url = "https://mvn.devos.one/snapshots/" } // Fabric Create, Porting Lib, Forge Tags, Milk Lib
+        maven { url = "https://mvn.devos.one/releases/" }
+        maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
+        maven { url = "https://maven.ithundxr.dev/mirror" } // Registrate
+        maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" } // ForgeConfigAPIPort
+        maven { url = "https://maven.cafeteria.dev/releases" } // Fake Player API
     }
 
     dependencies {
@@ -136,11 +142,7 @@ allprojects {
             url = 'https://thedarkcolour.github.io/KotlinForForge/'
             content { includeGroup "thedarkcolour" }
         }
-        // Create
-        maven {
-            name = 'tterrag maven'
-            url = 'https://maven.tterrag.com/'
-        }
+
         maven {
             name = "Valkyrien Skies Internal"
             url = project.vs_maven_url ?: 'https://maven.valkyrienskies.org'

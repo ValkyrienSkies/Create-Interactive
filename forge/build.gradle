@@ -1,21 +1,12 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/open-obfuscator/dProtect")
-            credentials {
-                username = "Rubydesic"
-                password = "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"
-            }
-        }
     }
     dependencies {
         // Make sure this version matches the one included in Kotlin for Forge
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
         // OPTIONAL Gradle plugin for Kotlin Serialization
         classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
-        // Proguard
-        classpath 're.obfuscator:dprotect-gradle:1.0.0'
     }
 }
 
@@ -23,13 +14,8 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
     id "com.matthewprenger.cursegradle"
     id "com.modrinth.minotaur"
-    id("io.github.izhangzhihao.unmeta") version "1.0.1"
 }
 
-// remove kotlin metadata
-unmeta {
-    enable.set(true)
-}
 
 apply from: '../gradle-scripts/publish-curseforge.gradle'
 
@@ -76,11 +62,12 @@ dependencies {
     implementation "thedarkcolour:kotlinforforge:$forge_kotlin_version"
 
     // Create compat
-    modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge_version}:slim") { transitive = false }
-    modImplementation("com.jozufozu.flywheel:flywheel-forge-${minecraft_version}:${flywheel_forge_version}")
-    modImplementation("com.tterrag.registrate:Registrate:${registrate_forge_version}") {
-        exclude group: 'com.github.LlamaLad7', module: ''
-    }
+    modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge_version}:slim")
+    modImplementation("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_forge_version}")
+    modApi("dev.engine-room.flywheel:flywheel-forge-api-${minecraft_version}:${flywheel_forge_version}")
+    modImplementation("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_forge_version}")
+    modImplementation("com.tterrag.registrate:Registrate:${registrate_forge_version}")
+
 }
 
 processResources {
@@ -120,38 +107,6 @@ jar {
 //            from commonSources.archiveFile.map { zipTree(it) }
 //}
 
-def proguardJarFile = layout.buildDirectory.file("libs/forge-proguarded-minified.jar")
-
-tasks.register('proguardJar', proguard.gradle.ProGuardTask) {
-    configuration file('../proguard/proguard-config.pro')
-
-    injars(tasks.named('remapJar').flatMap { it.archiveFile })
-
-    // Automatically handle the Java version of this build.
-    if (System.getProperty('java.version').startsWith('1.')) {
-        // Before Java 9, the runtime classes were packaged in a single jar file.
-        libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
-    } else {
-        // As of Java 9, the runtime classes are packaged in modular jmod files.
-        libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
-        //libraryjars "${System.getProperty('java.home')}/jmods/....."
-    }
-
-    libraryjars(configurations.runtimeClasspath)
-
-    verbose
-
-    outjars(proguardJarFile)
-}
-
-artifacts {
-    add("runtimeElements", proguardJarFile) {
-        builtBy(proguardJar)
-    }
-    add("apiElements", proguardJarFile) {
-        builtBy(proguardJar)
-    }
-}
 
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
@@ -159,12 +114,7 @@ components.java {
     }
 }
 
-// Remove the non-proguarded artifacts
-configurations {
-    [runtimeElements, apiElements].forEach { config ->
-        config.artifacts.removeIf { it.file.canonicalPath != proguardJarFile.get().getAsFile().canonicalPath }
-    }
-}
+
 
 publishing {
     publications {

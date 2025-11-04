@@ -1,23 +1,11 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/open-obfuscator/dProtect")
-            credentials {
-                username = "Rubydesic"
-                password = "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"
-            }
-        }
     }
 }
 
 plugins {
-    id("io.github.izhangzhihao.unmeta") version "1.0.1"
-}
 
-// remove kotlin metadata
-unmeta {
-    enable.set(true)
 }
 
 architectury {
@@ -48,11 +36,13 @@ dependencies {
 
     //Common create compat,
     //We just use a version from a platform and hope the classes exist on both versions and mixins apply correctly
-    //modCompileOnly files("jars/create-fabric-0.5.1-j-build.1604+mc1.20.1.jar")
     modCompileOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
-            { exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml' }
+            { exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml'
+                exclude group: 'dev.engine-room.flywheel' }
     modCompileOnly("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
-    modCompileOnly("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
+    modCompileOnly("net.createmod.ponder:Ponder-Fabric-${minecraft_version}:${ponder_fabric_version}") { transitive = false }
+    modCompileOnly("net.createmod.ponder:Ponder-Common-${minecraft_version}:${ponder_fabric_version}")
+    modCompileOnly("dev.engine-room.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_fabric_version}")
 
     for (String module in port_lib_modules.split(",")) {
         modCompileOnly("io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version")

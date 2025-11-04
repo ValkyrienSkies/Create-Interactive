@@ -1,21 +1,12 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/open-obfuscator/dProtect")
-            credentials {
-                username = "Rubydesic"
-                password = "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"
-            }
-        }
     }
     dependencies {
         // Make sure this version matches the one included in Kotlin for Forge
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
         // OPTIONAL Gradle plugin for Kotlin Serialization
         classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
-        // Proguard
-        classpath 're.obfuscator:dprotect-gradle:1.0.0'
     }
 }
 
@@ -24,13 +15,8 @@ plugins {
     id "org.jetbrains.kotlin.jvm"
     id "com.matthewprenger.cursegradle"
     id "com.modrinth.minotaur"
-    id("io.github.izhangzhihao.unmeta") version "1.0.1"
 }
 
-// remove kotlin metadata
-unmeta {
-    enable.set(true)
-}
 
 apply from: '../gradle-scripts/publish-curseforge.gradle'
 
@@ -79,21 +65,19 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     // Create compat
-    //modRuntimeOnly files("jars/create-fabric-0.5.1-j-build.1604+mc1.20.1.jar")
     modImplementation("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}") {
         exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml'
+        exclude(group: 'dev.engine-room')
     }
-    modImplementation("com.jozufozu.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version_fabric}")
-    modImplementation("com.tterrag.registrate_fabric:Registrate:$registrate_version") {
-        exclude(group: "io.github.fabricators_of_create") // avoid duplicate Porting Lib
-    }
+    modImplementation("net.createmod.ponder:Ponder-Common-${minecraft_version}:${ponder_fabric_version}") { transitive = false }
+    modApi("dev.engine-room.flywheel:flywheel-fabric-api-${minecraft_version}:${flywheel_fabric_version}")
+    modImplementation("dev.engine-room.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_fabric_version}")
+    modImplementation("com.tterrag.registrate_fabric:Registrate:${registrate_fabric_version}")
 
-    // modImplementation("io.github.fabricators_of_create.Porting-Lib:Porting-Lib:$port_lib_version")
     for (String module in port_lib_modules.split(",")) {
         modImplementation("io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version")
     }
 
-    //modImplementation("net.minecraftforge:forgeconfigapiport-fabric:${forge_config_api_port_version}")
     modImplementation("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:$forge_config_api_port_version")
     modImplementation("com.jamieswhiteshirt:reach-entity-attributes:${reach_entity_attributes_version}")
     modImplementation("dev.cafeteria:fake-player-api:${fake_player_api_version}")
@@ -142,49 +126,10 @@ jar {
 //            from commonSources.archiveFile.map { zipTree(it) }
 //}
 
-def proguardJarFile = layout.buildDirectory.file("libs/fabric-proguarded-minified.jar")
-
-tasks.register('proguardJar', proguard.gradle.ProGuardTask) {
-    configuration file('../proguard/proguard-config.pro')
-
-    injars(tasks.named('remapJar').flatMap { it.archiveFile })
-
-    // Automatically handle the Java version of this build.
-    if (System.getProperty('java.version').startsWith('1.')) {
-        // Before Java 9, the runtime classes were packaged in a single jar file.
-        libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
-    } else {
-        // As of Java 9, the runtime classes are packaged in modular jmod files.
-        libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
-        //libraryjars "${System.getProperty('java.home')}/jmods/....."
-    }
-
-    libraryjars(configurations.runtimeClasspath)
-
-    verbose
-
-    outjars(proguardJarFile)
-}
-
-artifacts {
-    add("runtimeElements", proguardJarFile) {
-        builtBy(proguardJar)
-    }
-    add("apiElements", proguardJarFile) {
-        builtBy(proguardJar)
-    }
-}
 
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
-    }
-}
-
-// Remove the non-proguarded artifacts
-configurations {
-    [runtimeElements, apiElements].forEach { config ->
-        config.artifacts.removeIf { it.file.canonicalPath != proguardJarFile.get().getAsFile().canonicalPath }
     }
 }
 
