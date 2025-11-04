@@ -68,9 +68,10 @@ dependencies {
     modImplementation("com.simibubi.create:create-${minecraft_version}:${create_forge_version}:slim") { transitive = false }
 //    modCompileOnly("dev.engine-room.flywheel:flywheel-forge-api-${minecraft_version}:${flywheel_version}")
 //    modRuntimeOnly("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
-    modImplementation("com.tterrag.registrate:Registrate:${registrate_forge_version}") {
-        exclude group: 'com.github.LlamaLad7', module: ''
-    }
+    modCompileOnly("com.tterrag.registrate:Registrate:MC1.20-1.3.0")
+//    modImplementation("com.tterrag.registrate:Registrate:${registrate_forge_version}") {
+//        exclude group: 'com.github.LlamaLad7', module: ''
+//    }
 }
 
 processResources {

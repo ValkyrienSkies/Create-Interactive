@@ -96,10 +96,10 @@ dependencies {
     }
 //    modCompileOnly("dev.engine-room.flywheel:flywheel-fabric-api-${minecraft_version}:${flywheel_version}")
 //    modRuntimeOnly("dev.engine-room.flywheel:flywheel-fabric-${minecraft_version}:${flywheel_version}")
-    modImplementation("com.tterrag.registrate_fabric:Registrate:$registrate_version") {
-        exclude(group: "io.github.fabricators_of_create") // avoid duplicate Porting Lib
-    }
-
+//    modImplementation("com.tterrag.registrate_fabric:Registrate:$registrate_version") {
+//        exclude(group: "io.github.fabricators_of_create") // avoid duplicate Porting Lib
+//    }
+    modCompileOnly("com.tterrag.registrate:Registrate:MC1.20-1.3.0")
     // modImplementation("io.github.fabricators_of_create.Porting-Lib:Porting-Lib:$port_lib_version")
     for (String module in port_lib_modules.split(",")) {
         modImplementation("io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version")
