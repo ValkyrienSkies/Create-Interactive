@@ -1,6 +1,7 @@
 package org.valkyrienskies.create_interactive.config;
 
-import com.simibubi.create.foundation.config.ConfigBase;
+
+import net.createmod.catnip.config.ConfigBase;
 
 @SuppressWarnings("unused")
 public class CServer extends ConfigBase {

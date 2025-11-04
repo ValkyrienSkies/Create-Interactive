@@ -1,11 +1,12 @@
 package org.valkyrienskies.create_interactive.mixinducks;
 
-import com.jozufozu.flywheel.api.InstanceData;
+import dev.engine_room.flywheel.lib.instance.AbstractInstance;
+import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public interface ActorInstanceDuck {
     @NotNull
-    List<InstanceData> ci$getInstances();
+    List<AbstractInstance> ci$getInstances();
 }

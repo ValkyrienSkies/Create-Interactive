@@ -1,7 +1,7 @@
 package org.valkyrienskies.create_interactive.mixin_logic.bearing
 
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
-import com.simibubi.create.foundation.utility.AnimationTickHolder
+import net.createmod.catnip.animation.AnimationTickHolder
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable

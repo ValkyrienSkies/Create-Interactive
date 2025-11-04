@@ -21,7 +21,7 @@ public class MixinCarriageContraptionEntityRenderer {
         final float partialTicks,
         final CallbackInfo ci
     ) {
-        MixinCarriageContraptionEntityRendererLogic.INSTANCE.preTranslateBogey$create_interactive(
+        MixinCarriageContraptionEntityRendererLogic.INSTANCE.preTranslateBogey$create_interactive_mod_common_main(
             ms, bogey, partialTicks, ci
         );
     }

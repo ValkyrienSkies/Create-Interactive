@@ -1,7 +1,7 @@
 package org.valkyrienskies.create_interactive.mixinducks;
 
-import com.simibubi.create.content.contraptions.render.ActorInstance;
+import com.simibubi.create.content.contraptions.render.ActorVisual;
 
 public interface ContraptionInstanceManagerDuck {
-    void ci$deleteActorInstance(ActorInstance actorInstance);
+    void ci$deleteActorInstance(ActorVisual actorInstance);
 }

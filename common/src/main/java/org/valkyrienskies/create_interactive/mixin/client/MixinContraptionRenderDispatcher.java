@@ -1,10 +1,10 @@
 package org.valkyrienskies.create_interactive.mixin.client;
 
-import com.jozufozu.flywheel.core.virtual.VirtualRenderWorld;
 import com.simibubi.create.content.contraptions.Contraption;
+import com.simibubi.create.content.contraptions.render.ContraptionEntityRenderer;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
-import com.simibubi.create.content.contraptions.render.ContraptionRenderDispatcher;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
+import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.Level;
@@ -18,10 +18,10 @@ import org.valkyrienskies.create_interactive.mixin_logic.client.MixinContraption
 /**
  * Completely disable contraption block rendering
  */
-@Mixin(ContraptionRenderDispatcher.class)
+@Mixin(ContraptionEntityRenderer.class)
 public class MixinContraptionRenderDispatcher {
     @Inject(method = "buildStructureBuffer", at = @At("HEAD"), cancellable = true)
-    private static void preBuildStructureBuffer(final VirtualRenderWorld renderWorld, final Contraption c, final RenderType layer, final CallbackInfoReturnable<SuperByteBuffer> cir) {
+    private static SuperByteBuffer preBuildStructureBuffer(final VirtualRenderWorld renderWorld, final Contraption c, final RenderType layer, final CallbackInfoReturnable<SuperByteBuffer> cir) {
         MixinContraptionRenderDispatcherLogic.INSTANCE.preBuildStructureBuffer$create_interactive(renderWorld, c, layer, cir);
     }
 

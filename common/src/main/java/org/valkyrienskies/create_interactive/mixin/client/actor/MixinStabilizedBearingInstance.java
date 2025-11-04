@@ -1,10 +1,10 @@
 package org.valkyrienskies.create_interactive.mixin.client.actor;
 
 import com.google.common.collect.ImmutableList;
-import com.jozufozu.flywheel.api.InstanceData;
-import com.jozufozu.flywheel.core.materials.oriented.OrientedData;
-import com.simibubi.create.content.contraptions.bearing.StabilizedBearingInstance;
-import com.simibubi.create.content.kinetics.base.flwdata.RotatingData;
+import com.simibubi.create.content.contraptions.bearing.StabilizedBearingVisual;
+import com.simibubi.create.content.kinetics.base.RotatingInstance;
+import dev.engine_room.flywheel.lib.instance.AbstractInstance;
+import dev.engine_room.flywheel.lib.instance.OrientedInstance;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,16 +13,16 @@ import org.valkyrienskies.create_interactive.mixinducks.ActorInstanceDuck;
 
 import java.util.List;
 
-@Mixin(StabilizedBearingInstance.class)
+@Mixin(StabilizedBearingVisual.class)
 public class MixinStabilizedBearingInstance implements ActorInstanceDuck {
     @Shadow(remap = false)
     @Final
-    OrientedData topInstance;
+    OrientedInstance topInstance;
     @Shadow(remap = false)
     @Final
-    RotatingData shaft;
+    RotatingInstance shaft;
     @Override
-    public @NotNull List<InstanceData> ci$getInstances() {
+    public @NotNull List<AbstractInstance> ci$getInstances() {
         return ImmutableList.of(topInstance, shaft);
     }
 }

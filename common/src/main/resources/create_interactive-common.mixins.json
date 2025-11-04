@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "MixinValueSettingsScreen",
-    "client.ContraptionInstanceWorldAccessor",
     "client.MixinBlockEntityRenderDispatcher",
     "client.MixinCarriageContraptionEntityRenderer",
     "client.MixinContraptionInstanceManager",
@@ -76,6 +75,7 @@
     "Vec3iAccessor",
     "bearing.MixinMechanicalBearingBlockEntity",
     "bearing.StabilizedBearingMovementBehaviourAccessor",
+    "client.ActorVisualAccessor",
     "client.MixinFilteringRenderer",
     "compat.cbc.MixinAbstractCannonDrillBlockEntity",
     "compat.cbc.MixinPitchOrientedContraptionEntity",
