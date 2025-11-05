@@ -3,6 +3,8 @@ package org.valkyrienskies.create_interactive.mixin_logic
 import com.simibubi.create.AllBlocks
 import com.simibubi.create.AllInteractionBehaviours
 import com.simibubi.create.AllMovementBehaviours
+import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.StructureTransform
@@ -10,13 +12,12 @@ import com.simibubi.create.content.contraptions.actors.contraptionControls.Contr
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock
 import com.simibubi.create.content.contraptions.bearing.StabilizedBearingMovementBehaviour
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
-import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock
 import com.simibubi.create.content.trains.entity.Carriage
 import com.simibubi.create.content.trains.entity.CarriageContraption
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
-import com.simibubi.create.foundation.utility.Couple
-import com.simibubi.create.foundation.utility.Iterate
+import net.createmod.catnip.data.Couple
+import net.createmod.catnip.data.Iterate
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
@@ -220,11 +221,11 @@ internal object MixinContraptionLogic {
             val newIsBurner = structureBlockInfo.state.block is BlazeBurnerBlock
             if (prevWasBurner && !newIsBurner) {
                 (contraption as CarriageContraptionAccessor).assembledBlazeBurners.remove(localPos)
-                contraption.blazeBurnerConductors = Couple.create(false, false)
+                contraption.blockConductors = Couple.create(false, false)
                 for (burners in (contraption as CarriageContraptionAccessor).assembledBlazeBurners) {
                     for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
                         if (contraption.inControl(burners, direction)) {
-                            contraption.blazeBurnerConductors.set(direction != contraption.assemblyDirection, true)
+                            contraption.blockConductors.set(direction != contraption.assemblyDirection, true)
                         }
                     }
                 }
@@ -232,19 +233,19 @@ internal object MixinContraptionLogic {
                 (contraption as CarriageContraptionAccessor).assembledBlazeBurners.add(localPos)
                 for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
                     if (contraption.inControl(localPos, direction)) {
-                        contraption.blazeBurnerConductors.set(direction != contraption.assemblyDirection, true)
+                        contraption.blockConductors.set(direction != contraption.assemblyDirection, true)
                     }
                 }
             }
         }
 
-        val newBehavior = AllMovementBehaviours.getBehaviour(structureBlockInfo.state)
+        val newBehavior = MovementBehaviour.REGISTRY.get(structureBlockInfo.state)
         // Don't create actors for new bearings
         if (newBehavior != null && newBehavior !is StabilizedBearingMovementBehaviour) {
             val context = MovementContext(
                 contraption.entity.level(), structureBlockInfo, contraption
             )
-            val behaviour = AllMovementBehaviours.getBehaviour(structureBlockInfo.state)
+            val behaviour = MovementBehaviour.REGISTRY.get(structureBlockInfo.state)
             behaviour?.startMoving(context)
             if (behaviour is ContraptionControlsMovement) disableActorOnStart(context)
             actors.removeIf { next: CreateActor -> next.left.pos == structureBlockInfo.pos }
@@ -263,7 +264,7 @@ internal object MixinContraptionLogic {
                 changedActors.add(structureBlockInfo.pos)
             }
         }
-        val interactionBehaviour = AllInteractionBehaviours.getBehaviour(structureBlockInfo.state)
+        val interactionBehaviour = MovingInteractionBehaviour.REGISTRY.get(structureBlockInfo.state)
         if (interactionBehaviour != null) {
             interactors[localPos] = interactionBehaviour
         } else {

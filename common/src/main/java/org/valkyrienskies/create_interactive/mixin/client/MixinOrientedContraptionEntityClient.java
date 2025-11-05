@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.create_interactive.mixin_logic.client.MixinOrientedContraptionEntityClientLogic;
 
-@Mixin(OrientedContraptionEntity.class)
+@Mixin(value = OrientedContraptionEntity.class, remap = false)
 public class MixinOrientedContraptionEntityClient {
     @Inject(method = "applyLocalTransforms", at = @At("HEAD"), cancellable = true)
     private void preApplyLocalTransforms(

@@ -20,13 +20,13 @@ import org.valkyrienskies.create_interactive.mixin_logic.client.MixinContraption
  */
 @Mixin(ContraptionEntityRenderer.class)
 public class MixinContraptionRenderDispatcher {
-    @Inject(method = "buildStructureBuffer", at = @At("HEAD"), cancellable = true)
-    private static SuperByteBuffer preBuildStructureBuffer(final VirtualRenderWorld renderWorld, final Contraption c, final RenderType layer, final CallbackInfoReturnable<SuperByteBuffer> cir) {
-        MixinContraptionRenderDispatcherLogic.INSTANCE.preBuildStructureBuffer$create_interactive(renderWorld, c, layer, cir);
-    }
-
-    @Inject(method = "renderBlockEntities", at = @At("HEAD"), cancellable = true)
-    private static void preRenderBlockEntities(final Level world, final VirtualRenderWorld renderWorld, final Contraption c, final ContraptionMatrices matrices, final MultiBufferSource buffer, final CallbackInfo ci) {
-        MixinContraptionRenderDispatcherLogic.INSTANCE.preRenderBlockEntities$create_interactive(c, ci);
-    }
+//    @Inject(method = "buildStructureBuffer", at = @At("HEAD"), cancellable = true)
+//    private static SuperByteBuffer preBuildStructureBuffer(final VirtualRenderWorld renderWorld, final Contraption c, final RenderType layer, final CallbackInfoReturnable<SuperByteBuffer> cir) {
+//        MixinContraptionRenderDispatcherLogic.INSTANCE.preBuildStructureBuffer$create_interactive(renderWorld, c, layer, cir);
+//    }
+//
+//    @Inject(method = "renderBlockEntities", at = @At("HEAD"), cancellable = true)
+//    private static void preRenderBlockEntities(final Level world, final VirtualRenderWorld renderWorld, final Contraption c, final ContraptionMatrices matrices, final MultiBufferSource buffer, final CallbackInfo ci) {
+//        MixinContraptionRenderDispatcherLogic.INSTANCE.preRenderBlockEntities$create_interactive(c, ci);
+//    }
 }

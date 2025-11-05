@@ -1,8 +1,8 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
-import com.jozufozu.flywheel.util.transform.TransformStack
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity
+import dev.engine_room.flywheel.lib.transform.TransformStack
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
@@ -18,15 +18,15 @@ internal object MixinOrientedContraptionEntityClientLogic {
         val angles: Vector3dc = rotationTransform.getEulerAnglesXYZ(Vector3d())
         matrixStack.translate(-.5, 0.0, -.5)
 
-        TransformStack.cast(matrixStack)
+        TransformStack.of(matrixStack)
             .nudge(contraptionEntity.id)
-            .centre()
-            .rotateX(Math.toDegrees(angles.x()))
-            .rotateY(Math.toDegrees(angles.y()))
-            .rotateZ(Math.toDegrees(angles.z()))
+            .center()
+            .rotateX(Math.toDegrees(angles.x()).toFloat())
+            .rotateY(Math.toDegrees(angles.y()).toFloat())
+            .rotateZ(Math.toDegrees(angles.z()).toFloat())
             .scale(ship.renderTransform.shipToWorldScaling.x().toFloat())
             // .rotateY(180.0)
-            .unCentre()
+            .uncenter()
 
         ci.cancel()
     }

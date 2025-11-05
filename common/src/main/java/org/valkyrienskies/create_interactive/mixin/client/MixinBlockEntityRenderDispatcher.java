@@ -16,7 +16,7 @@ import org.valkyrienskies.create_interactive.mixin_logic.client.MixinBlockEntity
 @Mixin(BlockEntityRenderDispatcher.class)
 public class MixinBlockEntityRenderDispatcher {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    private <E extends BlockEntity> void preRender(final E blockEntity, final float partialTick, final PoseStack poseStack, final MultiBufferSource bufferSource, final CallbackInfo ci) {
+    private <E extends BlockEntity> void preRender(E blockEntity, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, CallbackInfo ci) {
         MixinBlockEntityRenderDispatcherLogic.INSTANCE.preRender$create_interactive(blockEntity, ci);
     }
 }

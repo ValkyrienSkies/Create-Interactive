@@ -1,9 +1,9 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
-import com.jozufozu.flywheel.backend.Backend
-import com.jozufozu.flywheel.backend.instancing.InstancedRenderDispatcher
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
+import dev.engine_room.flywheel.api.backend.BackendManager
+import dev.engine_room.flywheel.api.visualization.VisualizationManager
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -45,11 +45,11 @@ internal object MixinLevelChunkLogic {
             (contraptionEntity.contraption as ContraptionDuck).`ci$setBlock`(relativePos, info)
         }
         if (level.isClientSide) {
-            if (Backend.isOn()) {
+            if (BackendManager.isBackendOn()) {
                 val blockEntity: BlockEntity? = blockEntities[pos]
                 if (blockEntity != null && shouldRemoveBlockEntityInShip(blockEntity)) {
                     // Remove block entity flywheel instances if tile entity is on a shadow ship
-                    InstancedRenderDispatcher.getBlockEntities(level).remove(blockEntity)
+                    VisualizationManager.get(level)?.blockEntities()?.queueRemove(blockEntity)
                 }
             }
         }

@@ -1,7 +1,7 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
 import com.simibubi.create.content.trains.entity.CarriageBogey
-import com.simibubi.create.foundation.utility.VecHelper
+import net.createmod.catnip.math.VecHelper
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.Vec3

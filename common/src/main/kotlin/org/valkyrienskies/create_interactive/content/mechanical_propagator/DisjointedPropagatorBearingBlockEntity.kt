@@ -22,6 +22,7 @@ import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity.OFFSET_Y
+import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
@@ -71,8 +72,8 @@ class DisjointedPropagatorBearingBlockEntity(
             bearingAxis !== axis
 
         }) {
-            override fun getLocalOffset(state: BlockState?): Vec3 {
-                val defaultOffset = super.getLocalOffset(state)
+            override fun getLocalOffset(level: LevelAccessor?, pos: BlockPos?, state: BlockState?): Vec3? {
+                val defaultOffset = super.getLocalOffset(level, pos, state)
                 return defaultOffset.subtract(0.0, 0.25, 0.0);
             }
         }

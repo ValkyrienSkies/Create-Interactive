@@ -9,7 +9,7 @@ internal object MixinBlockMovementChecksLogic {
     /**
      * Allow track blocks to be relocated
      */
-    internal fun preIsMovementAllowedFallback(
+    internal fun preIsMovementAllowed(
         state: BlockState,
         cir: CallbackInfoReturnable<Boolean>,
     ) {

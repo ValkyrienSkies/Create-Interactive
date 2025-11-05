@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive
 
+import com.simibubi.create.api.contraption.BlockMovementChecks
 import com.simibubi.create.content.contraptions.*
 import com.simibubi.create.content.contraptions.bearing.BearingContraption
 import com.simibubi.create.content.contraptions.bearing.ClockworkContraption

@@ -1,7 +1,5 @@
 package org.valkyrienskies.create_interactive
 
-import com.jozufozu.flywheel.api.MaterialManager
-import com.jozufozu.flywheel.backend.instancing.blockentity.BlockEntityInstance
 import com.simibubi.create.AllTags
 import com.simibubi.create.foundation.data.BuilderTransformers
 import com.simibubi.create.foundation.data.ModelGen
@@ -10,6 +8,10 @@ import com.tterrag.registrate.builders.BlockEntityBuilder
 import com.tterrag.registrate.util.entry.BlockEntry
 import com.tterrag.registrate.util.nullness.NonNullBiFunction
 import com.tterrag.registrate.util.nullness.NonNullFunction
+import dev.engine_room.flywheel.api.visual.BlockEntityVisual
+import dev.engine_room.flywheel.api.visualization.VisualManager
+import dev.engine_room.flywheel.api.visualization.VisualizationContext
+import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.world.item.Item
@@ -23,6 +25,7 @@ import org.valkyrienskies.create_interactive.content.interact_me.InteractMeBlock
 import org.valkyrienskies.create_interactive.content.interact_me.InteractMeBlockItem
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.*
 import java.util.function.BiFunction
+import java.util.function.Function
 
 object GameContent {
 
@@ -80,12 +83,9 @@ object GameContent {
                     state
                 )
             })
-        .instance {
-            BiFunction<MaterialManager?, MechanicalPropagatorBearingBlockEntity?, BlockEntityInstance<in MechanicalPropagatorBearingBlockEntity?>> { materialManager: MaterialManager?, blockEntity: MechanicalPropagatorBearingBlockEntity? ->
-                MechPropBearingInstance(
-                    materialManager,
-                    blockEntity
-                )
+        .visual {
+            SimpleBlockEntityVisualizer.Factory {
+                ctx, be, pt -> MechPropBearingInstance<MechanicalPropagatorBearingBlockEntity>(ctx, be, pt)
             }
         }
         .validBlocks(MECHANICAL_PROPAGATOR_BEARING_BLOCK)

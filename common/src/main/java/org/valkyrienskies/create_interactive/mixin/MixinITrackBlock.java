@@ -1,7 +1,7 @@
 package org.valkyrienskies.create_interactive.mixin;
 
 import com.simibubi.create.content.trains.track.ITrackBlock;
-import com.simibubi.create.foundation.utility.Pair;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;

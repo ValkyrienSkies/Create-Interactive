@@ -13,7 +13,6 @@
     "client.MixinMinecraft",
     "client.MixinOrientedContraptionEntityClient",
     "client.MixinOutliner",
-    "client.MixinSBBContraptionManager",
     "client.MixinTrackPlacementClient",
     "client.MixinTrackTargetingClient",
     "client.actor.MixinActorInstance",

@@ -6,7 +6,7 @@ import com.simibubi.create.content.trains.graph.TrackGraphLocation;
 import com.simibubi.create.content.trains.track.BezierTrackPointLocation;
 import com.simibubi.create.content.trains.track.TrackTargetingBlockItem;
 import com.simibubi.create.content.trains.track.TrackTargetingClient;
-import com.simibubi.create.foundation.render.SuperRenderTypeBuffer;
+import net.createmod.catnip.render.SuperRenderTypeBuffer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,10 +36,7 @@ public class MixinTrackTargetingClient {
      */
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private static void preRender(
-        final PoseStack ms,
-        final SuperRenderTypeBuffer buffer,
-        final Vec3 camera,
-        final CallbackInfo ci
+            PoseStack ms, SuperRenderTypeBuffer buffer, Vec3 camera, CallbackInfo ci
     ) {
         MixinTrackTargetingClientLogic.INSTANCE.render$create_interactive(
             lastHovered,

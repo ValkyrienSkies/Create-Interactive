@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive.forge.mixin_logic.mixin
 
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorageWrapper
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.logistics.vault.ItemVaultBlockEntity
@@ -20,8 +21,8 @@ internal object MixinMountedStorageManagerLogic {
         entity: AbstractContraptionEntity,
         shipId: ShipId?,
         externalStorages: List<IItemHandlerModifiable>,
-        inventory: Contraption.ContraptionInvWrapper,
-        fuelInventory: Contraption.ContraptionInvWrapper,
+        inventory: MountedItemStorageWrapper,
+        fuelInventory: MountedItemStorageWrapper,
         fluidInventory: CombinedTankWrapper,
     ) {
         if (shipId != null) {

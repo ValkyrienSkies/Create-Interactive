@@ -1,9 +1,9 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
-import com.jozufozu.flywheel.core.model.WorldModelBuilder
-import com.jozufozu.flywheel.core.virtual.VirtualRenderWorld
 import com.simibubi.create.content.contraptions.Contraption
-import com.simibubi.create.foundation.render.SuperByteBuffer
+import com.simibubi.create.content.contraptions.render.ClientContraption
+import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld
+import net.createmod.catnip.render.SuperByteBuffer
 import net.minecraft.client.renderer.RenderType
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
@@ -18,11 +18,7 @@ internal object MixinContraptionRenderDispatcherLogic {
     ) {
         // Only disable block rendering if the contraption has a ship
         if (doesContraptionHaveShipLoaded(c)) {
-            val data = WorldModelBuilder(layer).withRenderWorld(renderWorld)
-                .withBlocks(emptyList())
-                .build()
-            val sbb = SuperByteBuffer(data)
-            data.release()
+            val sbb = ClientContraption.getBuffer(c, renderWorld, layer)
             cir.setReturnValue(sbb)
         }
     }

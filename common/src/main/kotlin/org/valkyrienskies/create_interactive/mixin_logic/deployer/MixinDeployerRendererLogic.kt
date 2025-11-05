@@ -1,8 +1,8 @@
 package org.valkyrienskies.create_interactive.mixin_logic.deployer
 
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
-import com.simibubi.create.foundation.utility.AnimationTickHolder
-import com.simibubi.create.foundation.utility.VecHelper
+import net.createmod.catnip.animation.AnimationTickHolder
+import net.createmod.catnip.math.VecHelper
 import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getActorAtPos

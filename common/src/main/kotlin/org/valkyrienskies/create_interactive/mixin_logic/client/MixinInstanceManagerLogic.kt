@@ -1,10 +1,11 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
-import com.jozufozu.flywheel.backend.instancing.AbstractInstance
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
 import com.simibubi.create.content.decoration.slidingDoor.SlidingDoorBlockEntity
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
 import com.simibubi.create.content.trains.bogey.AbstractBogeyBlockEntity
+import dev.engine_room.flywheel.api.visual.BlockEntityVisual
+import dev.engine_room.flywheel.lib.visual.AbstractVisual
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.joml.Vector3ic
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
@@ -32,7 +33,7 @@ internal object MixinInstanceManagerLogic {
             && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(relativePos)
     }
 
-    internal fun preCreateInternal(obj: Any, cir: CallbackInfoReturnable<AbstractInstance?>) {
+    internal fun <T: BlockEntity> preCreateInternal(obj: Any, cir: CallbackInfoReturnable<BlockEntityVisual<T>?>) {
         if (obj is BlockEntity && shouldRemoveBlockEntityInShip(obj)) {
             // Don't create the instance
             cir.setReturnValue(null)

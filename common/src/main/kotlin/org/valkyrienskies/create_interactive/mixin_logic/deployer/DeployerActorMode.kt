@@ -2,7 +2,7 @@ package org.valkyrienskies.create_interactive.mixin_logic.deployer
 
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions
 import com.simibubi.create.foundation.gui.AllIcons
-import com.simibubi.create.foundation.utility.Lang
+import net.createmod.catnip.lang.Lang
 import org.valkyrienskies.create_interactive.CreateInteractiveIcons
 import org.valkyrienskies.create_interactive.services.NoOptimize
 

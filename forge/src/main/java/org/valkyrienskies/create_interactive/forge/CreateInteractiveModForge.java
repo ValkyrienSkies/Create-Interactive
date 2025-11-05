@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive.forge;
 
+import net.createmod.ponder.foundation.PonderIndex;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.Registries;
@@ -46,7 +47,7 @@ public class CreateInteractiveModForge {
     private static void onClientSetup(FMLClientSetupEvent event) {
         ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME_NOT.get(), RenderType.cutout());
-        InteractivePonderRegistry.Companion.register();
+        PonderIndex.addPlugin(new InteractivePonderRegistry());
     }
 
     @SubscribeEvent

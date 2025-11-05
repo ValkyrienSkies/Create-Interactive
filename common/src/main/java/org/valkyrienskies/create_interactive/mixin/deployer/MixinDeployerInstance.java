@@ -1,10 +1,10 @@
 package org.valkyrienskies.create_interactive.mixin.deployer;
 
-import com.jozufozu.flywheel.api.MaterialManager;
-import com.jozufozu.flywheel.core.materials.oriented.OrientedData;
-import com.simibubi.create.content.kinetics.base.ShaftInstance;
+import com.simibubi.create.content.kinetics.base.ShaftVisual;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity;
-import com.simibubi.create.content.kinetics.deployer.DeployerInstance;
+import com.simibubi.create.content.kinetics.deployer.DeployerVisual;
+import dev.engine_room.flywheel.api.visualization.VisualizationContext;
+import dev.engine_room.flywheel.lib.instance.OrientedInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.create_interactive.mixin_logic.deployer.MixinDeployerRendererLogic;
 
-@Mixin(DeployerInstance.class)
-public abstract class MixinDeployerInstance extends ShaftInstance<DeployerBlockEntity> {
+@Mixin(DeployerVisual.class)
+public abstract class MixinDeployerInstance extends ShaftVisual<DeployerBlockEntity> {
     @Shadow(remap = false)
     float progress;
     @Shadow
@@ -25,12 +25,12 @@ public abstract class MixinDeployerInstance extends ShaftInstance<DeployerBlockE
     Direction facing;
     @Shadow(remap = false)
     @Final
-    protected OrientedData pole;
+    protected OrientedInstance pole;
     @Shadow(remap = false)
-    protected OrientedData hand;
+    protected OrientedInstance hand;
 
-    public MixinDeployerInstance(MaterialManager materialManager, DeployerBlockEntity blockEntity) {
-        super(materialManager, blockEntity);
+    public MixinDeployerInstance(VisualizationContext context, DeployerBlockEntity blockEntity, float partialTick) {
+        super(context, blockEntity, partialTick);
     }
 
     /**
@@ -45,15 +45,15 @@ public abstract class MixinDeployerInstance extends ShaftInstance<DeployerBlockE
         }
         progress = actorDistance.floatValue();
 
-        final BlockPos blockPos = getInstancePosition();
+        final BlockPos blockPos = getVisualPosition();
         final Vec3i facingVec = facing.getNormal();
 
         final float x = blockPos.getX() + ((float) facingVec.getX()) * actorDistance.floatValue();
         final float y = blockPos.getY() + ((float) facingVec.getY()) * actorDistance.floatValue();
         final float z = blockPos.getZ() + ((float) facingVec.getZ()) * actorDistance.floatValue();
 
-        pole.setPosition(x, y, z);
-        hand.setPosition(x, y, z);
+        pole.position(x, y, z);
+        hand.position(x, y, z);
 
         ci.cancel();
     }

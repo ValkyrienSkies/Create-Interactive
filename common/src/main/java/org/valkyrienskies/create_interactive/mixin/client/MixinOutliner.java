@@ -1,8 +1,8 @@
 package org.valkyrienskies.create_interactive.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.foundation.outliner.Outliner;
-import com.simibubi.create.foundation.render.SuperRenderTypeBuffer;
+import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.render.SuperRenderTypeBuffer;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,11 +22,7 @@ public class MixinOutliner {
 
     @Inject(method = "renderOutlines", at = @At("HEAD"), cancellable = true)
     private void preRenderOutlines(
-        final PoseStack ms,
-        final SuperRenderTypeBuffer buffer,
-        final Vec3 camera,
-        final float pt,
-        final CallbackInfo ci
+            PoseStack ms, SuperRenderTypeBuffer buffer, Vec3 camera, float pt, CallbackInfo ci
     ) {
         MixinOutlinerLogic.INSTANCE.preRenderOutlines$create_interactive(outlines, ci);
     }
