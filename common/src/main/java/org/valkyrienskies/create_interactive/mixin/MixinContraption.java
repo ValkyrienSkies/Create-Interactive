@@ -53,6 +53,9 @@ public abstract class MixinContraption implements ContraptionDuck {
     @Shadow
     protected abstract CompoundTag getBlockEntityNBT(final Level world, final BlockPos pos);
 
+    @Shadow
+    public abstract void invalidateClientContraptionChildren();
+
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     private void postInit(final CallbackInfo ci) {
         ci$changedActors = new HashSet<>();
@@ -105,6 +108,11 @@ public abstract class MixinContraption implements ContraptionDuck {
             interactors,
             Contraption.class.cast(this)
         );
+        // Invalidate the children, to add/remove actor visuals
+        if(!ci$changedActors.isEmpty()) {
+            invalidateClientContraptionChildren();
+            ci$clearChangedActors();
+        }
     }
 
     @Override

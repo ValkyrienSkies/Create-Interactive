@@ -35,6 +35,7 @@ object CreateInteractiveMod {
     }
 
     private fun registerCommonEvents() {
+        VSEvents.shipLoadEventClient.on { (clientShip) -> CreateInteractiveUtil.onShipLoadEventClient(clientShip) }
         VSEvents.shipUnloadEventClient.on { (clientShip) -> CreateInteractiveUtil.onShipUnloadEventClient(clientShip) }
     }
 

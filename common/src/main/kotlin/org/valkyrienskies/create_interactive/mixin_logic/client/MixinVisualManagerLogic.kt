@@ -4,8 +4,6 @@ import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEn
 import com.simibubi.create.content.decoration.slidingDoor.SlidingDoorBlockEntity
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
 import com.simibubi.create.content.trains.bogey.AbstractBogeyBlockEntity
-import dev.engine_room.flywheel.api.visual.BlockEntityVisual
-import dev.engine_room.flywheel.lib.visual.AbstractVisual
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.joml.Vector3ic
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
@@ -15,7 +13,7 @@ import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toBlockPos
 
-internal object MixinInstanceManagerLogic {
+internal object MixinVisualManagerLogic {
     internal fun shouldRemoveBlockEntityInShip(blockEntity: BlockEntity): Boolean {
         val level = blockEntity.level
         val pos = blockEntity.blockPos
@@ -32,11 +30,10 @@ internal object MixinInstanceManagerLogic {
             && blockEntity !is MechanicalBearingBlockEntity
             && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(relativePos)
     }
-
-    internal fun <T: BlockEntity> preCreateInternal(obj: Any, cir: CallbackInfoReturnable<BlockEntityVisual<T>?>) {
-        if (obj is BlockEntity && shouldRemoveBlockEntityInShip(obj)) {
+    internal fun <T: BlockEntity> preWillAccept(obj: T, cir: CallbackInfoReturnable<Boolean>) {
+        if (shouldRemoveBlockEntityInShip(obj)) {
             // Don't create the instance
-            cir.setReturnValue(null)
+            cir.setReturnValue(false)
         }
     }
 }

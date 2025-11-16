@@ -4,6 +4,7 @@ import com.simibubi.create.AllTags
 import com.simibubi.create.foundation.data.BuilderTransformers
 import com.simibubi.create.foundation.data.ModelGen
 import com.simibubi.create.foundation.data.TagGen
+import com.simibubi.create.infrastructure.fabric.SimpleBlockEntityVisualFactory
 import com.tterrag.registrate.builders.BlockEntityBuilder
 import com.tterrag.registrate.util.entry.BlockEntry
 import com.tterrag.registrate.util.nullness.NonNullBiFunction
@@ -83,11 +84,11 @@ object GameContent {
                     state
                 )
             })
-        .visual {
-            SimpleBlockEntityVisualizer.Factory {
-                ctx, be, pt -> MechPropBearingInstance<MechanicalPropagatorBearingBlockEntity>(ctx, be, pt)
-            }
-        }
+//        .visual {
+//            SimpleBlockEntityVisualFactory {
+//                ctx, be, pt -> MechPropBearingInstance<MechanicalPropagatorBearingBlockEntity>(ctx, be, pt)
+//            }
+//        }
         .validBlocks(MECHANICAL_PROPAGATOR_BEARING_BLOCK)
         .renderer {
             NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in MechanicalPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->

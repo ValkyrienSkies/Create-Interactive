@@ -24,7 +24,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     // Remove the next line if you don't want to depend on the API
 //    modApi "me.shedaniel:architectury:${rootProject.architectury_version}"
-    modApi("org.valkyrienskies:valkyrienskies-120-common:${rootProject.vs2_version}")
+    modApi("org.valkyrienskies:valkyrienskies-120-common:${rootProject.vs2_version}") {
+        exclude(group: "com.simibubi.create")
+    }
 
     compileOnly("org.valkyrienskies.core:api:${rootProject.vs_core_version}")
     compileOnly("org.valkyrienskies.core:api-game:${rootProject.vs_core_version}")
@@ -36,7 +38,7 @@ dependencies {
 
     //Common create compat,
     //We just use a version from a platform and hope the classes exist on both versions and mixins apply correctly
-    modCompileOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
+    modCompileOnly("com.simibubi.create:create-fabric:${create_fabric_version}")
             { exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml'
                 exclude group: 'dev.engine-room.flywheel' }
     modCompileOnly("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")

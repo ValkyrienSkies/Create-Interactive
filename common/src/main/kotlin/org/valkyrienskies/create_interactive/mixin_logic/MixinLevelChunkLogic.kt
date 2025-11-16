@@ -14,7 +14,7 @@ import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.shipIdToContraptionEntityClient
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.shipIdToContraptionEntityServer
-import org.valkyrienskies.create_interactive.mixin_logic.client.MixinInstanceManagerLogic.shouldRemoveBlockEntityInShip
+import org.valkyrienskies.create_interactive.mixin_logic.client.MixinVisualManagerLogic.shouldRemoveBlockEntityInShip
 import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toBlockPos

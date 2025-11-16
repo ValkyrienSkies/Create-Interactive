@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive
 
+import com.mojang.logging.LogUtils
 import com.simibubi.create.api.contraption.BlockMovementChecks
 import com.simibubi.create.content.contraptions.*
 import com.simibubi.create.content.contraptions.bearing.BearingContraption
@@ -22,12 +23,7 @@ import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.Vec3
-import org.joml.Quaterniond
-import org.joml.Quaterniondc
-import org.joml.Vector3d
-import org.joml.Vector3dc
-import org.joml.Vector3i
-import org.joml.Vector3ic
+import org.joml.*
 import org.joml.primitives.AABBd
 import org.joml.primitives.AABBdc
 import org.valkyrienskies.core.api.ships.ClientShip
@@ -54,11 +50,7 @@ import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
-import org.valkyrienskies.mod.common.util.set
-import org.valkyrienskies.mod.common.util.settings
-import org.valkyrienskies.mod.common.util.toBlockPos
-import org.valkyrienskies.mod.common.util.toJOML
-import org.valkyrienskies.mod.common.util.toMinecraft
+import org.valkyrienskies.mod.common.util.*
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
@@ -482,6 +474,12 @@ object CreateInteractiveUtil {
                 shipIdToContraptionEntityServerInternal.remove(shipId)
             }
         }
+    }
+
+    internal fun onShipLoadEventClient(clientShip: ClientShip) {
+        val contraption: Contraption = getContraptionEntityForShip(clientShip.id, true)?.contraption ?: return
+        LogUtils.getLogger().info("reset client contraption")
+        contraption.resetClientContraption()
     }
 
     internal fun onShipUnloadEventClient(clientShip: ClientShip) {
