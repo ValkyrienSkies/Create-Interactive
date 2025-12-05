@@ -1,10 +1,8 @@
 package org.valkyrienskies.create_interactive.fabric.mixin;
 
-import com.google.common.collect.ImmutableMap;
+import com.mojang.logging.LogUtils;
 import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorage;
-import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageWrapper;
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
-import com.simibubi.create.api.contraption.storage.item.MountedItemStorageWrapper;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
@@ -20,45 +18,28 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.valkyrienskies.create_interactive.fabric.InteractiveMountedItemStorage;
 import org.valkyrienskies.create_interactive.fabric.mixin_logic.mixin.MixinMountedStorageManagerLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 @Mixin(MountedStorageManager.class)
 public abstract class MixinMountedStorageManager {
     @Unique
     private Long ci$shipId = null;
     @Unique
-    private List<SlottedStorage<ItemVariant>> ci$externalStorages;
-    @Shadow(remap = false)
-    protected MountedItemStorageWrapper items;
-    @Nullable
-    @Shadow(remap = false)
-    protected MountedItemStorageWrapper fuelItems;
-    @Shadow(remap = false)
-    protected MountedFluidStorageWrapper fluids;
-
-    @Shadow
-    protected abstract boolean isExposed(MountedItemStorage storage);
-
-    @Shadow
-    protected abstract boolean canUseForFuel(MountedItemStorage storage);
-
-    @Shadow
-    private ImmutableMap<BlockPos, MountedItemStorage> allItemStorages;
+    private Map<BlockPos, InteractiveMountedItemStorage> ci$externalStorages;
 
     @Shadow
     protected CombinedSlottedStorage<ItemVariant, ? extends SlottedStorage<ItemVariant>> allItems;
 
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     private void postInit(final CallbackInfo ci) {
-        ci$externalStorages = new ArrayList<>();
+        ci$externalStorages = new HashMap<>();
     }
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true, remap = false)
@@ -68,18 +49,14 @@ public abstract class MixinMountedStorageManager {
             ci.cancel();
             if (entity.level().isClientSide) return;
 
-            Map<BlockPos, MountedItemStorage> itemStorages = new HashMap<>();
+            Map<BlockPos, InteractiveMountedItemStorage> itemStorages = new HashMap<>();
             Map<BlockPos, MountedFluidStorage> fluidStorages = new HashMap<>();
 
             // Recreate inventories
             MixinMountedStorageManagerLogic.INSTANCE.preEntityTick$create_interactive(
                     entity, ci$shipId, itemStorages, fluidStorages
             );
-
-            allItemStorages = ImmutableMap.copyOf(itemStorages);
-            items = new MountedItemStorageWrapper(vs$subMap(itemStorages, this::isExposed));
-            fuelItems = new MountedItemStorageWrapper(vs$subMap(itemStorages, this::canUseForFuel));
-            fluids = new MountedFluidStorageWrapper(ImmutableMap.copyOf(fluidStorages));
+            ci$externalStorages = itemStorages;
         }
     }
 
@@ -125,30 +102,35 @@ public abstract class MixinMountedStorageManager {
         }
     }
 
-//    @Inject(method = "reset", at = @At("HEAD"), cancellable = true, remap = false)
-//    private void preClear(final CallbackInfo ci) {
-//        if (check()) {
-//            ci.cancel();
-//        }
-//    }
-//
-//    @Inject(method = "updateContainedFluid", at = @At("HEAD"), cancellable = true, remap = false)
-//    private void preUpdateContainedFluid(final CallbackInfo ci) {
-//        if (check()) {
-//            ci.cancel();
-//        }
-//    }
-
     @Inject(method = "attachExternal", at = @At("HEAD"), cancellable = true, remap = false)
     private void preAttachExternal(SlottedStorage<ItemVariant> externalStorage, CallbackInfo ci) {
         if (check()) {
             ci.cancel();
             if (externalStorage == null) return;
-            ci$externalStorages.add(externalStorage);
             List<SlottedStorage<ItemVariant>> all = new ArrayList<>(ci$externalStorages.size() + 1);
-            all.add(0, this.items);
-            all.addAll(this.ci$externalStorages);
+            all.addAll(this.ci$externalStorages.values());
+            all.add(externalStorage);
             this.allItems = new CombinedSlottedStorage<>(all);
+        }
+    }
+
+    @Inject(
+            method = "getAllItems",
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private void redirectGetAllItems(CallbackInfoReturnable<CombinedSlottedStorage<ItemVariant, ? extends SlottedStorage<ItemVariant>>> cir){
+        if(check()){
+            List<SlottedStorage<ItemVariant>> all = new ArrayList<>(ci$externalStorages.size() + 1);
+            all.addAll(this.ci$externalStorages.values());
+            LogUtils.getLogger().info("storages");
+            ci$externalStorages.values().forEach(
+                    (storage) -> {
+                        LogUtils.getLogger().info("    {}", storage);
+                    }
+            );
+            cir.setReturnValue(new CombinedSlottedStorage<>(all));
         }
     }
 
@@ -163,16 +145,5 @@ public abstract class MixinMountedStorageManager {
     @Unique
     private boolean check() {
         return ci$shipId != null;
-    }
-
-    @Unique
-    private static <K, V> ImmutableMap<K, V> vs$subMap(Map<K, V> map, Predicate<V> predicate) {
-        ImmutableMap.Builder<K, V> builder = ImmutableMap.builder();
-        map.forEach((key, value) -> {
-            if (predicate.test(value)) {
-                builder.put(key, value);
-            }
-        });
-        return builder.build();
     }
 }

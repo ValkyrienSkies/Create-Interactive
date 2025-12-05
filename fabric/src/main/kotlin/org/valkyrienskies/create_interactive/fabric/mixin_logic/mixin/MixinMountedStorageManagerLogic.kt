@@ -17,13 +17,14 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.entity.ChestBlockEntity
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.properties.ShipId
+import org.valkyrienskies.create_interactive.fabric.InteractiveMountedItemStorage
 import org.valkyrienskies.mod.common.shipObjectWorld
 
 internal object MixinMountedStorageManagerLogic {
     internal fun preEntityTick(
         entity: AbstractContraptionEntity,
         shipId: ShipId?,
-        inventories: MutableMap<BlockPos, MountedItemStorage>,
+        inventories: MutableMap<BlockPos, InteractiveMountedItemStorage>,
         fluidInventories: MutableMap<BlockPos, MountedFluidStorage>
     ) {
         // Recreate inventories
@@ -37,7 +38,7 @@ internal object MixinMountedStorageManagerLogic {
                     if (itemType != null) {
                         val storage: MountedItemStorage? = itemType.mount(be.level, be.blockState, be.blockPos, be)
                         if (storage != null) {
-                            inventories[be.blockPos] = storage
+                            inventories[be.blockPos] = InteractiveMountedItemStorage(be, storage)
                         }
                     }
 
