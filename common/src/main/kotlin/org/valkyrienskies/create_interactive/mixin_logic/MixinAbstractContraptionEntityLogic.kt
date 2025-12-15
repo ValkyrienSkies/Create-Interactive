@@ -27,6 +27,7 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
@@ -76,7 +77,7 @@ internal object MixinAbstractContraptionEntityLogic {
             linkShipToContraption(newShadowShipId, thisEntity)
             val serverShip: ServerShip? =
                 (thisEntity.level() as ServerLevel).shipObjectWorld.allShips.getById(newShadowShipId)
-            if (serverShip == null) {
+            if (serverShip !is LoadedServerShip) {
                 // How???!
                 println("Absolute giga-sus!!!")
                 return newShadowShipId

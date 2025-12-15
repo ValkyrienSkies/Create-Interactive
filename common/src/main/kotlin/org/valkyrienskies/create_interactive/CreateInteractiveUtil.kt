@@ -26,15 +26,19 @@ import net.minecraft.world.phys.Vec3
 import org.joml.*
 import org.joml.primitives.AABBd
 import org.joml.primitives.AABBdc
+import org.valkyrienskies.core.api.bodies.properties.BodyKinematics
 import org.valkyrienskies.core.api.ships.ClientShip
+import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
-import org.valkyrienskies.core.apigame.ShipTeleportData
-import org.valkyrienskies.core.apigame.world.properties.DimensionId
+import org.valkyrienskies.core.api.world.properties.DimensionId
+import org.valkyrienskies.core.impl.bodies.properties.BodyTransformImpl
+import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.core.internal.ShipTeleportData
 import org.valkyrienskies.core.util.expand
 import org.valkyrienskies.create_interactive.config.CreateInteractiveConfigs
 import org.valkyrienskies.create_interactive.config.InteractiveHandling
@@ -277,11 +281,11 @@ object CreateInteractiveUtil {
         val newPos: Vector3dc = contraptionPos.add(offset, Vector3d())
         val newScale = contraptionPosRot.scale
         val posInShip: Vector3dc = cmInShip.add(0.5, 0.5, 0.5, Vector3d())
-        return ShipTransformImpl(
+        return BodyTransformImpl(
             newPos,
-            posInShip,
             contraptionPosRot.rot,
-            Vector3d(newScale)
+            Vector3d(newScale),
+            posInShip
         )
     }
 
@@ -291,8 +295,14 @@ object CreateInteractiveUtil {
         val newOmega: Vector3dc = Vector3d()
         val newDimension: String = level.dimensionId
         // Because of an issue with the teleport function we have to set the center of mass to be cmInShip + (.5,.5,.5)
-        val shipTeleportData: ShipTeleportData = ShipTeleportDataImplFixed(
-            shipTransform.positionInWorld, shipTransform.positionInShip, shipTransform.shipToWorldRotation, newVel, newOmega, newDimension, shipTransform.shipToWorldScaling.x()
+        val shipTeleportData: ShipTeleportData = ShipTeleportDataImpl(
+            shipTransform.positionInWorld,
+            shipTransform.shipToWorldRotation,
+            newVel,
+            newOmega,
+            newDimension,
+            shipTransform.shipToWorldScaling.x(),
+            shipTransform.positionInShip,
         )
         level.shipObjectWorld.teleportShip(serverShip, shipTeleportData)
     }
@@ -327,9 +337,9 @@ object CreateInteractiveUtil {
 
         // Make the ship static, so it won't be affected by physics
         serverShip.isStatic = true
-        serverShip.enableKinematicVelocity = true
+        //serverShip.enableKinematicVelocity = true
         // Don't let the ship teleport through dimensions on its own
-        serverShip.settings.changeDimensionOnTouchPortals = false
+        if(serverShip is LoadedServerShip) serverShip.settings.changeDimensionOnTouchPortals = false
 
         return transform
     }
@@ -495,23 +505,5 @@ object CreateInteractiveUtil {
 
     fun isTrainDerailed(carriageEntity: CarriageContraptionEntity): Boolean {
         return carriageEntity.carriage?.train?.derailed == true
-    }
-
-    data class ShipTeleportDataImplFixed(
-        override val newPos: Vector3dc = Vector3d(),
-        val newPosInShip: Vector3dc = Vector3d(),
-        override val newRot: Quaterniondc = Quaterniond(),
-        override val newVel: Vector3dc = Vector3d(),
-        override val newOmega: Vector3dc = Vector3d(),
-        override val newDimension: DimensionId? = null,
-        override val newScale: Double? = null,
-    ) : ShipTeleportData {
-        @NoOptimize
-        override fun createNewShipTransform(oldShipTransform: ShipTransform): ShipTransform = ShipTransformImpl(
-            positionInWorld = newPos,
-            positionInShip = newPosInShip,
-            shipToWorldRotation = newRot,
-            shipToWorldScaling = newScale?.let { Vector3d(it) } ?: oldShipTransform.shipToWorldScaling,
-        )
     }
 }
