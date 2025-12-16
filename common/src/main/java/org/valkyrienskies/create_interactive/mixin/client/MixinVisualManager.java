@@ -10,7 +10,7 @@ import org.valkyrienskies.create_interactive.mixin_logic.client.MixinVisualManag
 
 @Mixin(BlockEntityStorage.class)
 public class MixinVisualManager {
-    @Inject(method = "willAccept(Lnet/minecraft/world/level/block/entity/BlockEntity;)Z", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "willAccept(Lnet/minecraft/world/level/block/entity/BlockEntity;)Z", at = @At("HEAD"), cancellable = true)
     private void preWillAccept(BlockEntity blockEntity, CallbackInfoReturnable<Boolean> cir) {
         MixinVisualManagerLogic.INSTANCE.preWillAccept$create_interactive(blockEntity, cir);
     }

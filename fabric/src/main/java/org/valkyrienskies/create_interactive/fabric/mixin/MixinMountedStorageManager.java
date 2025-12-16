@@ -74,7 +74,7 @@ public abstract class MixinMountedStorageManager {
         }
     }
 
-    @Inject(method = "addStorage(Lcom/simibubi/create/api/contraption/storage/fluid/MountedFluidStorage;Lnet/minecraft/core/BlockPos;)V", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "addStorage(Lcom/simibubi/create/api/contraption/storage/fluid/MountedFluidStorage;Lnet/minecraft/core/BlockPos;)V", at = @At("HEAD"), cancellable = true)
     private void preBindTanks(final CallbackInfo ci) {
         if (check()) {
             ci.cancel();
@@ -95,7 +95,7 @@ public abstract class MixinMountedStorageManager {
         }
     }
 
-    @Inject(method = "addStorage(Lcom/simibubi/create/api/contraption/storage/item/MountedItemStorage;Lnet/minecraft/core/BlockPos;)V", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "addStorage(Lcom/simibubi/create/api/contraption/storage/item/MountedItemStorage;Lnet/minecraft/core/BlockPos;)V", at = @At("HEAD"), cancellable = true)
     private void preAddStorageToWorld(final CallbackInfo ci) {
         if (check()) {
             ci.cancel();
