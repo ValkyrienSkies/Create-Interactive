@@ -63,15 +63,15 @@ object GameContent {
                 properties!!
             )
         }
-            .transform(TagGen.axeOrPickaxe())
-            .properties { p: BlockBehaviour.Properties ->
-                p.mapColor(
-                    MapColor.PODZOL
-                )
-            }
-            .transform(BuilderTransformers.bearing("mechanical", "gearbox"))
-            .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
-            .register()
+        .transform(TagGen.axeOrPickaxe())
+        .properties { p: BlockBehaviour.Properties ->
+            p.mapColor(
+                MapColor.PODZOL
+            )
+        }
+        .transform(BuilderTransformers.bearing("mechanical", "gearbox"))
+        .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
+        .register()
 
 
 
@@ -84,11 +84,6 @@ object GameContent {
                     state
                 )
             })
-//        .visual {
-//            SimpleBlockEntityVisualFactory {
-//                ctx, be, pt -> MechPropBearingInstance<MechanicalPropagatorBearingBlockEntity>(ctx, be, pt)
-//            }
-//        }
         .validBlocks(MECHANICAL_PROPAGATOR_BEARING_BLOCK)
         .renderer {
             NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in MechanicalPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->
@@ -109,7 +104,7 @@ object GameContent {
                     state
                 )
             })
-        .validBlocks({ DISJOINTED_PROPAGATOR_BEARING_BLOCK.get() })
+        .validBlocks(DISJOINTED_PROPAGATOR_BEARING_BLOCK)
         .renderer {
             NonNullFunction<BlockEntityRendererProvider.Context, BlockEntityRenderer<in DisjointedPropagatorBearingBlockEntity>> { context: BlockEntityRendererProvider.Context ->
                 DisjointedPropagatorBearingRenderer(

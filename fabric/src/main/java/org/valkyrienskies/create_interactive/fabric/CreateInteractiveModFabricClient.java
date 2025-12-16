@@ -15,5 +15,6 @@ public class CreateInteractiveModFabricClient implements ClientModInitializer {
         CreateInteractiveMod.initClient();
         PonderIndex.addPlugin(new InteractivePonderRegistry());
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.cutout(), GameContent.INTERACT_ME.get(), GameContent.INTERACT_ME_NOT.get());
+        CreateInteractiveMod.registerVisuals();
     }
 }

@@ -48,6 +48,7 @@ public class CreateInteractiveModForge {
         ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(GameContent.INTERACT_ME_NOT.get(), RenderType.cutout());
         PonderIndex.addPlugin(new InteractivePonderRegistry());
+        CreateInteractiveMod.registerVisuals();
     }
 
     @SubscribeEvent

@@ -1,12 +1,16 @@
 package org.valkyrienskies.create_interactive
 
 import com.simibubi.create.foundation.data.CreateRegistrate
+import dev.engine_room.flywheel.api.visualization.VisualizerRegistry
+import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
 import org.valkyrienskies.core.impl.hooks.VSEvents
+import org.valkyrienskies.create_interactive.GameContent.MECHANICAL_PROPAGATOR_BEARING_BE
+import org.valkyrienskies.create_interactive.content.mechanical_propagator.MechPropBearingInstance
 import org.valkyrienskies.create_interactive.content.ponders.InteractivePonderRegistry
 
 
@@ -31,7 +35,16 @@ object CreateInteractiveMod {
     fun initClient() {
         registerClientEvents()
         CreateInteractivePartialModels.init()
+    }
 
+    @JvmStatic
+    fun registerVisuals() {
+        VisualizerRegistry.setVisualizer(MECHANICAL_PROPAGATOR_BEARING_BE.get(),
+            SimpleBlockEntityVisualizer(
+                {ctx, be, pt -> MechPropBearingInstance(ctx, be, pt)},
+                { _ -> false}
+            )
+        )
     }
 
     private fun registerCommonEvents() {
