@@ -1,5 +1,6 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
+import com.mojang.logging.LogUtils
 import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.contraptions.ContraptionHandler
@@ -79,7 +80,7 @@ internal object MixinAbstractContraptionEntityLogic {
                 (thisEntity.level() as ServerLevel).shipObjectWorld.allShips.getById(newShadowShipId)
             if (serverShip !is LoadedServerShip) {
                 // How???!
-                println("Absolute giga-sus!!!")
+                LogUtils.getLogger().error("The ship was not loaded! Absolute giga-sus!!!")
                 return newShadowShipId
             }
             // Derailed trains can move freely
