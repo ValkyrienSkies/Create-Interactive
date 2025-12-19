@@ -50,6 +50,7 @@ public abstract class MixinCarriageContraptionEntity extends OrientedContraption
         } else {
             if (ci$jointId != null) {
                 ValkyrienSkiesMod.getOrCreateGTPA(VSGameUtilsKt.getDimensionId(level())).removeJoint(ci$jointId);
+                MixinCarriageContraptionEntityLogic.INSTANCE.setJointId(thisAs, null);
             }
         }
     }

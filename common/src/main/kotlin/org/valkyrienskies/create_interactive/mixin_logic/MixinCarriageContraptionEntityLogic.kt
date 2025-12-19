@@ -88,7 +88,7 @@ internal object MixinCarriageContraptionEntityLogic {
 
     var CarriageContraptionEntity.jointId : VSJointId?
         set(value) {
-            jointMap.put(this, value)
+            jointMap[this] = value
         }
         get() {
             return jointMap[this]
