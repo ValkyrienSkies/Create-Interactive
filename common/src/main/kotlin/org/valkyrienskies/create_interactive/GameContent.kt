@@ -16,6 +16,7 @@ import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
 import net.minecraft.world.item.Item
+import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.material.MapColor
@@ -23,7 +24,6 @@ import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlock
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopBlockEntity
 import org.valkyrienskies.create_interactive.content.buffer_stop.BufferStopRenderer
 import org.valkyrienskies.create_interactive.content.interact_me.InteractMeBlock
-import org.valkyrienskies.create_interactive.content.interact_me.InteractMeBlockItem
 import org.valkyrienskies.create_interactive.content.mechanical_propagator.*
 import java.util.function.BiFunction
 import java.util.function.Function
@@ -163,13 +163,11 @@ object GameContent {
             p.mapColor(
                 MapColor.PODZOL
             )
+            p.sound(SoundType.SLIME_BLOCK)
             p.noOcclusion()
         }
         .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
-        .item(NonNullBiFunction<InteractMeBlock, Item.Properties, InteractMeBlockItem> { block: InteractMeBlock, properties: Item.Properties ->
-            InteractMeBlockItem(block,
-                properties)
-        })
+        .item()
         .transform(ModelGen.customItemModel())
         .register()
 
@@ -185,13 +183,11 @@ object GameContent {
             p.mapColor(
                 MapColor.PODZOL
             )
+            p.sound(SoundType.SLIME_BLOCK)
             p.noOcclusion()
         }
         .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
-        .item(NonNullBiFunction<InteractMeBlock, Item.Properties, InteractMeBlockItem> { block: InteractMeBlock, properties: Item.Properties ->
-            InteractMeBlockItem(block,
-                properties)
-        })
+        .item()
         .transform(ModelGen.customItemModel())
         .register()
 
