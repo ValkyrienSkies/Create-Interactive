@@ -1,14 +1,18 @@
 package org.valkyrienskies.create_interactive.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
+import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import kotlin.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
@@ -154,6 +158,15 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
     @Inject(method = "getPassengerPosition", at = @At("HEAD"), cancellable = true)
     private void preGetPassengerPosition(final Entity passenger, final float partialTicks, final CallbackInfoReturnable<Vec3> cir) {
         MixinAbstractContraptionEntityLogic.INSTANCE.preGetPassengerPosition$create_interactive(AbstractContraptionEntity.class.cast(this), passenger, partialTicks, cir);
+    }
+
+    @WrapOperation(
+            method = "handlePlayerInteraction",
+            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/MountedStorageManager;handlePlayerStorageInteraction(Lcom/simibubi/create/content/contraptions/Contraption;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/BlockPos;)Z"),
+            remap = false
+    )
+    private boolean preHandleStorageInteraction(MountedStorageManager storageManager, Contraption contraption, Player player, BlockPos blockPos, Operation<Boolean> original){
+        return MixinAbstractContraptionEntityLogic.INSTANCE.preStorageInteraction$create_interactive(AbstractContraptionEntity.class.cast(this), storageManager, contraption, player, blockPos, original);
     }
 
     @Override

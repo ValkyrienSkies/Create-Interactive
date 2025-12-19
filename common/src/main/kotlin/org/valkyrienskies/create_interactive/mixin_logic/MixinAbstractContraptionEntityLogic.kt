@@ -1,10 +1,13 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation
 import com.mojang.logging.LogUtils
 import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.ContraptionHandler
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity
+import com.simibubi.create.content.contraptions.MountedStorageManager
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.elevator.ElevatorColumn
@@ -21,6 +24,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
@@ -364,6 +368,12 @@ internal object MixinAbstractContraptionEntityLogic {
         val passengerPosInLocal = contraptionEntity.getPassengerPosInShip(ship, passenger) ?: return
 
         cir.returnValue = passengerPosInLocal.toMinecraft()
+    }
+
+    internal fun preStorageInteraction(contraptionEntity: AbstractContraptionEntity, storageManager : MountedStorageManager, contraption : Contraption, player : Player, blockPos : BlockPos, original : Operation<Boolean>) : Boolean {
+        val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return original.call(storageManager, contraption, player, blockPos)
+        val ship = contraptionEntity.level().shipObjectWorld.loadedShips.getById(shadowShipId) ?: return original.call(storageManager, contraption, player, blockPos)
+        return false
     }
 
     internal data class ExtraData(
