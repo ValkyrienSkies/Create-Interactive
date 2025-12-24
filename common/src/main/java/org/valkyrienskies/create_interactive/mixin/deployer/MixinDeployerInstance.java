@@ -37,7 +37,7 @@ public abstract class MixinDeployerInstance extends ShaftVisual<DeployerBlockEnt
      * @author Triode
      * @reason Get the hand offset from the actor when this is rendering in a contraption with a ship shadow
      */
-    @Inject(method = "beginFrame", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "updatePosition", at = @At("HEAD"), cancellable = true, remap = false)
     private void preBeginFrame(final CallbackInfo ci) {
         final Double actorDistance = MixinDeployerRendererLogic.INSTANCE.preGetHandOffset$create_interactive(blockEntity);
         if (actorDistance == null) {
@@ -52,8 +52,8 @@ public abstract class MixinDeployerInstance extends ShaftVisual<DeployerBlockEnt
         final float y = blockPos.getY() + ((float) facingVec.getY()) * actorDistance.floatValue();
         final float z = blockPos.getZ() + ((float) facingVec.getZ()) * actorDistance.floatValue();
 
-        pole.position(x, y, z);
-        hand.position(x, y, z);
+        pole.position(x, y, z).setChanged();
+        hand.position(x, y, z).setChanged();
 
         ci.cancel();
     }
