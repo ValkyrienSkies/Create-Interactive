@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - '1.20.x/*'
-  pull_request:
-    types: [ opened, synchronize, reopened ]
 jobs:
   validate-gradle:
     name: "Validate Gradle wrapper"
