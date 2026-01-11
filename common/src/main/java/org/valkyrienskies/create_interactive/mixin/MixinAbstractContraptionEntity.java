@@ -162,7 +162,7 @@ public abstract class MixinAbstractContraptionEntity extends Entity implements A
 
     @WrapOperation(
             method = "handlePlayerInteraction",
-            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/MountedStorageManager;handlePlayerStorageInteraction(Lcom/simibubi/create/content/contraptions/Contraption;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/BlockPos;)Z"),
+            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/MountedStorageManager;handlePlayerStorageInteraction(Lcom/simibubi/create/content/contraptions/Contraption;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/BlockPos;)Z", remap = true),
             remap = false
     )
     private boolean preHandleStorageInteraction(MountedStorageManager storageManager, Contraption contraption, Player player, BlockPos blockPos, Operation<Boolean> original){
