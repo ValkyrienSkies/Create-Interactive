@@ -85,6 +85,7 @@
     "deployer.MixinDeployerMovementBehaviour",
     "gantry.MixinGantryCarriageBlockEntity",
     "kinetics.MixinRotationPropagator",
+    "seat.MixinContraptionPlayerPassengerRotation",
     "seat.MixinSeatBlock",
     "sliding_door.MixinSlidingDoorMovementBehaviour"
   ]

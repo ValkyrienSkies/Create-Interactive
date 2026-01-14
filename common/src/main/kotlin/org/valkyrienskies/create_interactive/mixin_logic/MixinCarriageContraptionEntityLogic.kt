@@ -71,7 +71,7 @@ internal object MixinCarriageContraptionEntityLogic {
                             frontCarShip.id,
                             VSJointPose(frontShipConstraintPos, Quaterniond()),
                             VSJointMaxForceTorque(1.0E100F, 1.0E-10F),
-                            fixedDistance,
+                            1e-10,
                             fixedDistance
                         )
                         return ValkyrienSkiesMod.getOrCreateGTPA(level.dimensionId).addJoint(attachmentConstraint) {
