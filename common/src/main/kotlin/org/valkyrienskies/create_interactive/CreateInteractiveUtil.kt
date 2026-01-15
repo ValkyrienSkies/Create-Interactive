@@ -136,7 +136,7 @@ object CreateInteractiveUtil {
             val newPos = pos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
 
             val flags = Block.UPDATE_MOVE_BY_PISTON or Block.UPDATE_ALL
-            level.setBlock(newPos, structureInfo.state, flags)
+            level.setBlock(newPos, structureInfo.state, flags, 0)
 
             // region Copy the tile entity to the ship
             val newBlockEntity = level.getBlockEntity(newPos)
