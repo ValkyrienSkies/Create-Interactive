@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.valkyrienskies.create_interactive.mixin_logic.deployer.MixinDeployerMovementBehaviourLogic;
-import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 
 /**
  * Fix DeployerMovementBehaviour
@@ -43,12 +42,5 @@ public class MixinDeployerMovementBehaviour {
     @Inject(method = "getMode", at = @At("HEAD"), cancellable = true, remap = false)
     private void preGetMode(final MovementContext context, final CallbackInfoReturnable<Object> cir) {
         MixinDeployerMovementBehaviourLogic.INSTANCE.preGetMode$create_interactive(context, cir);
-    }
-
-    @Inject(
-            method = "createVisual", at = @At("HEAD"), cancellable = true, remap = false
-    )
-    private void preCreateVisual(VisualizationContext visualizationContext, VirtualRenderWorld simulationWorld, MovementContext movementContext, CallbackInfoReturnable<ActorVisual> cir) {
-        MixinDeployerMovementBehaviourLogic.INSTANCE.preCreateVisual$create_interactive(movementContext.contraption, cir);
     }
 }

@@ -22,6 +22,7 @@
     "client.actor.MixinRollerActorInstance",
     "client.actor.MixinStabilizedBearingInstance",
     "client.actor.PIInstanceAccessor",
+    "deployer.MixinDeployerMovementBehaviourClient",
     "deployer.MixinDeployerRenderer"
   ],
   "injectors": {
@@ -81,7 +82,7 @@
     "contraptins.ControlledContraptionEntityAccessor",
     "deployer.DeployerBlockEntityAccessor",
     "deployer.MixinDeployerBlockEntity",
-    "deployer.MixinDeployerInstance",
+    "deployer.MixinDeployerVisual",
     "deployer.MixinDeployerMovementBehaviour",
     "gantry.MixinGantryCarriageBlockEntity",
     "kinetics.MixinRotationPropagator",

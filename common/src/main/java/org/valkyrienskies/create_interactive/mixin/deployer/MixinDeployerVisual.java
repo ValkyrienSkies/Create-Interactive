@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.create_interactive.mixin_logic.deployer.MixinDeployerRendererLogic;
 
 @Mixin(DeployerVisual.class)
-public abstract class MixinDeployerInstance extends ShaftVisual<DeployerBlockEntity> {
+public abstract class MixinDeployerVisual extends ShaftVisual<DeployerBlockEntity> {
     @Shadow(remap = false)
     float progress;
     @Shadow
@@ -29,7 +29,7 @@ public abstract class MixinDeployerInstance extends ShaftVisual<DeployerBlockEnt
     @Shadow(remap = false)
     protected OrientedInstance hand;
 
-    public MixinDeployerInstance(VisualizationContext context, DeployerBlockEntity blockEntity, float partialTick) {
+    public MixinDeployerVisual(VisualizationContext context, DeployerBlockEntity blockEntity, float partialTick) {
         super(context, blockEntity, partialTick);
     }
 
