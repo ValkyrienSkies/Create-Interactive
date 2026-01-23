@@ -1,6 +1,8 @@
 package org.valkyrienskies.create_interactive.mixin_logic.deployer
 
+import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
+import com.simibubi.create.content.contraptions.render.ActorVisual
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer
 import net.minecraft.world.item.ItemStack
@@ -52,6 +54,12 @@ internal object MixinDeployerMovementBehaviourLogic {
         if (check(context)) {
             val deployerBlockEntity = getBlockEntity(context) ?: return
             cir.setReturnValue(modeField.get(deployerBlockEntity))
+        }
+    }
+
+    internal fun preCreateVisual(contraption: Contraption, cir: CallbackInfoReturnable<ActorVisual>) {
+        if ((contraption.entity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() != null) {
+            cir.returnValue = null
         }
     }
 }

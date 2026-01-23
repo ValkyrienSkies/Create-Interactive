@@ -1,6 +1,5 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
-import com.jozufozu.flywheel.backend.instancing.AbstractInstance
 import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity
 import com.simibubi.create.content.decoration.slidingDoor.SlidingDoorBlockEntity
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity
@@ -14,7 +13,7 @@ import org.valkyrienskies.create_interactive.mixinducks.ContraptionDuck
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.util.toBlockPos
 
-internal object MixinInstanceManagerLogic {
+internal object MixinVisualManagerLogic {
     internal fun shouldRemoveBlockEntityInShip(blockEntity: BlockEntity): Boolean {
         val level = blockEntity.level
         val pos = blockEntity.blockPos
@@ -31,11 +30,10 @@ internal object MixinInstanceManagerLogic {
             && blockEntity !is MechanicalBearingBlockEntity
             && (contraptionEntity.contraption as ContraptionDuck).`ci$hasActorAtPos`(relativePos)
     }
-
-    internal fun preCreateInternal(obj: Any, cir: CallbackInfoReturnable<AbstractInstance?>) {
-        if (obj is BlockEntity && shouldRemoveBlockEntityInShip(obj)) {
+    internal fun <T: BlockEntity> preWillAccept(obj: T, cir: CallbackInfoReturnable<Boolean>) {
+        if (shouldRemoveBlockEntityInShip(obj)) {
             // Don't create the instance
-            cir.setReturnValue(null)
+            cir.setReturnValue(false)
         }
     }
 }

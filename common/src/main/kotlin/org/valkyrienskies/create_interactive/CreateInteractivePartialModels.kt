@@ -1,6 +1,6 @@
 package org.valkyrienskies.create_interactive
 
-import com.jozufozu.flywheel.core.PartialModel
+import dev.engine_room.flywheel.lib.model.baked.PartialModel
 import net.minecraft.resources.ResourceLocation
 
 object CreateInteractivePartialModels {
@@ -12,7 +12,7 @@ object CreateInteractivePartialModels {
         private set
 
     private fun block(path: String): PartialModel {
-        return PartialModel(ResourceLocation(CreateInteractiveMod.MOD_ID, "block/$path"))
+        return PartialModel.of(ResourceLocation(CreateInteractiveMod.MOD_ID, "block/$path"))
     }
 
     fun init() {

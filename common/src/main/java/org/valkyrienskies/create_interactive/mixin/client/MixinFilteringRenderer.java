@@ -21,9 +21,9 @@ import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
-@Mixin(FilteringRenderer.class)
+@Mixin(value = FilteringRenderer.class, remap = false)
 public abstract class MixinFilteringRenderer {
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/blockEntity/behaviour/BlockEntityBehaviour;get(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lcom/simibubi/create/foundation/blockEntity/behaviour/BehaviourType;)Lcom/simibubi/create/foundation/blockEntity/behaviour/BlockEntityBehaviour;"), cancellable = true)
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/blockEntity/SmartBlockEntity;getAllBehaviours()Ljava/util/Collection;"), cancellable = true)
     private static void preTick(CallbackInfo ci, @Local(ordinal = 0) BlockState blockState, @Local(ordinal = 0) ClientLevel world, @Local(ordinal = 0) BlockPos pos) {
         if (blockState.getBlock() instanceof ContraptionControlsBlock) {
             final Ship ship = VSGameUtilsKt.getShipManagingPos(world, pos);
@@ -40,8 +40,9 @@ public abstract class MixinFilteringRenderer {
             method = "renderOnBlockEntity",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/simibubi/create/foundation/blockEntity/SmartBlockEntity;getBehaviour(Lcom/simibubi/create/foundation/blockEntity/behaviour/BehaviourType;)Lcom/simibubi/create/foundation/blockEntity/behaviour/BlockEntityBehaviour;"
-            )
+                    target = "Lcom/simibubi/create/foundation/blockEntity/SmartBlockEntity;getAllBehaviours()Ljava/util/Collection;"
+            ),
+            cancellable = true
     )
     private static void preRenderOnBlockEntity(SmartBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay, CallbackInfo ci) {
         if (be instanceof ContraptionControlsBlockEntity) {

@@ -1,8 +1,8 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
-import com.jozufozu.flywheel.util.transform.TransformStack
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.trains.entity.CarriageBogey
+import dev.engine_room.flywheel.lib.transform.TransformStack
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
 import org.joml.Quaterniondc
@@ -15,7 +15,6 @@ import org.valkyrienskies.create_interactive.mixin.CarriageBogeyAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.mod.common.shipObjectWorld
 import org.valkyrienskies.mod.common.util.toJOMLD
-import org.valkyrienskies.mod.common.util.toMinecraft
 
 internal object MixinCarriageContraptionEntityRendererLogic {
     internal fun preTranslateBogey(
@@ -48,20 +47,20 @@ internal object MixinCarriageContraptionEntityRendererLogic {
 
         val offset: Vector3dc = bogeyPos.toJOMLD().rotate(rotation).mul(scale)
 
-        TransformStack.cast(ms)
+        TransformStack.of(ms)
             // Add the bogey offset
             .translate(offset.x(), offset.y(), offset.z())
             // Add ship rotation
             .translate(0.0, 0.5, 0.0)
             .scale(scale.toFloat())
-            .multiply(Quaternionf(rotation))
+            .rotate(Quaternionf(rotation))
             .translate(0.0, -0.5, 0.0)
             // Regular create past here
-            .rotateY(bogey.yaw.getValue(partialTicks).toDouble())
-            .rotateX(bogey.pitch.getValue(partialTicks).toDouble())
+            .rotateY(bogey.yaw.getValue(partialTicks).toDouble().toFloat())
+            .rotateX(bogey.pitch.getValue(partialTicks).toDouble().toFloat())
             .translate(0.0, .5, 0.0)
-            .rotateZ((if (selfUpsideDown) 180 else 0).toDouble())
-            .translateY((if (selfUpsideDown != leadingUpsideDown) 2 else 0).toDouble())
+            .rotateZ((if (selfUpsideDown) 180 else 0).toFloat())
+            .translateY((if (selfUpsideDown != leadingUpsideDown) 2 else 0).toFloat())
     }
 
     internal fun getClientShipForBogey(bogey: CarriageBogey): ClientShip? {

@@ -6,7 +6,7 @@ import com.simibubi.create.content.contraptions.ContraptionHandler
 import com.simibubi.create.content.contraptions.ContraptionHandlerClient
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import com.simibubi.create.content.trains.entity.TrainRelocator
-import com.simibubi.create.foundation.utility.VecHelper
+import net.createmod.catnip.math.VecHelper
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.multiplayer.ClientPacketListener
 import net.minecraft.client.multiplayer.MultiPlayerGameMode

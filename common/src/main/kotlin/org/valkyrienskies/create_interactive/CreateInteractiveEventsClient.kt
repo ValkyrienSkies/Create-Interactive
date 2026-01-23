@@ -14,12 +14,12 @@ import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import org.joml.Vector3d
 import org.joml.Vector3ic
+import org.valkyrienskies.core.api.ships.ClientShip
 import org.valkyrienskies.core.api.ships.ClientShipTransformProvider
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
-import org.valkyrienskies.core.apigame.world.ClientShipWorldCore
-import org.valkyrienskies.core.impl.game.ships.ShipObjectClient
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.core.internal.world.VsiClientShipWorld
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRotForRender
@@ -41,7 +41,7 @@ object CreateInteractiveEventsClient {
     internal fun postTickClient() {
         val mc = Minecraft.getInstance()
         // Tick the ship world and then drag entities
-        val shipObjectWorld: ClientShipWorldCore = (mc as IShipObjectWorldClientProvider).shipObjectWorld!!
+        val shipObjectWorld: VsiClientShipWorld = (mc as IShipObjectWorldClientProvider).shipObjectWorld!!
 
         val it: MutableIterator<LongObjectMap.PrimitiveEntry<WeakReference<AbstractContraptionEntity>>> =
             shipToContraptions.entries().iterator()
@@ -126,7 +126,7 @@ object CreateInteractiveEventsClient {
                         }
 
                         val position = contraptionEntity.position()
-                        val parentShip = contraptionEntity.level().getShipManagingPos(position) as ShipObjectClient?
+                        val parentShip = contraptionEntity.level().getShipManagingPos(position) as ClientShip?
                         if (contraptionEntityCopy.level().isBlockInShipyard(position) && parentShip == null) {
                             // Ignore it to fix train turntables being strange when going to be world
                             return null
@@ -136,7 +136,7 @@ object CreateInteractiveEventsClient {
                             return null
                         }
                         if (parentShip != null && !updatedShips.contains(parentShip.id)) {
-                            parentShip.updateRenderShipTransform(partialTick)
+                            //parentShip.updateRenderShipTransform(partialTick)
                             updatedShips.add(parentShip.id)
                         }
                         val (first, second, scale) = getContraptionPosRotForRender(contraptionEntity, partialTick)

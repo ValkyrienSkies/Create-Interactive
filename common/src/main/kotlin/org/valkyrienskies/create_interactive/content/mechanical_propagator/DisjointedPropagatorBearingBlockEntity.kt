@@ -22,6 +22,7 @@ import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity.OFFSET_Y
+import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
@@ -71,8 +72,8 @@ class DisjointedPropagatorBearingBlockEntity(
             bearingAxis !== axis
 
         }) {
-            override fun getLocalOffset(state: BlockState?): Vec3 {
-                val defaultOffset = super.getLocalOffset(state)
+            override fun getLocalOffset(level: LevelAccessor?, pos: BlockPos?, state: BlockState?): Vec3? {
+                val defaultOffset = super.getLocalOffset(level, pos, state)
                 return defaultOffset.subtract(0.0, 0.25, 0.0);
             }
         }
@@ -89,7 +90,7 @@ class DisjointedPropagatorBearingBlockEntity(
     }
 
     private fun getDisjointAngularSpeed(): Float {
-        var speed = convertToAngular(if (isWindmill) generatedSpeed else disjointSpeed)
+        var speed = convertToAngular(if (isWindmill()) generatedSpeed else disjointSpeed)
         if (disjointSpeed == 0f) speed = 0f
         if (level!!.isClientSide) {
             speed *= ServerSpeedProvider.get()
@@ -110,7 +111,7 @@ class DisjointedPropagatorBearingBlockEntity(
                 .stop(level)
         }
 
-        if (!isWindmill && sequenceContext != null
+        if (!isWindmill() && sequenceContext != null
             && sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE
         ) sequencedAngleLimit = sequenceContext.getEffectiveValue(
             theoreticalSpeed.toDouble()
@@ -230,7 +231,6 @@ class DisjointedPropagatorBearingBlockEntity(
         }
         //--
 
-
         //todo: This doesn't actually work, so we'll need to figure an alternative out later.
 //        if (getOtherConnection() != null) {
 //            if (previousOtherConnection != level!!.getBlockEntity(getOtherConnection()!!)) {
@@ -274,7 +274,7 @@ class DisjointedPropagatorBearingBlockEntity(
                         movedContraption.contraption.stop(level)
                     }
 
-                    if (!isWindmill && kineticSmartAccess.sequenceContext != null && kineticSmartAccess.sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE)
+                    if (!isWindmill() && kineticSmartAccess.sequenceContext != null && kineticSmartAccess.sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE)
                         mechAccess.sequencedAngleLimit = kineticSmartAccess.sequenceContext.getEffectiveValue(theoreticalSpeed.toDouble())
                     setChanged()
 
@@ -297,7 +297,7 @@ class DisjointedPropagatorBearingBlockEntity(
                 movedContraption.contraption.stop(level)
             }
 
-            if (!isWindmill && kineticSmartAccess.sequenceContext != null && kineticSmartAccess.sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE)
+            if (!isWindmill() && kineticSmartAccess.sequenceContext != null && kineticSmartAccess.sequenceContext.instruction() == SequencerInstructions.TURN_ANGLE)
                 mechAccess.sequencedAngleLimit = kineticSmartAccess.sequenceContext.getEffectiveValue(theoreticalSpeed.toDouble())
             setChanged()
 
@@ -321,7 +321,7 @@ class DisjointedPropagatorBearingBlockEntity(
                     return
                 }
             } else {
-                if (disjointSpeed == 0f && !isWindmill) return
+                if (disjointSpeed == 0f && !isWindmill()) return
                 assemble()
             }
         }
@@ -349,7 +349,7 @@ class DisjointedPropagatorBearingBlockEntity(
 
         val direction = blockState.getValue(BearingBlock.FACING)
         val contraption = BearingContraption(
-            isWindmill, direction
+            isWindmill(), direction
         )
         try {
             if (!contraption.assemble(level, worldPosition)) return
@@ -360,7 +360,7 @@ class DisjointedPropagatorBearingBlockEntity(
             return
         }
 
-        if (isWindmill) award(AllAdvancements.WINDMILL)
+        if (isWindmill()) award(AllAdvancements.WINDMILL)
         if (contraption.sailBlocks >= 16 * 8) award(AllAdvancements.WINDMILL_MAXED)
 
         contraption.removeBlocksFromWorld(level, BlockPos.ZERO)
@@ -385,7 +385,7 @@ class DisjointedPropagatorBearingBlockEntity(
         if (!running && movedContraption == null) return
         disjointAngle = 0f
         sequencedAngleLimit = -1.0
-        if (isWindmill) applyRotation()
+        if (isWindmill()) applyRotation()
         if (movedContraption != null) {
             movedContraption.disassemble()
             AllSoundEvents.CONTRAPTION_DISASSEMBLE.playOnServer(level, worldPosition)

@@ -1,19 +1,21 @@
 package org.valkyrienskies.create_interactive.mixin_logic.deployer
 
-import com.jozufozu.flywheel.util.transform.TransformStack
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.kinetics.deployer.DeployerBlock
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform
-import com.simibubi.create.foundation.utility.AngleHelper
-import com.simibubi.create.foundation.utility.VecHelper
+import dev.engine_room.flywheel.lib.transform.TransformStack
+import net.createmod.catnip.math.AngleHelper
+import net.createmod.catnip.math.VecHelper
+import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
 import org.valkyrienskies.create_interactive.services.NoOptimize
 
 class DeployerActorValueboxTransform : ValueBoxTransform.Sided() {
     @NoOptimize
-    override fun getLocalOffset(state: BlockState): Vec3 {
+    override fun getLocalOffset(level: LevelAccessor, pos: BlockPos, state: BlockState): Vec3 {
         val facing = state.getValue(DeployerBlock.FACING)
         var vec = when (facing) {
             Direction.UP -> VecHelper.voxelSpace(8.0, 4.0, 15.5)
@@ -41,15 +43,15 @@ class DeployerActorValueboxTransform : ValueBoxTransform.Sided() {
     }
 
     @NoOptimize
-    override fun rotate(state: BlockState, ms: PoseStack) {
+    override fun rotate(level: LevelAccessor, pos: BlockPos, state: BlockState, ms: PoseStack) {
         val facing: Direction = side
         val xRot = (if (facing == Direction.UP) 90 else if (facing == Direction.DOWN) 270 else 0).toFloat()
         val yRot = AngleHelper.horizontalAngle(facing) + 180
-        if (facing.axis === Direction.Axis.Y) TransformStack.cast(ms)
-            .rotateY((180 + AngleHelper.horizontalAngle(state.getValue(DeployerBlock.FACING))).toDouble())
-        TransformStack.cast(ms)
-            .rotateY(yRot.toDouble())
-            .rotateX(xRot.toDouble())
+        if (facing.axis === Direction.Axis.Y) TransformStack.of(ms)
+            .rotateY((180 + AngleHelper.horizontalAngle(state.getValue(DeployerBlock.FACING))).toDouble().toFloat())
+        TransformStack.of(ms)
+            .rotateY(yRot)
+            .rotateX(xRot)
     }
 
     @NoOptimize

@@ -3,6 +3,7 @@ package org.valkyrienskies.create_interactive.mixin_logic
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity
 import net.minecraft.server.level.ServerLevel
+import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
@@ -12,6 +13,8 @@ import org.valkyrienskies.create_interactive.mixin.AbstractContraptionEntityAcce
 import org.valkyrienskies.create_interactive.mixin.ContraptionAccessor
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck
 import org.valkyrienskies.create_interactive.mixinducks.OrientedContraptionEntityDuck
+import org.valkyrienskies.mod.api.dimensionId
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.isBlockInShipyard
 import org.valkyrienskies.mod.common.shipObjectWorld
@@ -131,14 +134,14 @@ internal object MixinMinecraftServerLogic {
 
         toDisable.forEach {
             // println("Disabling collision pair $it")
-            serverLevel.shipObjectWorld.disableCollisionBetweenBodies(
+            ValkyrienSkiesMod.getOrCreateGTPA(serverLevel.dimensionId).disableCollisionBetween(
                 it.id0, it.id1
             )
         }
 
         toEnable.forEach {
             // println("Enabling collision pair $it")
-            serverLevel.shipObjectWorld.enableCollisionBetweenBodies(
+            ValkyrienSkiesMod.getOrCreateGTPA(serverLevel.dimensionId).enableCollisionBetween(
                 it.id0, it.id1
             )
         }

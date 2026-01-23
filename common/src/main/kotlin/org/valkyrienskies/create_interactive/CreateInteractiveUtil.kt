@@ -1,5 +1,7 @@
 package org.valkyrienskies.create_interactive
 
+import com.mojang.logging.LogUtils
+import com.simibubi.create.api.contraption.BlockMovementChecks
 import com.simibubi.create.content.contraptions.*
 import com.simibubi.create.content.contraptions.bearing.BearingContraption
 import com.simibubi.create.content.contraptions.bearing.ClockworkContraption
@@ -21,23 +23,22 @@ import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
 import net.minecraft.world.phys.Vec3
-import org.joml.Quaterniond
-import org.joml.Quaterniondc
-import org.joml.Vector3d
-import org.joml.Vector3dc
-import org.joml.Vector3i
-import org.joml.Vector3ic
+import org.joml.*
 import org.joml.primitives.AABBd
 import org.joml.primitives.AABBdc
+import org.valkyrienskies.core.api.bodies.properties.BodyKinematics
 import org.valkyrienskies.core.api.ships.ClientShip
+import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.ServerShipTransformProvider
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
-import org.valkyrienskies.core.apigame.ShipTeleportData
-import org.valkyrienskies.core.apigame.world.properties.DimensionId
+import org.valkyrienskies.core.api.world.properties.DimensionId
+import org.valkyrienskies.core.impl.bodies.properties.BodyTransformImpl
+import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
+import org.valkyrienskies.core.internal.ShipTeleportData
 import org.valkyrienskies.core.util.expand
 import org.valkyrienskies.create_interactive.config.CreateInteractiveConfigs
 import org.valkyrienskies.create_interactive.config.InteractiveHandling
@@ -53,11 +54,7 @@ import org.valkyrienskies.create_interactive.services.NoOptimize
 import org.valkyrienskies.mod.common.dimensionId
 import org.valkyrienskies.mod.common.getShipManagingPos
 import org.valkyrienskies.mod.common.shipObjectWorld
-import org.valkyrienskies.mod.common.util.set
-import org.valkyrienskies.mod.common.util.settings
-import org.valkyrienskies.mod.common.util.toBlockPos
-import org.valkyrienskies.mod.common.util.toJOML
-import org.valkyrienskies.mod.common.util.toMinecraft
+import org.valkyrienskies.mod.common.util.*
 import org.valkyrienskies.mod.common.yRange
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
@@ -139,7 +136,7 @@ object CreateInteractiveUtil {
             val newPos = pos.offset(shipCenter.x(), shipCenter.y(), shipCenter.z())
 
             val flags = Block.UPDATE_MOVE_BY_PISTON or Block.UPDATE_ALL
-            level.setBlock(newPos, structureInfo.state, flags)
+            level.setBlock(newPos, structureInfo.state, flags, 0)
 
             // region Copy the tile entity to the ship
             val newBlockEntity = level.getBlockEntity(newPos)
@@ -284,11 +281,11 @@ object CreateInteractiveUtil {
         val newPos: Vector3dc = contraptionPos.add(offset, Vector3d())
         val newScale = contraptionPosRot.scale
         val posInShip: Vector3dc = cmInShip.add(0.5, 0.5, 0.5, Vector3d())
-        return ShipTransformImpl(
+        return BodyTransformImpl(
             newPos,
-            posInShip,
             contraptionPosRot.rot,
-            Vector3d(newScale)
+            Vector3d(newScale),
+            posInShip
         )
     }
 
@@ -298,8 +295,14 @@ object CreateInteractiveUtil {
         val newOmega: Vector3dc = Vector3d()
         val newDimension: String = level.dimensionId
         // Because of an issue with the teleport function we have to set the center of mass to be cmInShip + (.5,.5,.5)
-        val shipTeleportData: ShipTeleportData = ShipTeleportDataImplFixed(
-            shipTransform.positionInWorld, shipTransform.positionInShip, shipTransform.shipToWorldRotation, newVel, newOmega, newDimension, shipTransform.shipToWorldScaling.x()
+        val shipTeleportData: ShipTeleportData = ShipTeleportDataImpl(
+            shipTransform.positionInWorld,
+            shipTransform.shipToWorldRotation,
+            newVel,
+            newOmega,
+            newDimension,
+            shipTransform.shipToWorldScaling.x(),
+            shipTransform.positionInShip,
         )
         level.shipObjectWorld.teleportShip(serverShip, shipTeleportData)
     }
@@ -334,9 +337,9 @@ object CreateInteractiveUtil {
 
         // Make the ship static, so it won't be affected by physics
         serverShip.isStatic = true
-        serverShip.enableKinematicVelocity = true
+        //serverShip.enableKinematicVelocity = true
         // Don't let the ship teleport through dimensions on its own
-        serverShip.settings.changeDimensionOnTouchPortals = false
+        if(serverShip is LoadedServerShip) serverShip.settings.changeDimensionOnTouchPortals = false
 
         return transform
     }
@@ -483,6 +486,12 @@ object CreateInteractiveUtil {
         }
     }
 
+    internal fun onShipLoadEventClient(clientShip: ClientShip) {
+        val contraption: Contraption = getContraptionEntityForShip(clientShip.id, true)?.contraption ?: return
+        LogUtils.getLogger().info("reset client contraption")
+        contraption.resetClientContraption()
+    }
+
     internal fun onShipUnloadEventClient(clientShip: ClientShip) {
         shipIdToContraptionEntityClientInternal.remove(clientShip.id)
     }
@@ -496,23 +505,5 @@ object CreateInteractiveUtil {
 
     fun isTrainDerailed(carriageEntity: CarriageContraptionEntity): Boolean {
         return carriageEntity.carriage?.train?.derailed == true
-    }
-
-    data class ShipTeleportDataImplFixed(
-        override val newPos: Vector3dc = Vector3d(),
-        val newPosInShip: Vector3dc = Vector3d(),
-        override val newRot: Quaterniondc = Quaterniond(),
-        override val newVel: Vector3dc = Vector3d(),
-        override val newOmega: Vector3dc = Vector3d(),
-        override val newDimension: DimensionId? = null,
-        override val newScale: Double? = null,
-    ) : ShipTeleportData {
-        @NoOptimize
-        override fun createNewShipTransform(oldShipTransform: ShipTransform): ShipTransform = ShipTransformImpl(
-            positionInWorld = newPos,
-            positionInShip = newPosInShip,
-            shipToWorldRotation = newRot,
-            shipToWorldScaling = newScale?.let { Vector3d(it) } ?: oldShipTransform.shipToWorldScaling,
-        )
     }
 }

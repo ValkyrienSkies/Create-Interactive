@@ -1,8 +1,11 @@
 package org.valkyrienskies.create_interactive.mixin.deployer;
 
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
+import com.simibubi.create.content.contraptions.render.ActorVisual;
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
 import com.simibubi.create.content.kinetics.deployer.DeployerMovementBehaviour;
+import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
+import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

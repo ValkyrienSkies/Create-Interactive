@@ -1,9 +1,13 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation
+import com.mojang.logging.LogUtils
 import com.simibubi.create.Create
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.contraptions.Contraption
 import com.simibubi.create.content.contraptions.ContraptionHandler
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity
+import com.simibubi.create.content.contraptions.MountedStorageManager
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity
 import com.simibubi.create.content.contraptions.behaviour.MovementContext
 import com.simibubi.create.content.contraptions.elevator.ElevatorColumn
@@ -20,6 +24,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
@@ -27,6 +32,7 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
 import org.joml.Vector3dc
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.ServerShip
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
@@ -76,9 +82,9 @@ internal object MixinAbstractContraptionEntityLogic {
             linkShipToContraption(newShadowShipId, thisEntity)
             val serverShip: ServerShip? =
                 (thisEntity.level() as ServerLevel).shipObjectWorld.allShips.getById(newShadowShipId)
-            if (serverShip == null) {
+            if (serverShip !is LoadedServerShip) {
                 // How???!
-                println("Absolute giga-sus!!!")
+                LogUtils.getLogger().error("The ship was not loaded! Absolute giga-sus!!!")
                 return newShadowShipId
             }
             // Derailed trains can move freely
@@ -362,6 +368,12 @@ internal object MixinAbstractContraptionEntityLogic {
         val passengerPosInLocal = contraptionEntity.getPassengerPosInShip(ship, passenger) ?: return
 
         cir.returnValue = passengerPosInLocal.toMinecraft()
+    }
+
+    internal fun preStorageInteraction(contraptionEntity: AbstractContraptionEntity, storageManager : MountedStorageManager, contraption : Contraption, player : Player, blockPos : BlockPos, original : Operation<Boolean>) : Boolean {
+        val shadowShipId = (contraptionEntity as AbstractContraptionEntityDuck).`ci$getShadowShipId`() ?: return original.call(storageManager, contraption, player, blockPos)
+        val ship = contraptionEntity.level().shipObjectWorld.loadedShips.getById(shadowShipId) ?: return original.call(storageManager, contraption, player, blockPos)
+        return false
     }
 
     internal data class ExtraData(
