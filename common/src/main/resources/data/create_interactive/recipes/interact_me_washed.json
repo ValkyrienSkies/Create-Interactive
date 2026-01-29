@@ -1,0 +1,14 @@
+{
+  "type": "create:splashing",
+  "ingredients": [
+    {
+      "item": "create_interactive:interact_me_not"
+    }
+  ],
+  "results": [
+    {
+      "item": "create_interactive:interact_me",
+      "count": 1
+    }
+  ]
+}
