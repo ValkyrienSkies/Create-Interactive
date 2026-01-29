@@ -280,7 +280,7 @@ object CreateInteractiveUtil {
         contraptionRot.transform(offset)
         val newPos: Vector3dc = contraptionPos.add(offset, Vector3d())
         val newScale = contraptionPosRot.scale
-        val posInShip: Vector3dc = cmInShip.add(0.5, 0.5, 0.5, Vector3d())
+        val posInShip: Vector3dc = cmInShip
         return BodyTransformImpl(
             newPos,
             contraptionPosRot.rot,
@@ -420,7 +420,7 @@ object CreateInteractiveUtil {
             return ContraptionPosRot(newNewPos, newNewRot, parentTransform.shipToWorldScaling.x())
         }
 
-        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot, 1.0)
+        return ContraptionPosRot(entity.anchorVec.toJOML(), newRot, 1.0)
     }
 
     fun getShipForMovementContext(context: MovementContext): Ship? = getShipForContraption(context.contraption)

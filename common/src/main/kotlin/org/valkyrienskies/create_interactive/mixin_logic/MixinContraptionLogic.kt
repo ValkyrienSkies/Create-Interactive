@@ -230,6 +230,8 @@ internal object MixinContraptionLogic {
                     }
                 }
             } else if (!prevWasBurner && newIsBurner) {
+                // TODO: If the blaze is being used as a stock ticker, don't add it to assembledBlazeBurners
+                // so that it doesn't complain it isn't a conductor
                 (contraption as CarriageContraptionAccessor).assembledBlazeBurners.add(localPos)
                 for (direction in Iterate.directionsInAxis(contraption.assemblyDirection.axis)) {
                     if (contraption.inControl(localPos, direction)) {
