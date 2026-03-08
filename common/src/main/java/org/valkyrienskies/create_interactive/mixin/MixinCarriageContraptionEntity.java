@@ -16,6 +16,7 @@ import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.mixin_logic.MixinCarriageContraptionEntityLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
+import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 @Mixin(CarriageContraptionEntity.class)
 public abstract class MixinCarriageContraptionEntity extends OrientedContraptionEntity implements AbstractContraptionEntityDuck {
@@ -30,8 +31,6 @@ public abstract class MixinCarriageContraptionEntity extends OrientedContraption
         }
     }
 
-    @Unique
-    private Integer ci$forceConstraintId = null;
 
     /**
      * Create the constraints between train cars
@@ -42,15 +41,16 @@ public abstract class MixinCarriageContraptionEntity extends OrientedContraption
             return;
         }
         final CarriageContraptionEntity thisAs = CarriageContraptionEntity.class.cast(this);
+        Integer ci$jointId = MixinCarriageContraptionEntityLogic.INSTANCE.getJointId(thisAs);
         if (CreateInteractiveUtil.INSTANCE.isTrainDerailed(thisAs)) {
-            if (ci$forceConstraintId == null) {
+            if (ci$jointId == null) {
                 // Compute this just in time to account for the distance between cars changing slightly during turns
-                ci$forceConstraintId = MixinCarriageContraptionEntityLogic.INSTANCE.preTick$create_interactive(thisAs);
+                MixinCarriageContraptionEntityLogic.INSTANCE.preTick$create_interactive(thisAs);
             }
         } else {
-            if (ci$forceConstraintId != null) {
-                VSGameUtilsKt.getShipObjectWorld((ServerLevel) level()).removeConstraint(ci$forceConstraintId);
-                ci$forceConstraintId = null;
+            if (ci$jointId != null) {
+                ValkyrienSkiesMod.getOrCreateGTPA(VSGameUtilsKt.getDimensionId(level())).removeJoint(ci$jointId);
+                MixinCarriageContraptionEntityLogic.INSTANCE.setJointId(thisAs, null);
             }
         }
     }

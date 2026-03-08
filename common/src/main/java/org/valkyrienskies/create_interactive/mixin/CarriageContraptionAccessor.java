@@ -9,9 +9,9 @@ import java.util.List;
 
 @Mixin(CarriageContraption.class)
 public interface CarriageContraptionAccessor {
-    @Accessor(value = "assembledBlazeBurners", remap = false)
+    @Accessor(value = "assembledBlockConductors", remap = false)
     List<BlockPos> getAssembledBlazeBurners();
 
-    @Accessor(value = "assembledBlazeBurners", remap = false)
+    @Accessor(value = "assembledBlockConductors", remap = false)
     void setAssembledBlazeBurners(List<BlockPos> assembledBlazeBurners);
 }

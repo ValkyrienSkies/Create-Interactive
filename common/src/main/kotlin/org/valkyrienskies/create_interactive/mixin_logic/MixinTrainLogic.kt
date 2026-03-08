@@ -6,9 +6,9 @@ import com.simibubi.create.content.trains.entity.Train
 import com.simibubi.create.content.trains.entity.TrainRelocator
 import com.simibubi.create.content.trains.graph.TrackNodeLocation
 import com.simibubi.create.content.trains.track.ITrackBlock
-import com.simibubi.create.foundation.utility.Iterate
-import com.simibubi.create.foundation.utility.Pair
-import com.simibubi.create.foundation.utility.VecHelper
+import net.createmod.catnip.data.Pair
+import net.createmod.catnip.data.Iterate
+import net.createmod.catnip.math.VecHelper
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.resources.ResourceKey

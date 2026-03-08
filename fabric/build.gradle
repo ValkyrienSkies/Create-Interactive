@@ -58,14 +58,18 @@ dependencies {
     modImplementation("me.shedaniel.cloth:cloth-config:${cloth_config_version}")
 
     // Remove the next line if you don't want to depend on the API
-    modApi("org.valkyrienskies:valkyrienskies-120-common:$vs2_version")
-    modApi("org.valkyrienskies:valkyrienskies-120-fabric:$vs2_version")
+    modApi("org.valkyrienskies:valkyrienskies-120-common:$vs2_version") {
+        exclude(group: "com.simibubi.create")
+    }
+    modApi("org.valkyrienskies:valkyrienskies-120-fabric:$vs2_version") {
+        exclude(group: "com.simibubi.create")
+    }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     // Create compat
-    modImplementation("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}") {
+    modImplementation("com.simibubi.create:create-fabric:${create_fabric_version}") {
         exclude group: 'com.github.AlphaMode', module: 'fakeconfigtoml'
         exclude(group: 'dev.engine-room')
     }
@@ -84,7 +88,7 @@ dependencies {
     modImplementation("io.github.tropheusj:milk-lib:${milk_lib_version}")
 
     // Indium
-    modRuntimeOnly("maven.modrinth:indium:${indium_version}")
+    // modRuntimeOnly("maven.modrinth:indium:${indium_version}")
 
     // CBC
     modCompileOnly("maven.modrinth:create-big-cannons:${createbigcannons_version}")
@@ -167,5 +171,16 @@ publishing {
                 }
             }
         }
+    }
+}
+
+compileKotlin {
+    compilerOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
     }
 }

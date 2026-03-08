@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.simibubi.create.content.trains.track.ITrackBlock;
 import com.simibubi.create.content.trains.track.TrackPlacement;
-import com.simibubi.create.foundation.utility.Pair;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -42,7 +42,7 @@ public class MixinTrackPlacement {
     /**
      * Fix placing rails on rotated ships part 2. Because of our mixin to getNearestTrackAxis we need to re-invoke without transforming the player look vector
      */
-    @WrapOperation(method = "tryConnect", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/track/ITrackBlock;getNearestTrackAxis(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/phys/Vec3;)Lcom/simibubi/create/foundation/utility/Pair;"))
+    @WrapOperation(method = "tryConnect", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/trains/track/ITrackBlock;getNearestTrackAxis(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/phys/Vec3;)Lnet/createmod/catnip/data/Pair;"))
     private static Pair<Vec3, Direction.AxisDirection> redirectTryConnectInvokeGetNearestTrackAxis(
         final ITrackBlock iTrackBlock,
         final BlockGetter world,

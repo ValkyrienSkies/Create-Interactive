@@ -1,15 +1,15 @@
 package org.valkyrienskies.create_interactive.content.mechanical_propagator
 
-import com.jozufozu.flywheel.backend.Backend
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.AllPartialModels
 import com.simibubi.create.content.contraptions.bearing.BearingBlock
 import com.simibubi.create.content.contraptions.bearing.IBearingBlockEntity
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer
-import com.simibubi.create.foundation.render.CachedBufferer
-import com.simibubi.create.foundation.render.SuperByteBuffer
-import com.simibubi.create.foundation.utility.AngleHelper
+import dev.engine_room.flywheel.api.visualization.VisualizationManager
+import net.createmod.catnip.math.AngleHelper
+import net.createmod.catnip.render.CachedBuffers
+import net.createmod.catnip.render.SuperByteBuffer
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
@@ -26,34 +26,34 @@ class MechanicalPropagatorBearingRenderer<T>(context: BlockEntityRendererProvide
         be: T, partialTicks: Float, ms: PoseStack, buffer: MultiBufferSource,
         light: Int, overlay: Int
     ) {
-        if (Backend.canUseInstancing(be!!.level)) return
+        if (VisualizationManager.supportsVisualization(be!!.level)) return
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay)
 
         val facing = be.blockState.getValue(BlockStateProperties.FACING)
         val top = CreateInteractivePartialModels.BEARING_TOP_PROPAGATOR
         val shaft = AllPartialModels.SHAFT_HALF
-        val superBuffer = CachedBufferer.partial(top, be.blockState)
-        val shaftBuffer = CachedBufferer.partial(shaft, be.blockState)
-        val topShaftBuffer = CachedBufferer.partial(shaft, be.blockState)
+        val superBuffer = CachedBuffers.partial(top, be.blockState)
+        val shaftBuffer = CachedBuffers.partial(shaft, be.blockState)
+        val topShaftBuffer = CachedBuffers.partial(shaft, be.blockState)
         val interpolatedAngle = be.getInterpolatedAngle(partialTicks - 1)
 
         kineticRotationTransform(superBuffer, be, facing.axis, (interpolatedAngle / 180 * Math.PI).toFloat(), light)
 
         if (facing.axis.isHorizontal) superBuffer.rotateCentered(
-            Direction.UP,
-            AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble())
+            AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble()),
+            Direction.UP
         )
         superBuffer.rotateCentered(
-            Direction.EAST,
-            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble())
+            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble()),
+            Direction.EAST
         )
         shaftBuffer.rotateCentered(
-            Direction.EAST,
-            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble())
+            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble()),
+            Direction.EAST
         )
         topShaftBuffer.rotateCentered(
-            Direction.EAST,
-            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble())
+            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble()),
+            Direction.EAST
         )
         superBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))
         shaftBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))
@@ -63,7 +63,7 @@ class MechanicalPropagatorBearingRenderer<T>(context: BlockEntityRendererProvide
 
     @NoOptimize
     override fun getRotatedModel(be: T, state: BlockState): SuperByteBuffer? {
-        return CachedBufferer.partialFacing(
+        return CachedBuffers.partialFacing(
             AllPartialModels.SHAFT_HALF, state, state
                 .getValue(BearingBlock.FACING)
                 .opposite

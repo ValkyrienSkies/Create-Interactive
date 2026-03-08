@@ -2,8 +2,8 @@ package org.valkyrienskies.create_interactive.content.mechanical_propagator
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.contraptions.bearing.BearingRenderer
-import com.simibubi.create.foundation.render.CachedBufferer
-import com.simibubi.create.foundation.utility.AngleHelper
+import net.createmod.catnip.math.AngleHelper
+import net.createmod.catnip.render.CachedBuffers
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
@@ -25,30 +25,30 @@ class DisjointedPropagatorBearingRenderer(context: BlockEntityRendererProvider.C
         val facing: Direction = be.blockState.getValue(BlockStateProperties.FACING)
         val top = CreateInteractivePartialModels.BEARING_TOP_PROPAGATOR_DISJOINTED
         val cog = CreateInteractivePartialModels.BEARING_COG
-        val superBuffer = CachedBufferer.partial(top, be.blockState)
-        val cogBuffer = CachedBufferer.partial(cog, be.blockState)
+        val superBuffer = CachedBuffers.partial(top, be.blockState)
+        val cogBuffer = CachedBuffers.partial(cog, be.blockState)
 
         val interpolatedAngle: Float = be.getDisjointInterpolatedAngle(partialTicks - 1)
         val cogAngle: Float = be.getInterpolatedAngle(partialTicks - 1)
         kineticRotationTransform(superBuffer, be, facing.axis, (interpolatedAngle / 180 * Math.PI).toFloat(), light)
         standardKineticRotationTransform(cogBuffer, be, light)
         if (facing.axis.isHorizontal) superBuffer.rotateCentered(
-            Direction.UP,
-            AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble())
+            AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble()),
+            Direction.UP
         )
 
         if (facing.axis.isHorizontal) cogBuffer.rotateCentered(
-            Direction.UP,
-            AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble())
+            AngleHelper.rad(AngleHelper.horizontalAngle(facing.opposite).toDouble()),
+            Direction.UP
         )
 
         superBuffer.rotateCentered(
-            Direction.EAST,
-            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble())
+            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble()),
+            Direction.EAST
         )
         cogBuffer.rotateCentered(
-            Direction.EAST,
-            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble())
+            AngleHelper.rad((-90 - AngleHelper.verticalAngle(facing)).toDouble()),
+            Direction.EAST
         )
         superBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))
         cogBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()))

@@ -1,10 +1,10 @@
 package org.valkyrienskies.create_interactive.mixin;
 
+import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
-import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour;
 import kotlin.Unit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -52,6 +52,9 @@ public abstract class MixinContraption implements ContraptionDuck {
     protected abstract void disableActorOnStart(final MovementContext context);
     @Shadow
     protected abstract CompoundTag getBlockEntityNBT(final Level world, final BlockPos pos);
+
+    @Shadow
+    public abstract void invalidateClientContraptionChildren();
 
     @Inject(method = "<init>", at = @At("RETURN"), remap = false)
     private void postInit(final CallbackInfo ci) {
@@ -105,6 +108,11 @@ public abstract class MixinContraption implements ContraptionDuck {
             interactors,
             Contraption.class.cast(this)
         );
+        // Invalidate the children, to add/remove actor visuals
+        if(!ci$changedActors.isEmpty()) {
+            invalidateClientContraptionChildren();
+            ci$clearChangedActors();
+        }
     }
 
     @Override

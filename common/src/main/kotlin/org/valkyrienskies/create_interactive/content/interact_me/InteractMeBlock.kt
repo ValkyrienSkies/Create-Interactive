@@ -3,9 +3,9 @@ package org.valkyrienskies.create_interactive.content.interact_me
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Maps
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity
+import com.simibubi.create.foundation.block.ProperWaterloggedBlock
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelAccessor
@@ -16,15 +16,10 @@ import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
 
-class InteractMeBlock(properties: Properties) : DirectionalBlock(properties.noOcclusion().instabreak()) {
+class InteractMeBlock(properties: Properties) : FaceAttachedHorizontalDirectionalBlock(properties.noOcclusion().instabreak()) {
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block?, BlockState?>) {
-        builder.add(FACING)
-        super.createBlockStateDefinition(builder)
-    }
-
-    override fun getStateForPlacement(blockPlaceContext: BlockPlaceContext): BlockState {
-        return (defaultBlockState().setValue(FACING, blockPlaceContext.clickedFace))
+        super.createBlockStateDefinition(builder.add(FACE, FACING, ProperWaterloggedBlock.WATERLOGGED))
     }
 
     override fun rotate(blockState: BlockState, rotation: Rotation): BlockState {
@@ -35,56 +30,11 @@ class InteractMeBlock(properties: Properties) : DirectionalBlock(properties.noOc
         return blockState.rotate(mirror.getRotation(blockState.getValue(FACING)))
     }
 
-    override fun canSurvive(blockState: BlockState, levelReader: LevelReader, blockPos: BlockPos): Boolean {
-        return levelReader.getBlockState(blockPos.relative((blockState.getValue(FACING)).opposite)).isSolid
-    }
-
-    override fun onRemove(
-        blockState: BlockState,
-        level: Level,
-        blockPos: BlockPos,
-        blockState2: BlockState,
-        bl: Boolean
-    ) {
-        if (!level.isClientSide()) {
-            val face = blockState.getValue(FACING)
-            val aabb = SuperGlueEntity.span(blockPos, blockPos.relative(face.opposite))
-            val glueNearby = level.getEntitiesOfClass(SuperGlueEntity::class.java, aabb)
-            for (glue in glueNearby) {
-                if (glue.boundingBox.equals(aabb)) {
-                    glue.spawnParticles()
-                    glue.discard()
-                    break
-                }
-            }
-        }
-        super.onRemove(blockState, level, blockPos, blockState2, bl)
-    }
-
-    override fun updateShape(
-            blockState: BlockState,
-            direction: Direction,
-            blockState2: BlockState?,
-            levelAccessor: LevelAccessor?,
-            blockPos: BlockPos?,
-            blockPos2: BlockPos?,
-    ): BlockState {
-        return if (direction.opposite == blockState.getValue(FACING) && !blockState.canSurvive(
-                levelAccessor,
-                blockPos)
-        ) Blocks.AIR.defaultBlockState() else super.updateShape(blockState,
-            direction,
-            blockState2,
-            levelAccessor,
-            blockPos,
-            blockPos2)
-    }
-
     override fun getShape(blockState: BlockState,
             blockGetter: BlockGetter?,
             blockPos: BlockPos?,
             collisionContext: CollisionContext?): VoxelShape? {
-        return AABBS[blockState.getValue(FACING)]
+        return AABBS[getConnectedDirection(blockState)]
     }
 
     companion object {

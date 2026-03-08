@@ -1,6 +1,6 @@
 package org.valkyrienskies.create_interactive.mixin_logic
 
-import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour
+import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour
 import com.simibubi.create.content.contraptions.behaviour.SimpleBlockMovingInteraction
 import com.simibubi.create.content.kinetics.deployer.DeployerMovingInteraction
 

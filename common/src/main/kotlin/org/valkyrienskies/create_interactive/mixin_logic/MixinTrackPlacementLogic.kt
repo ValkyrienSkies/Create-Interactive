@@ -2,7 +2,7 @@ package org.valkyrienskies.create_interactive.mixin_logic
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation
 import com.simibubi.create.content.trains.track.ITrackBlock
-import com.simibubi.create.foundation.utility.Pair
+import net.createmod.catnip.data.Pair
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.entity.player.Player

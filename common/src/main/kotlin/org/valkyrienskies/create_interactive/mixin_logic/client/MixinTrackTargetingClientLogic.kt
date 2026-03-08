@@ -1,13 +1,13 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
-import com.jozufozu.flywheel.util.transform.TransformStack
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.trains.graph.EdgePointType
 import com.simibubi.create.content.trains.graph.TrackGraphLocation
 import com.simibubi.create.content.trains.track.BezierTrackPointLocation
 import com.simibubi.create.content.trains.track.TrackTargetingBehaviour
 import com.simibubi.create.content.trains.track.TrackTargetingBlockItem
-import com.simibubi.create.foundation.render.SuperRenderTypeBuffer
+import dev.engine_room.flywheel.lib.transform.TransformStack
+import net.createmod.catnip.render.SuperRenderTypeBuffer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.LevelRenderer
 import net.minecraft.client.renderer.texture.OverlayTexture
@@ -55,7 +55,7 @@ internal object MixinTrackTargetingClientLogic {
         val posInShip: Vector3dc = lastHovered.toJOMLD().add(0.5, 0.5, 0.5)
         val posInWorld: Vector3dc = clientShip.renderTransform.shipToWorld.transformPosition(posInShip, Vector3d())
 
-        TransformStack.cast(ms)
+        TransformStack.of(ms)
             .translate(
                 posInWorld.x() - camera.x(), posInWorld.y() - camera.y(), posInWorld.z() - camera.z()
             )

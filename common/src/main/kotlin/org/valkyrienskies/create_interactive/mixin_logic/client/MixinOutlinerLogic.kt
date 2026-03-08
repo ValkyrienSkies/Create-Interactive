@@ -1,6 +1,6 @@
 package org.valkyrienskies.create_interactive.mixin_logic.client
 
-import com.simibubi.create.foundation.outliner.Outliner
+import net.createmod.catnip.outliner.Outliner
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 internal object MixinOutlinerLogic {
