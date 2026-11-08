@@ -18,7 +18,6 @@ import org.valkyrienskies.core.api.ships.ClientShip
 import org.valkyrienskies.core.api.ships.ClientShipTransformProvider
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
-import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.core.internal.world.VsiClientShipWorld
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getChunkClaimCenterPos
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil.getContraptionPosRot
@@ -99,11 +98,9 @@ object CreateInteractiveEventsClient {
                             }
                         }
 
-                        // The contraption center block is at the same position as the ship center, so create the
-                        // transform to apply that
-                        // TODO: Use CreateInteractiveUtil.posRotToShipTransform()
-                        return ShipTransformImpl.create(
-                            first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second, Vector3d(scale)
+                        return ContraptionTransforms.create(
+                            first, second, scale,
+                            Vector3d(shipCenter).add(0.5, 0.5, 0.5), shipTransform.positionInShip,
                         )
                     }
                     return null
@@ -140,9 +137,9 @@ object CreateInteractiveEventsClient {
                             updatedShips.add(parentShip.id)
                         }
                         val (first, second, scale) = getContraptionPosRotForRender(contraptionEntity, partialTick)
-                        // TODO: Use CreateInteractiveUtil.posRotToShipTransform()
-                        val renderTransform = ShipTransformImpl.create(
-                            first, Vector3d(shipCenter).add(0.5, 0.5, 0.5), second, Vector3d(scale)
+                        val renderTransform = ContraptionTransforms.create(
+                            first, second, scale,
+                            Vector3d(shipCenter).add(0.5, 0.5, 0.5), shipTransform.positionInShip,
                         )
                         cachedRenderTransforms[shipId] = renderTransform
                         return renderTransform

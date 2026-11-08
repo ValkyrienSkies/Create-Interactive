@@ -26,7 +26,6 @@ import net.minecraft.world.phys.Vec3
 import org.joml.*
 import org.joml.primitives.AABBd
 import org.joml.primitives.AABBdc
-import org.valkyrienskies.core.api.bodies.properties.BodyKinematics
 import org.valkyrienskies.core.api.ships.ClientShip
 import org.valkyrienskies.core.api.ships.LoadedServerShip
 import org.valkyrienskies.core.api.ships.ServerShip
@@ -34,10 +33,7 @@ import org.valkyrienskies.core.api.ships.ServerShipTransformProvider
 import org.valkyrienskies.core.api.ships.Ship
 import org.valkyrienskies.core.api.ships.properties.ShipId
 import org.valkyrienskies.core.api.ships.properties.ShipTransform
-import org.valkyrienskies.core.api.world.properties.DimensionId
-import org.valkyrienskies.core.impl.bodies.properties.BodyTransformImpl
 import org.valkyrienskies.core.impl.game.ShipTeleportDataImpl
-import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl
 import org.valkyrienskies.core.internal.ShipTeleportData
 import org.valkyrienskies.core.util.expand
 import org.valkyrienskies.create_interactive.config.CreateInteractiveConfigs
@@ -268,24 +264,12 @@ object CreateInteractiveUtil {
     private fun posRotToShipTransform(contraptionPosRot: ContraptionPosRot, serverShip: ServerShip, level: ServerLevel): ShipTransform {
         val (contraptionPos, contraptionRot) = contraptionPosRot
 
-        // Anchor at ship center of mass
-        val cmInShip: Vector3dc = serverShip.inertiaData.centerOfMassInShip
-        val shipCenter: Vector3ic = serverShip.getChunkClaimCenterPos(level)
-        val offset = cmInShip.sub(
-            shipCenter.x().toDouble(),
-            shipCenter.y().toDouble(),
-            shipCenter.z().toDouble(),
-            Vector3d()
-        )
-        contraptionRot.transform(offset)
-        val newPos: Vector3dc = contraptionPos.add(offset, Vector3d())
-        val newScale = contraptionPosRot.scale
-        val posInShip: Vector3dc = cmInShip
-        return BodyTransformImpl(
-            newPos,
-            contraptionPosRot.rot,
-            Vector3d(newScale),
-            posInShip
+        return ContraptionTransforms.create(
+            contraptionPos,
+            contraptionRot,
+            contraptionPosRot.scale,
+            Vector3d(serverShip.getChunkClaimCenterPos(level)).add(0.5, 0.5, 0.5),
+            serverShip.inertiaData.centerOfMassInShip,
         )
     }
 
@@ -294,7 +278,6 @@ object CreateInteractiveUtil {
         val newVel: Vector3dc = Vector3d()
         val newOmega: Vector3dc = Vector3d()
         val newDimension: String = level.dimensionId
-        // Because of an issue with the teleport function we have to set the center of mass to be cmInShip + (.5,.5,.5)
         val shipTeleportData: ShipTeleportData = ShipTeleportDataImpl(
             shipTransform.positionInWorld,
             shipTransform.shipToWorldRotation,
@@ -324,8 +307,9 @@ object CreateInteractiveUtil {
                 }
                 val prevPos = prevShipTransform.shipToWorld.transformPosition(transform.positionInShip, Vector3d())
                 val velocityAtContraptionPos: Vector3dc = transform.positionInWorld.sub(prevPos, Vector3d()).mul(20.0)
-                val rotDiff: Quaterniondc = transform.shipToWorldRotation.difference(prevShipTransform.shipToWorldRotation, Quaterniond()).normalize()
-                val omega: Vector3dc = Vector3d(rotDiff.x() * 2.0, rotDiff.y() * 2.0, rotDiff.z() * 2.0).apply { if (rotDiff.w() > 0.0) mul(-1.0) }.mul(20.0)
+                val omega = ContraptionTransforms.angularVelocity(
+                    prevShipTransform.shipToWorldRotation, transform.shipToWorldRotation
+                )
                 return ServerShipTransformProvider.NextTransformAndVelocityData(transform, velocityAtContraptionPos, omega)
             }
         }
@@ -370,21 +354,8 @@ object CreateInteractiveUtil {
 
     data class ContraptionPosRot(val pos: Vector3dc, val rot: Quaterniondc, val scale: Double)
 
-    fun getContraptionPosRot(entity: AbstractContraptionEntity): ContraptionPosRot {
-        val rotationStateOriginal = AbstractContraptionEntity::class.java.cast(entity).rotationState
-        val newRot = (rotationStateOriginal as ContraptionRotationStateDuck).`ci$getRotationQuaternion`(Quaterniond())
-        val contraptionPos: Vector3dc = entity.anchorVec.toJOML().add(0.5, 0.5, 0.5)
-
-        // Train on a train!!!
-        val parentShip = entity.level().getShipManagingPos(entity.position())
-        if (parentShip != null) {
-            val newNewPos = parentShip.transform.shipToWorld.transformPosition(contraptionPos, Vector3d())
-            val newNewRot = parentShip.transform.shipToWorldRotation.mul(newRot, Quaterniond())
-            return ContraptionPosRot(newNewPos, newNewRot, parentShip.transform.shipToWorldScaling.x())
-        }
-
-        return ContraptionPosRot(contraptionPos, newRot, 1.0)
-    }
+    fun getContraptionPosRot(entity: AbstractContraptionEntity): ContraptionPosRot =
+        getContraptionPosRot(entity, entity.level().getShipManagingPos(entity.position())?.transform)
 
     fun getContraptionPosRotForRender(entity: AbstractContraptionEntity, partialTick: Double): ContraptionPosRot {
         val prevRot: Quaterniondc = ((entity as AbstractContraptionEntityDuck).`ci$getPrevTickRotationState`() as ContraptionRotationStateDuck).`ci$getRotationQuaternion`(Quaterniond())
@@ -420,7 +391,7 @@ object CreateInteractiveUtil {
             return ContraptionPosRot(newNewPos, newNewRot, parentTransform.shipToWorldScaling.x())
         }
 
-        return ContraptionPosRot(entity.anchorVec.toJOML(), newRot, 1.0)
+        return ContraptionPosRot(entity.anchorVec.toJOML().add(0.5, 0.5, 0.5), newRot, 1.0)
     }
 
     fun getShipForMovementContext(context: MovementContext): Ship? = getShipForContraption(context.contraption)

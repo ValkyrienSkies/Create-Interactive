@@ -3,11 +3,9 @@ package org.valkyrienskies.create_interactive.mixin;
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -15,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.valkyrienskies.create_interactive.CreateInteractiveUtil;
 import org.valkyrienskies.create_interactive.mixin_logic.MixinCarriageContraptionEntityLogic;
 import org.valkyrienskies.create_interactive.mixinducks.AbstractContraptionEntityDuck;
-import org.valkyrienskies.mod.common.VSGameUtilsKt;
-import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 
 @Mixin(CarriageContraptionEntity.class)
 public abstract class MixinCarriageContraptionEntity extends OrientedContraptionEntity implements AbstractContraptionEntityDuck {
@@ -48,10 +44,15 @@ public abstract class MixinCarriageContraptionEntity extends OrientedContraption
                 MixinCarriageContraptionEntityLogic.INSTANCE.preTick$create_interactive(thisAs);
             }
         } else {
-            if (ci$jointId != null) {
-                ValkyrienSkiesMod.getOrCreateGTPA(VSGameUtilsKt.getDimensionId(level())).removeJoint(ci$jointId);
-                MixinCarriageContraptionEntityLogic.INSTANCE.setJointId(thisAs, null);
-            }
+            MixinCarriageContraptionEntityLogic.INSTANCE.clearJoint(thisAs);
         }
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        if (!level().isClientSide) {
+            MixinCarriageContraptionEntityLogic.INSTANCE.clearJoint(CarriageContraptionEntity.class.cast(this));
+        }
+        super.remove(reason);
     }
 }
