@@ -33,6 +33,13 @@ public abstract class MixinDeployerVisual extends ShaftVisual<DeployerBlockEntit
         super(context, blockEntity, partialTick);
     }
 
+    @Inject(method = "beginFrame", at = @At("HEAD"), remap = false)
+    private void forceUpdateWhenActorActive(final CallbackInfo ci) {
+        if (MixinDeployerRendererLogic.INSTANCE.preGetHandOffset$create_interactive(blockEntity) != null) {
+            progress = -1f;
+        }
+    }
+
     /**
      * @author Triode
      * @reason Get the hand offset from the actor when this is rendering in a contraption with a ship shadow
