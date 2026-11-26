@@ -57,12 +57,20 @@ dependencies {
     modImplementation("com.terraformersmc:modmenu:3.2.3")
     modImplementation("me.shedaniel.cloth:cloth-config:${cloth_config_version}")
 
-    // Remove the next line if you don't want to depend on the API
-    modApi("org.valkyrienskies:valkyrienskies-120-common:$vs2_version") {
-        exclude(group: "com.simibubi.create")
+    //VS2
+    modApi("org.valkyrienskies:valkyrienskies-120-fabric:${vs2_version}") {
+        exclude group: "com.simibubi"
+        // Excluding sodium since it crashes with vs2 for some reason
+        exclude group: 'maven.modrinth', module: 'sodium'
     }
-    modApi("org.valkyrienskies:valkyrienskies-120-fabric:$vs2_version") {
-        exclude(group: "com.simibubi.create")
+    implementation("org.valkyrienskies.core:api:${vs_core_version}") {
+        exclude group: 'org.joml', module: ''
+    }
+    implementation("org.valkyrienskies.core:util:${vs_core_version}") {
+        exclude group: 'org.joml', module: ''
+    }
+    implementation("org.valkyrienskies.core:internal:${vs_core_version}") {
+        exclude group: 'org.joml', module: ''
     }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
@@ -89,6 +97,10 @@ dependencies {
 
     // Indium
     // modRuntimeOnly("maven.modrinth:indium:${indium_version}")
+
+    modRuntimeOnly("maven.modrinth:create-clockwork:1.20.1-fabric-0.5.7.1")
+    modRuntimeOnly "curse.maven:kelvin-vs-1751257:9602092"
+    modRuntimeOnly "maven.modrinth:lhGA9TYQ:WbL7MStR"
 
     // CBC
     modCompileOnly("maven.modrinth:create-big-cannons:${createbigcannons_version}")
