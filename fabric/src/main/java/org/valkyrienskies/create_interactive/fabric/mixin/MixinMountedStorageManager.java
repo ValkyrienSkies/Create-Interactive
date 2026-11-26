@@ -124,7 +124,7 @@ public abstract class MixinMountedStorageManager {
         if(check()){
             List<SlottedStorage<ItemVariant>> all = new ArrayList<>(ci$externalStorages.size() + 1);
             all.addAll(this.ci$externalStorages.values());
-            LogUtils.getLogger().info("storages");
+            //LogUtils.getLogger().info("storages");
             ci$externalStorages.values().forEach(
                     (storage) -> {
                         LogUtils.getLogger().info("    {}", storage);
