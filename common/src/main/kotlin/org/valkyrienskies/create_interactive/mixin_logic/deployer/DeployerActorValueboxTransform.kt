@@ -74,6 +74,10 @@ class DeployerActorValueboxTransform : ValueBoxTransform.Sided() {
             return type
         }
 
+        override fun netId(): Int {
+            return 2
+        }
+
         override fun write(nbt: CompoundTag, clientPacket: Boolean) {
             val tmp = CompoundTag()
             super.write(tmp, clientPacket)
