@@ -2,7 +2,11 @@ package org.valkyrienskies.create_interactive.mixin_logic.deployer
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.simibubi.create.content.kinetics.deployer.DeployerBlock
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity
+import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour
 import dev.engine_room.flywheel.lib.transform.TransformStack
 import net.createmod.catnip.math.AngleHelper
 import net.createmod.catnip.math.VecHelper
@@ -14,6 +18,7 @@ import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.Vec3
 import org.valkyrienskies.create_interactive.services.NoOptimize
+
 
 class DeployerActorValueboxTransform : ValueBoxTransform.Sided() {
     @NoOptimize
@@ -55,4 +60,33 @@ class DeployerActorValueboxTransform : ValueBoxTransform.Sided() {
         return 0.5f
     }
 
+    /**
+     * Create stores BE behaviours in a map using their class as the key.
+     * We make a custom class for the sole purpose of not overriding VS's scroll options.
+     */
+    class InteractiveOptionBehaviour<E>
+        (
+        private val type: BehaviourType<*>, private val nbtKey: String, enum: Class<E>,
+        label: Component, be: SmartBlockEntity, slot: ValueBoxTransform
+    ) : ScrollOptionBehaviour<E>(enum, label, be, slot) where E : Enum<E>, E : INamedIconOptions {
+
+        override fun getType(): BehaviourType<*> {
+            return type
+        }
+
+        override fun write(nbt: CompoundTag, clientPacket: Boolean) {
+            val tmp = CompoundTag()
+            super.write(tmp, clientPacket)
+            nbt.put(nbtKey, tmp)
+        }
+
+        override fun read(nbt: CompoundTag, clientPacket: Boolean) {
+            super.read(nbt.getCompound(nbtKey), clientPacket)
+        }
+    }
+
+    companion object {
+        val ACTOR_TYPE: BehaviourType<InteractiveOptionBehaviour<DeployerActorMode>> =
+            BehaviourType<InteractiveOptionBehaviour<DeployerActorMode>>()
+    }
 }

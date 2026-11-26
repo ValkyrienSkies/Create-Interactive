@@ -23,7 +23,9 @@ public class MixinDeployerBlockEntity implements DeployerDuck {
 
     @Inject(method = "addBehaviours", at = @At("RETURN"), remap = false)
     private void onAddBehaviours(List<BlockEntityBehaviour> behaviours, final CallbackInfo ci) {
-        actorBehaviour = new ScrollOptionBehaviour<>(
+        actorBehaviour = new DeployerActorValueboxTransform.InteractiveOptionBehaviour<>(
+                DeployerActorValueboxTransform.Companion.getACTOR_TYPE(),
+                "DeployerActor",
                 DeployerActorMode.class,
                 CreateLang.text("Deployer Actor").component(),
                 ((DeployerBlockEntity) (Object) this),
