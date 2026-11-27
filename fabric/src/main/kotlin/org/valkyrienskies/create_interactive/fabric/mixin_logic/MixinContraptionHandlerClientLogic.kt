@@ -15,14 +15,10 @@ internal object MixinContraptionHandlerClientLogic {
         val hitResult = Minecraft.getInstance().hitResult
         if (hitResult is BlockHitResult) {
             val level: Level? = Minecraft.getInstance().level
-            if (level != null && level.isBlockInShipyard(hitResult.blockPos) && hitResult.getLocation()
-                    .distanceToSqr(
-                        hitResult.blockPos.x.toDouble(),
-                        hitResult.blockPos.y.toDouble(),
-                        hitResult.blockPos.z.toDouble()
-                    ) > 1e6
-            ) {
-                // If location doesn't match the position then assume this is on a ship, so increase the distance we raytrace contraptions to ensure we hit the contraption instead
+            // Ship blocks live in the shipyard. Depending on the VS version the hit location is in world or shipyard
+            // space, so only the block position is a reliable signal.
+            if (level != null && level.isBlockInShipyard(hitResult.blockPos)) {
+                // Increase the distance we raytrace contraptions to ensure we hit the contraption instead
                 return originalDistanceTo + 0.1
             }
         }
